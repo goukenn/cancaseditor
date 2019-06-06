@@ -1,0 +1,11 @@
+<?php
+ //-------------------------------------------------------------------------
+ //Zone Application
+ //-------------------------------------------------------------------------
+ $container = $d->addDiv()->setClass('')->setId("apps")->addDiv()->setClass("igk-container");
+ $container->addDiv()->setClass("igk-title-4 igk-landing-h1")->setContent (R::ngets("title.ApplicationAndServices")); 
+ $container->addDiv()->setClass("alignc igk-ftl-lg-4 igk-disable ")->Content = "créer de developpe des applications et services web disponible pour balafon";
+ $v_t = $container->addRow(); 
+ include("binddata.phtml");  
+ $v_t->addClearTab();
+?>

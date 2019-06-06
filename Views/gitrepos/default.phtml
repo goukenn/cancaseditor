@@ -1,0 +1,49 @@
+<?php
+class IGKGitRepos{
+	const service_receive = "git-receive-pack";
+	const service_upload = "git-upload-pack";
+}
+
+$rp = igk_getr("service");
+igk_ilog($_REQUEST);
+igk_ilog("params");
+igk_ilog($params);
+
+
+
+if (!empty($rp)){
+	
+	if ($rp == IGKGitRepos::service_upload){
+		
+		
+		igk_exit();
+	}
+	
+	
+	if ($rp == IGKGITRepos::service_receive){
+		$n = igk_createxmlnode("result");
+		$n["token"]  = "";
+		
+		
+		// $n->renderXml();
+		header("Content-Type: application/x-git-receive-pack-advertisement");
+		igk_wl(<<<EOF
+001f
+# service=git-receive-pack
+0000009da88f9170d5582b270eb44a33a2f3f08398b6245c refs/heads/master report-status delete-refs side-band-64k quiet atomic ofs-delta agent=git/github-ge481f3758fee
+0000
+EOF
+);		
+		
+		
+		
+		igk_exit();
+	}
+}
+
+$t->clearChilds();
+// $n->render
+
+//git repos host
+igk_wln("done");
+igk_exit();

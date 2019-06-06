@@ -1,0 +1,16 @@
+<div id="appinfo-binding" />
+<div igk-data-row-binding="true" class="igk-col-lg-12-3 igk-list-item igk-transparent-bg" >
+[funce:dx: ($dx == null)?1:($dx + 1)]
+<a href="{$row->AppUri}" class="igk-app-node dispb no-wrap no-overflow posr" igk-js-anim-focus="{duration:'0.2s', select:'>div', css:{transform:'translateX(-100%)', backgroundColor:'white'}}" igk-js-anim-msover="{duration:'0.2s', select:'>div', css:{transform:'translateX(-100%)', backgroundColor:'white'}}"  >
+<igk:cellRow class="dispib fitw fith wrapnormal" >
+	<igk:CenterBox class="fith" >
+		{$row->AppTitle}
+	</igk:CenterBox>	
+</igk:cellRow>
+<div class="dispib fitw fith">	
+	<igk:CenterBox class="fith" > 
+		<igk:img src="{$row->AppImgUri}" alt="{$row->AppImgDesc}" ></igk:img>
+	</igk:CenterBox>
+</div>
+</a>
+</div>

@@ -1,0 +1,7 @@
+<?php
+R::AddLang("title.contact", "Contact");
+R::AddLang("title.applications", "Applications");
+R::AddLang("title.about", "A propos");
+R::AddLang("title.partner", "Partenaires");
+
+?>

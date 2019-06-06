@@ -1,0 +1,11 @@
+<?php
+$t->ClearChilds();
+// igk_ctrl_init_css($this, $t, "+".strtolower(basename(__FILE__)));
+$doc->Title =igk_str_capitalize(igk_io_basenamewithoutext(__FILE__))." - IGKDEV";
+
+include(dirname(__FILE__)."/.header.pinc");
+
+include(dirname(__FILE__)."/.footer.pinc");
+$this->resetCurrentView("default");
+
+?>

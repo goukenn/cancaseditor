@@ -1,0 +1,447 @@
+<?php 
+//file : default canvaseditor view 
+//Project : canvas editor project view
+
+$pwa = igk_require_module("igk/PWA");
+$bmc = igk_require_module("igk/BMC");
+$bge = igk_require_module("igk/bge");
+
+
+define("CE_SCRIPT_NAME", "canvas-editor"); //name of production script
+define("CE_CACHE_VERSION", "1.0"); //name of production script
+define("CE_CACHE_NAME", "canvaseditor-".CE_CACHE_VERSION.""); //name of production script
+define("CE_APP_NAME", "com.igkdev.canvaseditor"); //name of production script
+define("CE_APP_LABEL", "CanvasEditor"); //name of production script
+define("CE_APP_DESC", "CanvasEditor Tools @ igkdev ".date('Y')); //name of production script
+define("CE_APP_VERSION", "1.2"); //name of production script
+
+$buri = igk_io_root_entryuri();
+$ruri  = $buri.dirname($fname)."/";
+
+///<summary> requirement for canvas editor</summary>
+function igk_html_node_CanvasEditorApp($setting=null){
+$n = igk_createNode("div");
+$n["class"] = "igk-canvas-editor-app";
+$n["igk:settings"] = $setting;
+return $n;
+} 
+ 
+// force directory on the current canvas editor
+igk_io_force_dir_entry($ctrl, $fname);
+
+
+// // igk_pwa_protect_entrydir($this);
+// $p = $this->getParam("redirectpost");
+// if (!$is_direntry && count($params)==0){
+	
+	// if ($this->getParam("redirect")){
+		// igk_wln(igk_io_request_uri());
+		// igk_wln("already redirecting : ".$is_direntry);
+		// igk_exit();
+	// }
+	// $this->setParam("redirectpost", $_POST);
+	// $query = igk_getv(parse_url(igk_io_request_uri()), "query");
+	// if ($query)
+		// $query = "?".$query;
+	// $this->setParam("redirect", 1);
+	// igk_navto($entryuri.'/'.$query);	
+// }else{
+	
+	// $this->setParam("redirectpost", null);
+	// $this->setParam("redirect", null);
+	
+	// if ($p){
+		// $_POST = $p;//retrieve the posted value
+		// igk_ilog("retrieve post");
+	// }
+	
+// }
+
+
+// igk_wln("rootdir : ".igk_io_rootdir());
+// igk_wln("basedir : ".igk_io_basedir());
+// igk_exit();
+
+if (IGKUserAgent::IsOldSafariAgent()){	
+	$t->clearChilds();
+	
+	$dv = $t->addDiv();
+	$row = $dv->addContainer()->addRow();
+	
+	igk_include_view($this, $row, $dir."/Contents/404.application.failed.php");
+	
+	return;
+	
+}
+//testing params----------------------------------------------------------------------------------------------------------------------
+// $params = array("canvas-app.sw.js");
+
+$scripts = dirname(__FILE__)."/Scripts";
+$styles = dirname(__FILE__)."/Styles";
+
+
+igk_doc_load_temp_script($doc, $scripts, CE_SCRIPT_NAME, 1);
+ 
+ 
+
+//theme definition callback
+$def = $doc->Theme;
+$def->resetAll();
+igk_bge_init($doc);
+$bmc->initdoc($doc);
+
+
+$themefile = get_theme_file($this) ?? "default.pcss";
+igk_css_reg_global_style_file( $styles."/".$themefile, $doc->Theme);
+
+
+$doc->title = "canvasEditor - [".igk_app()->Configs->website_title."]";
+
+igk_google_addfont($doc, "Roboto"); 
+$doc->setHeaderColor("red");
+
+igk_svg_bind_svgs($doc); 
+
+$t->clearChilds();
+
+
+$favicon = igk_io_fullpath2uri(dirname(__FILE__)."/Data/R/Img/favicon.ico");
+
+// igk_exit();
+$doc->setFavicon($favicon);
+
+
+//--------------------------------------------------------------------------------------------
+//action handle ------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
+igk_view_handle_actions($fname, Array(
+"(@error)"=>array(
+404=>function()use($t, $doc){ 
+	$t->addDiv()->addObData(function(){
+?>
+Page not found
+<?php
+		
+	});
+	$t->addSectionTitle(4)->Content = "404 - Resource page not found";
+	$doc->title  =  R::gets('!Oups page not found') . " - ".igk_app()->Configs->website_title;
+	igk_set_header(404);
+	igk_render_node($t, $doc, 1);
+	igk_exit();
+}
+),
+"assets"=>function(){
+
+$assets = igk_createXmlNode("assets");
+$is_chrome = IGKUserAgent::IsChrome();	
+igk_header_set_contenttype('xml'); 
+$assets->renderAJX();
+igk_exit();
+}, 
+// "request"=>function() {
+	// // requeset server info
+	// igk_ilog($_SERVER);
+	// igk_exit();
+// },
+// "data.json"=>function()use($t){
+		// header("Content-Type: text/html");
+		// $d = igk_createNode("div");
+		// $btn = $d->addButton();
+		// $btn->setAttribute("onclick", "javascript: ns_igk.system.io.getData('http://localhost:8080/igkdev/canvaseditor/data1.json'); return false; ");
+		// $btn->setContent("click me");	
+
+// $d->addA('http://localhost:8080/igkdev/canvaseditor/data1.json')->Content = "Direct Click";	
+		// $t->add($d);//->RenderAJX();
+		
+// },
+"data1.json/assets"=>function(){
+	igk_ilog($_SERVER);
+	igk_exit();
+},
+"manifest.json"=>function()use($entryuri){
+	igk_header_set_contenttype("json");
+	$buri = igk_io_root_entryuri();
+	$ruri  = $buri.dirname($fname)."/";
+
+$uri = igk_html_uri($buri.igk_io_basepath(dirname(__FILE__))."/Scripts/assets");
+
+// igk_wln("buri:".$buri);
+// igk_wln("manifest =".$uri);
+
+$const = "constant";
+igk_wl(<<<EFO
+
+{
+  "name": "{$const('CE_APP_NAME')}",
+  "short_name": "{$const('CE_APP_LABEL')}",
+  "description" : "{$const('CE_APP_DESC')}",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "start_url": "./",
+  "theme_color": "blue",
+  "background_color": "#4fce87",
+  "icons": [
+{
+"src": "{$uri}/192x192.png",
+"sizes": "192x192",
+"type": "image/png"
+},
+{
+"src": "{$uri}/512x512.png",
+"sizes": "512x512",
+"type": "image/png"
+}
+  ]
+}
+
+EFO
+);
+
+
+ 
+igk_exit();
+},
+
+"favicon.ico"=>function(){
+	$icon =dirname(__FILE__)."/Scripts/assets/favicon.png";
+	igk_header_set_contenttype("png");	
+	igk_wl(igk_io_read_allfile($icon));
+	igk_exit();
+},
+"canvas-app.sw.js"=>function()use($entryuri, $fname, $doc, $bge, $bmc){
+	header("Content-Type: text/javascript");
+	$icon =dirname(__FILE__)."/Scripts/.canvas-app.sw.jsinc";
+	$buri = igk_io_root_entryuri();
+	$ruri  = $buri.dirname($fname)."/";
+	
+	//igk_wln("is root ? ".igk_io_basedir_is_root());
+	// igk_wl($buri."\n");
+	// igk_wl($ruri."\n");
+	// igk_exit();
+	
+	// igk_ilog("buri : ".$buri);
+	// igk_ilog("ruri : ".$ruri);
+	$s = "";
+	$tab = array();
+	//entry uri definition
+	$tab[] = $ruri;
+	$tab[] = $ruri."manifest.json";	
+	$tab[] = $ruri."about";	
+	$tab[] = $ruri."wiki";
+	$tab[] = $ruri."canvas-app.sw.js"; //not caching service worker
+	$tab[] = $ruri."favicon.ico";
+
+	// igk_wln($tab);
+	// exit();
+	//system uri definition
+	$tab[] = $buri."R/Styles/balafon.css";
+	$tab[] = $buri."Lib/tiny_mce/tinymce.min.js";
+	$tab[] = $buri."Lib/igk/Default/R/Img/pics_24x24/session_btn.png";
+	$tab[] = $buri."!@res//google/cssfont/Roboto100x200x400x700x900/KFOkCnqEu92Fr1MmgVxIIzI.woff2";
+	// $tab[] = $buri."Projects/igk_default/Views/canvaseditor/Scripts/assets/192x192.png";
+	// $tab[] = $buri."Packages/Modules/igk/bge/Scripts/bge/load_shader.php"; 
+	// igk_wln("rootdir : ".igk_io_rootdir());
+	// igk_wln("rootdir : ".igk_io_rootdir());
+	
+	$lib = new IGKWPALinkCacheDocument($tab, null, $doc);
+	igk_bge_init($lib);
+	
+	$lib->cacheLib($bge->getScriptDir());
+	$lib->cacheLib($bmc->getScriptDir());
+	
+
+	
+	// $links = $doc->head->getElementsByTagName("link");
+	// if ($links){
+		// // igk_wln("rooturi :".igk_io_root_entryuri() ."\n");
+		// // igk_wln("rootrequesturi :".igk_io_rootrequesturi()."\n");
+		// // igk_wln("baseuri :".igk_io_baseuri()."\n");
+		// // igk_wln("rooturi :".igk_io_root_uri()."\n");
+		// // igk_wln("rooturi :".IGKIO::GetRootUri()."\n");
+		// $root_uri = igk_io_root_uri();
+		// $root_ln = strlen($root_uri)-1;
+		// foreach($links as $k=>$v){
+			// $lnk = IGKHtmlUtils::GetValue($v["href"]);
+			
+			// if ($lnk){
+				// if($s = strstr($lnk, $root_uri)){
+					// $c = substr($lnk,$root_ln);
+					// // igk_ilog($c);
+					// $tab[] = $c;
+				// } 
+			// }else{
+				// igk_ilog("not load ".$v->Render());
+			// }
+			// //igk_ilog(IGKHtmlUtils::GetValue($v["href"]));
+		// }
+	// }
+ 
+	
+	$ln = strlen(igk_io_rootdir());	
+	
+	if (igk_sys_env_production()){
+		$tab[] = $buri."R/Scripts/balafon.js?v=".IGK_BALAFON_JS_VERSION;
+		$tab[] = $buri."!@res/Scripts/".CE_SCRIPT_NAME."?strict=1";
+		
+	}else{
+		//incluscript
+			
+		igk_io_getfiles(IGK_LIB_DIR."/Scripts", function($f)use($ln, & $tab){
+			if ((basename($f)[0]!='.') && preg_match("/\.js$/", $f)){
+				$tab[] =igk_html_uri(substr($f, $ln));
+			}
+		});
+	 
+	}
+	
+	igk_io_getfiles(dirname(__FILE__)."/Scripts", function($f)use($ln, & $tab){
+			if ((basename($f)[0]!='.') && preg_match("/\.(png|jp(e)?g|json)$/", $f)){
+				$tab[] =igk_html_uri(substr($f, $ln)); 
+			}
+			
+		});
+		
+		
+	
+	
+	$s = "";
+	$s .= "var cachelist = ".json_encode($tab).";\n";
+	$s .= "var version = ".CE_CACHE_VERSION.";\n";
+	$s .= "var cacheName = '".CE_CACHE_NAME."';\n";
+	$s .= igk_io_read_allfile($icon);
+	igk_header_set_contenttype("js");
+	igk_wl($s);
+	igk_exit();
+},
+"about"=>function()use ($entryuri){
+	$d = igk_createNode("div");
+	
+	$d->setStyle("min-width: 320px");		
+	$d->add("div")->setContent("Author : C.A.D. BONDJE DOUE");
+	$d->add("div")->setContent("Version: ".CE_APP_VERSION);
+	$d->add("div")->setContent("Company: IGKDEV");
+	$d->add("div")->setContent("Copyright: IGKDEV @ ".date('Y')." all rights reserved");
+	$d->add("div")->addA("mailto:bondje.doue@igkdev.com")->setContent("@bondje.doue");
+	$d->add("div")->addA($entryuri."/wiki")
+	->setAttributes(["target"=>"__blank"])	
+	->setContent("wiki");
+	igk_ajx_panel_dialog("About", $d);
+	igk_exit();
+	
+},
+"share"=>function(){
+	$data = igk_io_get_uploaded_data();
+	$todecode = substr($data, strpos($data, ",")+1);
+	$deco = base64_decode($todecode);
+	
+	
+	igk_io_w2file(dirname(__FILE__)."/Data/shared/image.png", $deco);
+	igk_ajx_toast("data uploaded");
+	igk_exit();
+},
+"packages"=>function($cmd=null) use($query_options){
+	// package management 
+	$fmt = igk_getv($query_options, "fmt", "json");
+
+
+	if ($cmd == null ){
+		// load available user package
+		$u = $this->getUser();
+		$package = array("file"=>"",
+		"coast"=>"",
+		"start"=>""); 
+		if ($u == null){
+			//load package
+			igk_set_header(403);
+			
+		} 
+	}
+	else {
+		$data = dirname( __FILE__)."/Data/packages/";
+		switch($cmd){
+			case 'list' :
+					
+				$file = $data."/package.json";
+				switch($fmt){
+				case "xml":
+					igk_header_set_contenttype("xml");
+					if (file_exists($file)){
+						$d = igk_json_parse(igk_io_read_allfile($file));
+						$pack = igk_createNode("packages");
+						igk_xml_to_node($d, $pack);
+						// igk_wln($d);
+						$pack->renderAJX();
+					}else{
+						igk_set_header(404);
+						igk_wln(R::gets("package.json not found on this server"));
+					}
+					break;
+				case "json":
+				default:
+					if (file_exists($file)){
+						// igk_zip_output(
+						igk_header_set_contenttype("json");
+						igk_wl(igk_zip_output(igk_io_read_allfile($file))); // data."/packages.json"))
+					}else{
+						igk_set_header(404);						
+						igk_wln(R::gets("package.json not found on this server"));
+					}
+					
+					break;
+				}
+			
+				break;
+		}
+	}
+	// igk_wln("packages");
+	// igk_wln($cmd);
+	igk_exit();
+},
+"plugins"=>function(){
+	// extra plugins management
+},
+"store"=>function(){
+	// store job on server
+}
+
+), $params);
+
+
+function get_theme_file($ctrl){
+	return null;
+}
+
+igk_doc_enable_mobile_app($doc);
+igk_doc_add_ie_meta_compatibility($doc);
+
+
+$t->setClass("+fit +google-Roboto -igk-page");
+$n = $t->addCanvasEditorApp(igk_json_encode((object)[
+"Name"=>"Canva Editor Demonstration",
+"Version"=>CE_APP_VERSION,
+"isDebug"=>!igk_sys_env_production(),
+"Plugins"=> [],
+"appUri"=>$entryuri,
+"appCacheName"=>CE_CACHE_NAME,
+"appAssets"=>igk_io_fullpath2fulluri(dirname(__FILE__)."/Scripts"),
+"menu"=>["status", "menu", "tools"]
+]));
+
+$n->addCenterBox()->Content = R::gets("Initializing ...");
+
+
+///options block
+
+// $block = $t->addDiv()->setClass("option-block posab loc_b loc_r");
+// $tool = $block->setStyle("padding-bottom: 64px;padding-right: 24px;")->addBmcRoundTool();
+// $ul = $tool->add("ul")->setClass("igk-canvas-editor-options");
+// $ul["igk-no-contextmenu"] = 1;
+// $tab = ["drop", "text", "align", "font","settings"];
+// foreach($tab as $k=>$v){
+	// $li = $ul->add("li")->setClass($v);
+	// if ($v=="drop"){
+		// $li->on["click"] = "\$igk(this.parentNode).toggleClass('igk-hide'); cancel();";
+	// }
+	// $li->addA("#")->setAttribute("igk:tool", $v)->Content = igk_svg_use($v);
+// }
+

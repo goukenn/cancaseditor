@@ -1,0 +1,10 @@
+<?php
+$ctn =$t->addDiv()->addContainer();
+$dv = $ctn->addRow()->addCol()->addDiv();
+
+$dv->addSectionTitle(4)->Content = "Cancas Editor";
+$dv = $ctn->addRow()->addCol();
+igk_html_article($this, "canvaseditor.presentation",$dv->addDiv());
+
+
+$ctn->addRow()->addCol()->addDiv()->addA($this->getAppUri("canvaseditor"))->Content = R::gets("Open");

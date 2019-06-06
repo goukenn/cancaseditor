@@ -1,0 +1,35 @@
+<?php
+igk_sys_reg_autoloadLib($dir, "treenitySolutions");
+$bmc = igk_require_module("igk/BMC");
+
+use \treenitySolutions\Actions\ActionHandler as Actions;
+
+
+
+igk_view_handle_actions($fname, Actions::getInstance($this), $params);
+
+
+//binding controller view style
+$style = $dir."/Styles/default.pcss";
+$doc->Theme->resetAll();
+igk_css_reg_global_style_file($style, $doc->Theme);
+
+$bmc->initdoc($doc);
+$doc->Title = "Treenity Solutions Tools";
+$t->clearChilds();
+
+
+
+
+
+$t->addDiv()->addSectionTitle(4)->Content = "Treenity Solution Tools";
+
+
+$d = $t->addDiv();
+
+
+
+
+$t->addDiv()->addIGKCopyright();
+
+

@@ -1,0 +1,62 @@
+<?php
+ if (!isset($v_t))
+	$v_t = $t;
+ $b = array();
+ foreach(igk_sys_getuserctrls() as $k=>$v)
+ {	
+	if (igk_sys_ctrl_type($v) == "App")
+	{
+		$b[] = $v;
+	}
+ }
+
+igk_array_sort_bykey($b, "AppTitle");
+$r = 0;
+
+//post ajx value
+$n = $v_t->addBindDataAJXNode();
+$n->Ctrl = $this;
+$n->Article = "appinfo.template";
+$n->Row = $b;
+
+
+//method tow
+// $v_t->addDiv()->Content = "rep";
+//igk_html_binddata($this, $t, "appinfo.template", $b );
+
+
+
+
+
+/*
+-----------------------------------------------
+other method 
+-----------------------------------------------
+igk_html_clearbindinfo($this);
+ foreach($b as $k=>$v){
+	//igk_html_binddata($this, $v_t , "appinfo.template", $v);
+	
+	$n = $v_t->addBindDataAJXNode();
+	$n->Ctrl = $this;
+	$n->Article = "appinfo.template";
+	$n->Row = $v;
+ }
+ $k = "basic";  
+ $uri = R::GetImgUri("edit"); 
+ $o = igk_create_dynamic(
+	array(
+ "AppTitle"=>"More Apps",
+ "getAppUri"=>null,
+ "AppImgUri"=>R::GetImgUri("edit")
+ )
+ );
+ $v_t->addBindDataNode()
+ ->setClass('igk-text-ellipis')
+ ->initProperties(array("File"=>"appinfo.template", "Ctrl"=>$this, "Row"=>$o));
+ 
+ igk_html_clearbindinfo($this);
+ */
+ 
+
+ 
+?>

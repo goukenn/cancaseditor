@@ -1,0 +1,267 @@
+<?php
+
+//register autoload string
+
+
+
+igk_sys_reg_autoloadLib($dir, "sfia");
+
+use \sfia\sfiaDbUtility as sfiaDbUtility;
+use \sfia\sfiaPresentation as sfiaPresentation;
+
+
+$bmc = igk_require_module("igk/BMC");
+$bmc->initdoc($doc);
+$t->clearChilds();
+$t["class"] = "google-Roboto";
+
+$DATA = dirname(__FILE__)."/Data";
+$ad =igk_get_data_adapter("SQLite3");
+$litedb = $DATA."/lite.db";
+$schema = igk_io_dir($DATA."/sfia.schema.xml");
+
+$Utils = new sfiaDbUtility($this, $ad, $litedb, $schema);
+
+
+
+// - handle actions
+igk_view_handle_actions(
+$fname, array(
+"editjson"=>function($idx){
+	//edit json object
+	$o = $this->getParam("data");
+	if ($o && ($s = igk_getv($o, $idx-1))){
+		$d = igk_createNode("div");
+		$frm = $d->addPanelBox()->addForm();
+		$e = igk_get_builder_engine("bmc", $frm);
+		
+		igk_set_form_args((array)$s);
+		$e->addGroup()
+		->addLabelControl("name")
+		->addGroup()
+		->addLabelControl("code")
+		->addGroup()
+		->addLabelControl("minLevel")
+		->addGroup()
+		->addLabelControl("maxLevel")
+		->addGroup()
+		->addLabelControl("category")
+		->addGroup()
+		->addLabelControl("subcategory");
+		
+		$d->addBalafonJS()->Content = <<<EOF
+//initiase category and subcategorie list	
+EOF;
+		igk_ajx_panel_dialog(R::gets("Edit") , $d);
+	}
+	igk_exit();
+},
+
+"edit"=>function($idx)use($Utils){
+	
+	$o = $Utils->getGroupById($idx);
+	if ($o ){
+		
+		if (igk_qr_confirm()){
+			$ob = igk_get_robj();
+			$ob->clId = $idx;	
+			if ($ob->clParent == -1)
+					$ob->clParent = null;
+			$Utils->updateGroup($ob);	
+			igk_ajx_toast("update");
+			return;
+		};
+		
+		
+		$d = igk_createNode("div");
+		$frm = $d->addPanelBox()->addAJXForm();
+		$frm["action"] = igk_get_view_args()->entryuri."/edit/".$idx;
+		$e = igk_get_builder_engine("bmc", $frm);
+		$g = $Utils->getRootGroups($idx)->sortBy("clName")->Rows;
+		// igk_ilog($o);
+		// igk_wln($g);
+		igk_set_form_args($o);
+		// $frm->addObData($o);
+		
+		$e->addGroup()
+		->addLabelControl("clName")
+		->addGroup()
+		->addLabelControl("clCode")
+		->addGroup()
+		->addLabelControl("clMinLevel")
+		->addGroup()
+		->addLabelControl("clMaxLevel")
+		->addGroup()
+		->addCombobox("clParent", $g, array("emptyvalue"=>-1));
+		
+		$d->addBalafonJS()->Content = <<<EOF
+//initiase category and subcategorie list	
+EOF;
+
+		$bar = $frm->addActionBar();
+		$bar->addInput("update", "submit", R::gets("Update"));
+		
+		igk_html_add_confirm($frm);
+		
+		
+		igk_ajx_panel_dialog(R::gets("Edit") , $d);
+	}else {
+		igk_wl("failed get");
+	}
+	igk_exit();
+},
+
+"load"=> function(){
+	$data = igk_io_get_uploaded_data();
+	
+	
+	$lines = explode("\n", $data);
+	
+	
+	$tab = array();
+	if ($lines){
+		foreach($lines as $k=>$v){
+			$s = trim($v);
+			$g = explode(" ", trim($s));
+			$c = igk_count($g);
+			
+			$o = (object)array(
+			"name"=>substr($s, 0, strlen($s)- strlen($g[$c - 1])),
+			"code"=>$g[$c-1],
+			"category"=>"Strategy and Architecture",
+			"subcategory"=>"Information strategy",
+			"minLevel"=>4,
+			"maxLevel"=>6
+			);
+			
+			$tab[] = $o;
+		}
+	}
+	igk_wln(igk_count($tab));
+	igk_wln($tab);
+	
+	igk_io_w2file(dirname(__FILE__)."/Data/spfia.json", igk_json_encode($tab));
+	igk_exit();
+	
+},
+"get"=>function() use ($query_options){
+	$file = dirname(__FILE__)."/Data/spfia.json";
+	if (file_exists($file))
+		igk_download_file( basename($file), $file) ; // igk_io_read_allfile($file);
+	igk_exit();
+},
+"addgroup"=>function(){
+	
+	$d = igk_createNode("div");
+	$frm = $d->addPanelBox()->addAJXForm();
+	
+	
+	$engine = igk_get_builder_engine("bmc", $frm);
+	
+	$engine->addGroup()
+	->addLabelControl("clName")
+	->addGroup()
+	->addLabel("Parent");
+	
+	$frm->addDiv()->addInput("btn.confirm", "submit");
+	
+	igk_ajx_panel_dialog(R::gets("AddGroup"), $d);
+	igk_exit();
+},
+"drop"=>function(){
+	
+}
+,"list"=>function()use($Utils){
+	if(!igk_is_ajx_demand())
+		return;
+	
+	$tab = igk_createNode("table");
+	// $fc = new Closure(array(sfiaPresentation::class, 'ShowList'));
+	if ($Utils->connect()){
+		$e = $Utils->getRootGroups();
+		$groups = ($ge = $Utils->getGroups())? $ge->sortBy(["clParent"=>1])->Rows: null;
+		$o = igk_db_identifier_array($groups, "clName");
+
+		sfiaPresentation::ShowList($this, $tab, $o, $Utils);
+		$Utils->close();
+	}
+	$tab->RenderAJX();
+	igk_exit();
+}
+
+), $params);
+
+
+
+//initial document
+$styles = igk_io_dir(dirname(__FILE__)."/Styles");
+$scripts = igk_io_dir(dirname(__FILE__)."/Scripts");
+
+igk_css_reg_global_style_file( $styles."/default.pcss", $doc->Theme); 
+igk_doc_load_temp_script($doc, $scripts);
+igk_google_addfont($doc, "Roboto");
+
+
+$t->addDiv();
+//header
+include($dir."/.header.pinc");
+
+
+$dv = $t->addDiv();
+$bar = $dv->addActionBar();
+
+// $bar->addAJXBtn($entryuri."/addgroup")->setClass("svg-32")->Content = igk_svg_use("add");
+// $bar->addAJXBtn($entryuri."/drop")->setClass("svg-32")->Content = igk_svg_use("drop");
+// $bar->addABtn($entryuri."/get")->Content = "Get";
+// $bar->addAJXPickfile($entryuri."/load", "{accept:'.txt'}")->setAttribute("value", "Load File");
+
+
+//initialize db 
+if (!file_exists($litedb) || filesize($litedb)==0){
+	
+	if(file_exists($schema)){
+		if ($ad->connect($litedb)){
+			
+			$db = igk_db_load_data_and_entries_schemas($schema);
+			$ad->enableForeignKey(0);
+			igk_db_init_from_dataschema($this, $ad, $db);
+			$v = $db->Version;			
+			$ad->setDatabaseVersion($v);
+			$file = dirname(__FILE__)."/Data/spfia.json";
+			if (file_exists($file)){
+				$o = igk_json_parse(igk_io_read_allfile($file));
+							//init form json
+				foreach($o as $m){
+					$Utils->addGroup(array(
+					"clName"=>stripslashes( $m->name),
+					"clMinLevel"=>$m->minLevel,
+					"clMaxLevel"=>$m->maxLevel,
+					"clCode"=>$m->code,
+					"clDesc"=>igk_getv($m, "desc", null)
+					)
+					);
+
+				}
+			}			
+			$ad->enableForeignKey(1);			
+			$ad->close();
+			
+			
+			
+		}
+	
+	}
+	else {
+		$sm = !igk_sys_env_production() ? 
+		  $schema ." not found"
+		: "schema file is required";
+		
+		igk_die($sm);
+	}
+	//initialize
+}
+
+$box = $t->addDiv()->addContainer()->addPanelBox();
+$dv = $box->addDiv()->setClass("igk-tablehost");//->setStyle("");
+$dv->addDiv()->addAJXUriLoader($entryuri."/list");
+$t->addDiv()->addContainer()->addSingleRowCol()->addDiv()->addIGKCopyright();

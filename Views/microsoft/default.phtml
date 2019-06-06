@@ -1,0 +1,24 @@
+<?php
+
+
+use Microsoft\Certification as Cert;
+use Microsoft\Db as Db;
+
+
+//register directory for autoload library requirement
+igk_sys_reg_autoloadLib(dirname(__FILE__), "Microsoft");
+
+$db = new Db($this);
+
+
+$t->clearChilds();
+$dv = $t->addDiv();
+
+
+// certification trainings
+$numberId = 1;
+
+$question = $db->getQuestion($numberId);
+$dv = $dv->addDiv();
+
+$dv->addRadioButton()->Content = "var evaluator = new Regex(regExp, RegexOptions.Compiled);";

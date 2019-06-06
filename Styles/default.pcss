@@ -1,0 +1,95 @@
+<?php
+/* default base script declaration */
+// igk_ilog("include default.pcss : ".__FILE__);
+
+// default theme color defintion
+if($ctrl && ($referer ==  $ctrl->getAppUri())){
+	return;
+}
+
+$cl["defHeaderColor"] = "#982077";
+// header
+$def[$css_m." .igk-header"] = "background-color:[cl:defHeaderColor]";
+// $def[$css_m." .igk_default"]="background-color:#323232";
+$def[$css_m." .igk_default .footer"] = "color:#d9d9d9; background-color:#444; padding:24px 0px; font-size:normal; line-height:0;";
+
+
+$def[$css_m." .igk-section-title"]="font-family:'Roboto', sans-serif; font-weight:300;";
+
+
+ // igk_css_regpic("igk-default-barner", igk_io_baseRelativePath(IGKIO::GetDir($ctrl->getDataDir()."/R/Img/barner-2.jpg")));  
+ // igk_css_regclass(".igk-options", "[res:igk-default-barner] min-height:240px; {sys:norepeat}");
+$def[$css_m." .igk_default .igk-about-box"]= "border:1px dashed #eee;padding-left:10px; padding-right:10px; margin-bottom: 8px;";
+$def[$css_m." .igk_default .igk-about-box .cell"]= "padding-left:10px; padding-right:10px; padding-bottom:10px; margin-bottom: 8px; box-shadow: 0px 0px 8px #ccc;overflow:hidden;";
+$def[$css_m." .igk_default .igk-about-box .cell .img"]= "background-color:white; margin:-8px ; margin-top:-8px; margin-bottom:16px;";
+$def[$css_m." .igk_default .igk-about-zone"]= "[bgcl:igk-about-zone-bg] padding-bottom:16px;"; 
+$def[$css_m." .igk_default .igk-about-zone img"]= "{sys:dispb} margin-left:auto; margin-right:auto;"; 
+
+$def[$css_m." .igk-community-owner"] = "padding-bottom:8px;";
+$def[$css_m." .igk-community-owner .igk-community-btn"]= "{sys:dispib} width: 32px; height:32px;";
+$def[$css_m." .igk-community-owner .igk-community-btn .igk-community-link"]= "{sys:dispb,fitw,fith,no-decoration}";
+$def[$css_m." .igk-community-owner .igk-community-btn .igk-community-link:hover"]= "background-position:0px 32px; ";
+$def[$css_m." .igk-community-owner .igk-community-btn:not(:first-child)"]= "margin-left:8px;";
+ 
+ igk_css_regcolor("igk-about-zone-bg", "#eee");
+$def[$css_m." .igk-row.igk-contact-zone"]="margin-bottom:16px;"; 
+$def[$css_m." .igk_default .igk-gohome-btn"]= "border-radius: 20%; border:none; background-color:#ddd;";
+
+$def[$css_m." .off-comment"]="font-size:4em; text-overflow: ellipsis;overflow:hidden; color:rgba(220, 220, 220, 0.4) !important; position:fixed; z-index:-10";
+
+ 
+//change the default system theme
+$def[".igk-home-bar"] = "height: 380px;";
+$xdef = igk_css_get_sys_media(IGKHtmlDocThemeMediaType::SM_MEDIA);
+
+
+if ($xdef != null)
+{
+$xdef->def[".igk-home-bar"] = "height: 200px;"; 
+}
+ 
+igk_css_regclass(".igk-app-node", " background-color:#ddd; height: 132px; overflow-x:hidden;");
+igk_css_regclass(".igk-app-node > div", "vertical-align:top;");
+igk_css_regclass(".igk-app-node:hover", "");
+ 
+igk_css_regclass(".igk_default #apps", "[bgcl:igk-apps-bg] [fcl:igk-apps-fcl] padding-bottom:3em; font-weight: 100;");
+igk_css_regclass(".igk_default #apps .igk-app-node", "margin-bottom:10px");
+igk_css_regclass(".igk_default .igk-landing-h1","font-size:60px; line-height:70px ; text-align:center");
+igk_css_regclass(".igk-connect-form","margin-left:auto; margin-right:auto; max-width: 400px; padding-left:10px; padding-right:10px");
+igk_css_regclass(".igk-connect-form input:not([type=checkbox])","{sys:igk-form-control}");
+
+
+igk_css_regcolor("igk-apps-fcl", "#eee");
+igk_css_regcolor("igk-apps-bg", "#DB4D37");
+
+
+
+
+$def[".igk_default ul li"] = "text-decoration:none; list-style:disc; margin-left:20px;";
+$def[".igk-community-node ul li"]="{sys:dispib,no-margin,no-padding} padding:4px !important;";
+$def[".igk-community-node ul li > a"]="{sys:dispib};";
+$def[".igk-community-node ul li .igk-svg-symbol"]="fill:[cl:communitySvgfillColor];";
+$def[".igk-community-node ul li:hover .igk-svg-symbol"]="fill:[cl:communitySvgHoverfillColor];";
+
+$xsm_screen[".igk_default ul li"] = $sm_screen[".igk_default ul li"] ="margin:0px;list-style:none;";
+
+
+
+$PTR[".igdev-bg-layout"]="display:none;";
+
+$globaltheme = igk_app()->Configs->globaltheme;
+switch($globaltheme){
+	case "dark":		
+		igk_css_regcolor("communitySvgfillColor", "#ddd");
+		igk_css_regcolor("communitySvgHoverfillColor", "#FF3C00");
+	break;
+	default:
+		igk_css_regcolor("communitySvgfillColor", "#222");
+		igk_css_regcolor("communitySvgHoverfillColor", "#ccc");
+	break;
+}
+ 
+ $def[$css_m.""]="";
+ 
+
+?>

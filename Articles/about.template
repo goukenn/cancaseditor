@@ -1,0 +1,30 @@
+
+<div class="igk-row">
+<div class="igk-col-lg-3-1 igk-col-sm-3-3">&nbsp;
+</div>
+<div class="igk-col-lg-3-2 igk-col-sm-3-3 alignr igk-about-box">
+[lang:igkdev.msg.description]
+</div>
+</div>
+
+
+
+<div class="igk-row">
+<div class="igk-col-lg-3-1 igk-col-sm-3-3 igk-about-box">
+<div class="cell" >
+	<div class="img"> 
+		<img src="{$ctrl->getimage('v_information.png')}" alt="" />
+	</div>
+	<div>[lang:title.information]</div>
+</div>
+</div>
+<div class="igk-col-lg-3-1 igk-col-sm-3-3 igk-about-box"><div class="cell" >
+<div class="img">
+<img src="{$ctrl->getimage('v_process.png')}" alt="" />
+	</div>[lang:title.process]</div>
+</div>
+<div class="igk-col-lg-3-1 igk-col-sm-3-3 igk-about-box"><div class="cell" >
+	<div class="img"><img src="{$ctrl->getimage('v_dev.png')}" alt="" /></div>
+	[lang:title.dev] </div>
+	</div>
+<div>

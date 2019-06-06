@@ -1,0 +1,13 @@
+<?php
+
+$ctrl = igk_getctrl("app_drsstudio");
+if (!$ctrl)
+	return;
+
+$ctn =$t->addDiv()->addContainer();
+$dv = $ctn->addRow()->addCol()->addDiv();
+
+$dv->addSectionTitle(4)->Content = "DrSStudio";
+$dv = $ctn->addRow()->addCol();
+igk_html_article($this, "drsstudio.presentation",$dv->addDiv());
+

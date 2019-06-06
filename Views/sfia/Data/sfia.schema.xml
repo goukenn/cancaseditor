@@ -1,0 +1,39 @@
+<data-schemas date="20181206" app="IGK.DrSStudio.Balafon.DataBaseBuilder.WinUI" author="C.A.D BONDJE DOUE" version="10">
+	<Entries>
+		<Rows For="tbsfia_groups">
+			<Row clName="Strategy and architecture" clClass="skill-brown" />
+			<Row clName="Change and transformation" clClass="skill-magenta" />
+			<Row clName="Development and implementation" clClass="skill-orange" />
+			<Row clName="Delivery and operation" clClass="skill-red" />
+			<Row clName="Skills and quality" clClass="skill-blue" />
+			<Row clName="Relationships and engagement" clClass="skill-green" />
+			<Row clName="Information strategy" />
+			<Row clName="Advice and guidance" />
+			<Row clName="Business strategy and planning" />
+			<Row clName="Technical strategy and planning" />
+			<Row clName="Business change implementation" />
+			<Row clName="Business change management" />
+			<Row clName="Systems development" />
+			<Row clName="User experience" />
+			<Row clName="Installation and integration" />
+			<Row clName="Service design" />
+			<Row clName="Service transition" />
+			<Row clName="Service operation" />
+			<Row clName="Skill management" />
+			<Row clName="People management" />
+			<Row clName="Quality and conformance" />
+			<Row clName="Stakeholder management" />
+			<Row clName="Sales and marketing" />
+		</Rows>
+	</Entries>
+	<DataDefinition TableName="tbsfia_groups" Description="Group hierachi">
+		<Column clName="clId" clAutoIncrement="true" clIsPrimary="true" clNotNull="true" clType="Int" />
+		<Column clName="clName" clType="VARCHAR" clTypeLength="120" clNotNull="true" clIsUniqueColumnMember="true" />
+		<Column clName="clParent" clType="Int" clLinkType="tbsfia_groups" />
+		<Column clName="clDesc" clType="Text" clDescription="General description of the group" />
+		<Column clName="clMinLevel" clType="Int" clDefault="-1" />
+		<Column clName="clMaxLevel" clType="Int" clDefault="-1" />
+		<Column clName="clClass" clType="Text" />
+		<Column clName="clCode" clType="VARCHAR" clIsUniqueColumnMember="true" clIsUnique="true" />
+	</DataDefinition>
+</data-schemas>

@@ -1,0 +1,124 @@
+<?php
+// namespace IGK;
+// use IGK;  
+// throw new Exception("Not Valid operation");
+$doc->theme->def->clear(); 
+$t->clearChilds();
+ 
+
+ 
+/*
+header("Content-Type: text/html");
+?>
+<html>
+<head>
+<script type="text/javascript" src="http://localhost:5858/Lib/igk/Scripts/igk.js" type="javascript" ></script>
+</head>
+<body>The sample data is :::: 4588
+
+<div id="ou" />
+<script type="text/javascript" type="javascript" >
+$igk('#ou').setHtml("RIRIR");
+</script>
+<div style="max-height:400px; overflow:auto" >
+<?php
+igk_wln($_SERVER);
+?>
+</div>
+</body>
+</html>
+<?php
+
+echo "sample";
+exit;
+*/
+
+igk_view_handle_actions($fname, ["update"=>function()use($ctrl){
+	igk_wln("update-------------------------%>");
+	igk_navto($ctrl->getAppUri());
+	igk_exit();
+}], $params);
+
+
+//add egede meta compatibility - igk_doc_add_ie_meta_compatibility
+// $meta =  igk_createnode("meta");
+// $meta["http-equiv"] = "X-UA-Compatible";
+// $meta[IGKHtmlMetaManager::ATTR_CONTENT]="IE=edge";
+// $doc->Metas->addMeta("X-UA-Compatible-Edge", $meta);
+
+
+
+// $t->addJSLogger(true);
+
+
+include_once($dir."/.header.pinc");
+
+$t["class"]="+google-Roboto";
+// $body = $t->addSingleNodeViewer("NoTagNode")->targetNode;
+
+// $t->addScript()->Content = <<<EOF
+
+// function loaddata(uri, t){
+// 	igk.system.io.getData(uri, function(d){
+// 		console.debug(d);
+// 		t.setHtml("data load :"+d.data);
+// 	}, 'text/plain');
+// }
+
+// EOF;
+
+
+//$t->addDiv()->on["ready"]="loaddata('https://fonts.googleapis.com/css?family=Roboto:100;200;400;700;900',this)";
+// igk_wln("invoke view....".__FILE__);
+
+
+// if (igk_io_request_for_firefox_thumbnails()){
+	// $doc->body["class"]= "+custom-thumbnail";
+	// include_once($dir."/{$fname}.thumbnail.phtml");
+	// return;
+// }
+
+$this->setHandleShowChild(true); 
+$doc->Title = "IGKDEV";
+ // $t->addDiv()->setClass("google-Roboto")
+ //->setId("home");
+
+ $t->addNotifyHost();
+ 
+ 
+ //$t->addDiv()->setId('font')->setContent("Font Family")->on["click"] = "igk.log.write(\$igk(this).getComputedStyle('font-family'));";
+ //$t->addDiv()->setId('font')->setContent("Font face")->on["ready"] = "igk.log.write(FontFace)";
+  
+ $frm = $t->addForm(); 
+ 
+ // $frm["action"] = $this->getAppUri($fname."/update"); 
+ // $frm->addInput("clH", "text", "Hola ...."); 
+ // $frm->addButton("btone", "submit")->Content = "Click here";
+ 
+ 
+ $d = $t->addDiv()->setClass("igk-h-section"); 
+ //title
+ $container = $d->addDiv()->setClass('igk-header')->addContainer();
+ $d= $container->addRow()->addCol()->addDiv();
+ $d->addDiv()->setClass("igk-title-4 ft-think no-padding google-Roboto")->setContent("IGKDEV");
+ $d->add("span")->setClass("igk-css-def igk-hbox igk-smaller")->setContent("{Believe in IT Solutions}"); 
+ 
+  $vd = $t->addDiv()->setClass("no-overflow");  
+ 
+ //CSS Strick : white-space: nowrap; //for single line
+ 
+ 
+ // $vd->addDiv()
+ // ->setClass("igkdev-bg-layout no-print off-comment")
+ // ->setAttribute("igk-node-disable-selection", 1)
+ // ->addRepeatContent(5)->addDiv()->Content =<<<EOF
+// IGKDEV \033 C.A.D. BONDJE DOUE, COMPUTER, DEVELOPER, ANALYST, IT, BALAFON, DRSSTUDIO, IGKGLLIB, WEBSITE, MVET, SNACK, C/C++, C#, PHP, C#, JAVASCRIPT, HTML5, CSS3, UML, OPENGL, JBGAME,ANDROID, IGKCoreLib
+// EOF;
+
+
+igk_ctrl_view_load_pattern($this, $vd->addDiv(), "app");
+
+
+
+include(dirname(__FILE__)."/.footer.pinc");
+unset($body);

@@ -1,0 +1,9 @@
+<?php
+
+//usave font
+igk_google_addfont($doc, "Open Sans Condensed", 300);
+igk_google_addfont($doc, "Anton", 400);
+igk_google_addfont($doc, "Roboto");
+
+//define header
+$doc->setHeaderColor("#FF6500");

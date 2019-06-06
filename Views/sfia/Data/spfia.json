@@ -1,0 +1,818 @@
+[
+    {
+        "name": "Analytics ",
+        "code": "INAN",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Animation development ",
+        "code": "ADEV",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": 3,
+        "maxLevel": 7
+    },
+    {
+        "name": "Application support ",
+        "code": "ASUP",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": 2,
+        "maxLevel": 5
+    },
+    {
+        "name": "Asset management ",
+        "code": "ASMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Availability management ",
+        "code": "AVMT",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Benefits management ",
+        "code": "BENM",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Business analysis ",
+        "code": "BUAN",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Business modelling ",
+        "code": "BSMO",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Business process improvement ",
+        "code": "BPRE",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Business process testing ",
+        "code": "BPTS",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Business risk management ",
+        "code": "BURM",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Capacity management ",
+        "code": "CPMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Change implementation planning and management ",
+        "code": "CIPM",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Change management ",
+        "code": "CHMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Competency assessment ",
+        "code": "LEDA",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Configuration management ",
+        "code": "CFMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Conformance review ",
+        "code": "CORE",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Consultancy ",
+        "code": "CNSL",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Continuity management ",
+        "code": "COPL",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Contract management ",
+        "code": "ITCM",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Customer service support ",
+        "code": "CSMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Data management ",
+        "code": "DATM",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Data modelling and design ",
+        "code": "DTAN",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Data visualisation ",
+        "code": "VISL",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Database administration ",
+        "code": "DBAD",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Database design ",
+        "code": "DBDS",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Demand management ",
+        "code": "DEMM",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Digital forensics ",
+        "code": "DGFS",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Emerging technology monitoring ",
+        "code": "EMRG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Enterprise IT governance ",
+        "code": "GOVN",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Enterprise and business architecture ",
+        "code": "STPL",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Facilities management ",
+        "code": "DCMA",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Financial management ",
+        "code": "FMIT",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Hardware design ",
+        "code": "HWDE",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "IT infrastructure ",
+        "code": "ITOP",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "IT management ",
+        "code": "ITMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Incident management ",
+        "code": "USUP",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Information assurance ",
+        "code": "INAS",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Information content authoring ",
+        "code": "INCA",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Information content publishing ",
+        "code": "ICPM",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Information governance ",
+        "code": "IRMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Information security ",
+        "code": "SCTY",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Information systems coordination ",
+        "code": "ISCO",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Innovation ",
+        "code": "INOV",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Knowledge management ",
+        "code": "KNOW",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Learning and development management ",
+        "code": "ETMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Learning delivery ",
+        "code": "ETDL",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Learning design and development ",
+        "code": "TMCR",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Marketing ",
+        "code": "MKTG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Measurement ",
+        "code": "MEAS",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Methods and tools ",
+        "code": "METL",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Network design ",
+        "code": "NTDS",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Network planning ",
+        "code": "NTPL",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Network support ",
+        "code": "NTAS",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Organisation design and implementation ",
+        "code": "ORDI",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Organisational capability development ",
+        "code": "OCDV",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Penetration testing ",
+        "code": "PENT",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Performance management ",
+        "code": "PEMT",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Portfolio management ",
+        "code": "POMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Portfolio, programme and project support ",
+        "code": "PROF",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Porting\/software configuration ",
+        "code": "PORT",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Problem management ",
+        "code": "PBMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Product management ",
+        "code": "PROD",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Professional development ",
+        "code": "PDSV",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Programme management ",
+        "code": "PGMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Programming\/software development ",
+        "code": "PROG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Project management ",
+        "code": "PRMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Quality assurance ",
+        "code": "QUAS",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Quality management ",
+        "code": "QUMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Radio frequency engineering ",
+        "code": "RFEN",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Real-time\/embedded systems development ",
+        "code": "RESD",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Relationship management ",
+        "code": "RLMT",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Release and deployment ",
+        "code": "RELM",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Requirements definition and management ",
+        "code": "REQM",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Research ",
+        "code": "RSCH",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Resourcing ",
+        "code": "RESC",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Safety assessment ",
+        "code": "SFAS",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Safety engineering ",
+        "code": "SFEN",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Sales support ",
+        "code": "SSUP",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Security administration ",
+        "code": "SCAD",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Selling ",
+        "code": "SALE",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Service acceptance ",
+        "code": "SEAC",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Service level management ",
+        "code": "SLMO",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Software design ",
+        "code": "SWDN",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Solution architecture ",
+        "code": "ARCH",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Sourcing ",
+        "code": "SORC",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Specialist advice ",
+        "code": "TECH",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Storage management ",
+        "code": "STMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Strategic planning ",
+        "code": "ITSP",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Supplier management ",
+        "code": "SUPP",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Sustainability ",
+        "code": "SUST",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "System software ",
+        "code": "SYSP",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Systems design ",
+        "code": "DESN",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Systems development management ",
+        "code": "DLMG",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Systems installation \/ decommissioning ",
+        "code": "HSIN",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Systems integration and build ",
+        "code": "SINT",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Teaching and subject formation ",
+        "code": "TEAC",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "Testing ",
+        "code": "TEST",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "User experience analysis ",
+        "code": "UNAN",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "User experience design ",
+        "code": "HCEV",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "User experience evaluation ",
+        "code": "USEV",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    },
+    {
+        "name": "User research ",
+        "code": "URCH",
+        "category": "Strategy and Architecture",
+        "subcategory": "Information strategy",
+        "minLevel": -1,
+        "maxLevel": -1
+    }
+]

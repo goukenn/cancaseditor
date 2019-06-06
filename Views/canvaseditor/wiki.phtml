@@ -1,0 +1,15 @@
+<?php
+include(dirname(__FILE__)."/.header.pinc");
+
+$bootstrap = igk_require_module("bootstrap", false);
+
+$doc->Title = "WIKI - canvaseditor";
+
+$t->clearChilds();
+$t->addDiv();
+
+$t->addJumbotron();
+
+$dv = $t->addDiv(); 
+$dv->Content  = "Welcome - Wiki page";
+

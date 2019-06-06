@@ -1,0 +1,5 @@
+<div igk-data-row-binding="true" igk-data-row-checkexpression="[func:($row && ($row->clAvailable==1))]" class="igk-community-btn">
+[funce:x: igk_io_baseuri_i(igk_html_uri(igk_io_basePath($ctrl->getDataDir()."/R/Img/pics_32x32/com_{$row->clName}_btn.png")))]
+[func: $x ? igk_css_regclass(".com-{$row->clName}", "background-image:url('{$x}');") : "x not define"]
+<a href="{$row->clLink}" class="igk-community-link com-[func:$row->clName]" alt="{$row->clName}" >&nbsp;</a>
+</div>

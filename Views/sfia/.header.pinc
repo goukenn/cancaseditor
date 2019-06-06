@@ -1,0 +1,7 @@
+<?php
+
+$dv  = $t->addDiv();
+$dv->addSectionTitle(4)->Content=  "Sfia tool management";
+
+
+$t->addDiv()->setClass("toolbar");
