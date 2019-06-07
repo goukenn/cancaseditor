@@ -1,4 +1,7 @@
 <?php
+
+// igk_wln_e("tracing: ", igk_show_trace());
+/*/
 $t = igk_createNode("div");
 $t->clearChilds();
 $t["class"] = "google-Roboto";
@@ -19,12 +22,10 @@ $d = igk_get_document(__FILE__);
 igk_google_addFont($d , "Roboto", 400);
 $d->Title = "Oups!!! - 404 ";
 $d->body->addBodyBox()->clearChilds()->add($t);
-
-
-
 $t->addDiv()->Content = (new  IGKHtmlRelativeUriValueAttribute("/R/Styles/balafon.css"))->getValue();
 $d->RenderAJX();
 $d->dispose();
-igk_exit();
-igk_exit();
 
+*/
+igk_wln("done");
+igk_exit(); 

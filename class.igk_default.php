@@ -2,6 +2,7 @@
 //controller code class declaration
 //file is a part of the controller tab list
 class igk_default extends IGKDefaultPageController 
+// class igk_default extends IGKApplicationController 
 	//implements IIGKHTMLHorizontalPaneListener
 {
 	

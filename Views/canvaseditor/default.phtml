@@ -7,6 +7,21 @@ $bmc = igk_require_module("igk/BMC");
 $bge = igk_require_module("igk/bge");
 
 
+
+// igk_reg_hook(IGKEvents::HOOK_HTML_HEAD, function(){
+	// igk_wln("render header");
+// });
+
+// igk_reg_hook(IGKEvents::HOOK_HTML_FOOTER, function($e)use($doc){
+	// igk_wln("Pied de page ok : ".get_class($e->args[0]));
+// });
+
+
+// igk_hook(IGKEvents::HOOK_HTML_HEAD);
+
+// igk_exit();
+
+
 define("CE_SCRIPT_NAME", "canvas-editor"); //name of production script
 define("CE_CACHE_VERSION", "1.0"); //name of production script
 define("CE_CACHE_NAME", "canvaseditor-".CE_CACHE_VERSION.""); //name of production script
@@ -117,9 +132,10 @@ $doc->setFavicon($favicon);
 igk_view_handle_actions($fname, Array(
 "(@error)"=>array(
 404=>function()use($t, $doc){ 
+	igk_wln(igk_show_trace());
 	$t->addDiv()->addObData(function(){
 ?>
-Page not found
+CanvasEditor - Page not found
 <?php
 		
 	});

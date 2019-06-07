@@ -2,8 +2,7 @@
 // namespace IGK;
 // use IGK;  
 // throw new Exception("Not Valid operation");
-$doc->theme->def->clear(); 
-$t->clearChilds();
+
  
 
  
@@ -46,13 +45,29 @@ igk_view_handle_actions($fname, ["update"=>function()use($ctrl){
 // $meta[IGKHtmlMetaManager::ATTR_CONTENT]="IE=edge";
 // $doc->Metas->addMeta("X-UA-Compatible-Edge", $meta);
 
+// igk_ilog("clear theme:".igk_io_request_uri()." ".($c = igk_env_count(__FILE__)));
+// igk_io_w2file("d:\\temp\\trace".$c.".html", igk_ob_get_func("igk_trace"));
 
+$doc->theme->def->clear(); 
+$t->clearChilds();
+$t->addJSLogger(true);
 
-// $t->addJSLogger(true);
+// $t->addObData(function(){
+	// $this->loader->view(IGK_LIB_DIR."/Articles/templates/page_template.phtml", array(
+	// "docType"=>"html",
+	// "title"=>"Base",
+	// "currentLang"=>R::GetCurrentLang()
+	// ),1);
+	// echo "done".$this->loader->getOut(). " finishi ";
+// });
+
+// $t->RenderAJX();
+// echo json_encode($_SESSION);
+// igk_exit();
+//return;
 
 
 include_once($dir."/.header.pinc");
-
 $t["class"]="+google-Roboto";
 // $body = $t->addSingleNodeViewer("NoTagNode")->targetNode;
 
@@ -76,15 +91,11 @@ $t["class"]="+google-Roboto";
 	// $doc->body["class"]= "+custom-thumbnail";
 	// include_once($dir."/{$fname}.thumbnail.phtml");
 	// return;
-// }
+// } 
+$doc->Title = "IGKDEV"; 
+$t->addNotifyHost();
 
-$this->setHandleShowChild(true); 
-$doc->Title = "IGKDEV";
- // $t->addDiv()->setClass("google-Roboto")
- //->setId("home");
 
- $t->addNotifyHost();
- 
  
  //$t->addDiv()->setId('font')->setContent("Font Family")->on["click"] = "igk.log.write(\$igk(this).getComputedStyle('font-family'));";
  //$t->addDiv()->setId('font')->setContent("Font face")->on["ready"] = "igk.log.write(FontFace)";
