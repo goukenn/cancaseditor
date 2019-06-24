@@ -3,7 +3,11 @@
 // use IGK;  
 // throw new Exception("Not Valid operation");
 
- 
+igk_reg_hook(IGKEvents::HOOK_HTML_META, function(){
+	echo "<meta name='igk-app-version' content='igkdev2.0' />";
+});
+// session_destroy();	
+// igk_wln_e("done ", __FILE__);
 
  
 /*
@@ -29,11 +33,11 @@ igk_wln($_SERVER);
 <?php
 
 echo "sample";
-exit;
+ 
 */
 
 igk_view_handle_actions($fname, ["update"=>function()use($ctrl){
-	igk_wln("update-------------------------%>");
+	/*/igk_wln("update-------------------------%>");//*/
 	igk_navto($ctrl->getAppUri());
 	igk_exit();
 }], $params);
@@ -64,8 +68,7 @@ $t->addJSLogger(true);
 // $t->RenderAJX();
 // echo json_encode($_SESSION);
 // igk_exit();
-//return;
-
+//return; 
 
 include_once($dir."/.header.pinc");
 $t["class"]="+google-Roboto";

@@ -6,8 +6,5 @@ igk_google_addfont($doc, "Anton", 400);
 igk_google_addfont($doc, "Roboto");
 
 //define header
-$doc->setHeaderColor("#FF6500");
-$doc->Theme["baba"] = "background-color:red,; -----------------------------";
-
-// igk_wln_e("Doc?", $doc === igk_app()->Doc, $doc->Theme["baba"]);
+$doc->setHeaderColor("#FF6500"); 
  
