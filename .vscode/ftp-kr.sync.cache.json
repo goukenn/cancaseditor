@@ -1,0 +1,82 @@
+{
+  "ftp://ftp.igkdev.fr@igkdev": {
+    "sites": {
+      "igkdev": {
+        "src": {
+          "application": {
+            "projects": {
+              "igk_default": {
+                ".DS_Store": {
+                  "type": "-",
+                  "size": 8196,
+                  "lmtime": 0,
+                  "modified": false
+                },
+                ".gitignore": {
+                  "type": "-",
+                  "size": 23,
+                  "lmtime": 0,
+                  "modified": false
+                },
+                "Articles": {},
+                "Contents": {},
+                "Data": {},
+                "Scripts": {},
+                "Styles": {},
+                "Utest": {},
+                "Views": {
+                  "canvaseditor": {
+                    ".header.pinc": {
+                      "type": "-",
+                      "size": 132,
+                      "lmtime": 0,
+                      "modified": false
+                    },
+                    "Contents": {},
+                    "Data": {},
+                    "Docs": {},
+                    "Lib": {},
+                    "Scripts": {},
+                    "Styles": {},
+                    "caches": {},
+                    "default.phtml": {
+                      "type": "-",
+                      "size": 13342,
+                      "lmtime": 1561423254474,
+                      "modified": false
+                    },
+                    "svg.phtml": {
+                      "type": "-",
+                      "size": 670,
+                      "lmtime": 0,
+                      "modified": false
+                    },
+                    "wiki.phtml": {
+                      "type": "-",
+                      "size": 274,
+                      "lmtime": 0,
+                      "modified": false
+                    }
+                  }
+                },
+                "class.igk_default.php": {
+                  "type": "-",
+                  "size": 6500,
+                  "lmtime": 0,
+                  "modified": false
+                },
+                "igk_default_db_u.php": {
+                  "type": "-",
+                  "size": 245,
+                  "lmtime": 0,
+                  "modified": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$version": 1
+}

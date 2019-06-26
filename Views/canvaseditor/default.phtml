@@ -1,13 +1,61 @@
 <?php 
 //file : default canvaseditor view 
 //Project : canvas editor project view
-
+ // header("Content-Type: text/plain");
 $pwa = igk_require_module("igk/PWA");
 $bmc = igk_require_module("igk/BMC");
 $bge = igk_require_module("igk/bge");
 
+$scripts = igk_html_uri(dirname(__FILE__)."/Scripts");
+// igk_wln("autogenerate: ", $ctrl->Configs->auto_generate);
 
+if (!$ctrl->Configs->auto_generate){
+// igk_wln_e("loading default");
+// igk_wln_e(
+// 	__FILE__.":".__LINE__,
+// 	"? ".igk_io_is_subdir(igk_io_basedir(), $ctrl->getScriptDir())
+// ); 
 
+if (!igk_io_is_subdir(igk_io_basedir(), $ln = $scripts)){
+	$_rs = 	IGKResourceUriResolver::getInstance();
+	igk_wln(__FILE__.":".__LINE__,  "s", $ln);
+	foreach (igk_io_getfiles($ln, "/\.(json|xml|js|bmp)$/") as $file){
+		// igk_wln("resolve, ", $file);
+		$_rs->resolve($file, null);
+	}
+
+}
+$ctrl->Configs->auto_generate = 1;
+
+igk_wln_e("done", $ctrl->Configs->auto_generate, $ctrl->Configs);
+}
+
+// igk_reg_hook("generateLink", function($e){
+// 	// igk_html_debug(": generated link");
+// // 	$links = $e->args["link"];
+// 	 $out = $e->args["source"];
+// 	 realpath(__FILE__."/../");
+
+// 	 igk_wln_e("generate ", $e);
+
+// 	$ln = dirname($links);
+// 	if (basename($links)=="main.js"){
+// 		foreach (igk_io_getfiles($ln, "/\.(json|xml|js|bmp|js|)$/") as $file){
+// 			if ($links == $file){
+// 				continue;
+// 			}
+// 			// igk_wln("create link to ");
+// 			$s = substr($file, strlen($ln));
+// 			IGKIO::CreateDir(dirname($out."/".$s));  
+
+// 			// igk_wln($file ." <=====> ".$out."/".$s);
+// 			igk_io_symlink($file, $out."/".$s);//); 
+// 		}
+// 	}
+// 	//igk_wln_e("generated link", $e);
+// });
+
+// }
 // igk_reg_hook(IGKEvents::HOOK_HTML_HEAD, function(){
 	// igk_wln("render header");
 // });
@@ -91,7 +139,7 @@ if (IGKUserAgent::IsOldSafariAgent()){
 //testing params----------------------------------------------------------------------------------------------------------------------
 // $params = array("canvas-app.sw.js");
 
-$scripts = dirname(__FILE__)."/Scripts";
+
 $styles = dirname(__FILE__)."/Styles";
 
 
@@ -119,11 +167,19 @@ igk_svg_bind_svgs($doc);
 
 $t->clearChilds();
 
+$cf = igk_io_dir(dirname(__FILE__)."/Data/R/Img/favicon.ico");
 
-$favicon = igk_io_fullpath2uri(dirname(__FILE__)."/Data/R/Img/favicon.ico");
+// $favicon = igk_io_fullpath2uri(dirname(__FILE__)."/Data/R/Img/favicon.ico");
 
 // igk_exit();
-$doc->setFavicon($favicon);
+$doc->setFavicon($cf);
+
+// igk_wln("\n\n".$cf."\n\n"
+// ,
+// (new IGKHtmlRelativeUriValueAttribute($cf))->getValue(),
+// IGKResourceUriResolver::getInstance()->resolve($cf, null)
+// );
+ 
 
 
 //--------------------------------------------------------------------------------------------
@@ -149,7 +205,7 @@ CanvasEditor - Page not found
 "assets"=>function(){
 
 $assets = igk_createXmlNode("assets");
-$is_chrome = IGKUserAgent::IsChrome();	
+// $is_chrome = IGKUserAgent::IsChrome();	
 igk_header_set_contenttype('xml'); 
 $assets->renderAJX();
 igk_exit();
@@ -430,6 +486,9 @@ function get_theme_file($ctrl){
 igk_doc_enable_mobile_app($doc);
 igk_doc_add_ie_meta_compatibility($doc);
 
+
+// igk_wln_e("fullpath to full uri ", 
+// igk_io_fullpath2fulluri(dirname(__FILE__)."/Scripts"));
 
 $t->setClass("+fit +google-Roboto -igk-page");
 $n = $t->addCanvasEditorApp(igk_json_encode((object)[

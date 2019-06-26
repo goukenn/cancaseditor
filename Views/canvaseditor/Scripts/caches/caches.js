@@ -3,14 +3,18 @@
 (function(){
 	//extends canvas editor with cache functionality
 	var _NS = igk.system.createNS("igk.winui.canvasEditor", {
-		caches : function(){
-			
+		caches : function(){			
 		}
 	});
+
 	
-	var caches = new _NS.caches();
-	
+	var caches = new _NS.caches();	
 	var src = igk.getParentScript();
+
+	if (window.location.protocol!="https:"){
+		return;
+	}
+
 	if (window.caches){
 		_NS.initApplication(function(a){
 			//initialize application caches

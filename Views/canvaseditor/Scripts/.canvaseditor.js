@@ -737,10 +737,14 @@ igk.system.createNS(_NS.fullname, {
 	primitive: CanvasPrimitive,
 	initApplication: function(fc){
 		var g = initApplication;
-		initApplication = function(a){
-			g.apply(null, [a]);
-			fc.apply(null, [a]);
-		};  
+		if (g){
+			initApplication = function(a){
+				g.apply(null, [a]);
+				fc.apply(null, [a]);
+			};  
+		} else {
+			initApplication = fc;
+		}
 	}
 });
 //@ store container of list element
@@ -1624,6 +1628,7 @@ function CanvasEditorApp(q, o){
 
 
 function loadMenu(ul, items, editor){	
+	// console.debug("load menu");
 	var pa =0; //parent 
 	var p = ul;
 	var nodes = {}; 
@@ -1635,16 +1640,13 @@ function loadMenu(ul, items, editor){
 	ACTIONS.initMenuList(items, p , nodes, editor, ACTIONS.menuItem);	
 };
 
-var initApplication = function(a){
-	// console.debug("init application loading...");
-};
+var initApplication =  null;
 
 igk.appendProperties(CanvasEditorApp.prototype, {
 	initialize: function(){ // initialize the game application interface
 		var q = this.host;
 		var self = this;		
 		var tools = {};
-		
 		initApplication(this);
 		
 		q.setHtml("");
@@ -1798,7 +1800,7 @@ function ProcessInitiator(){
 		
 	};
 	function resolv(){
-		// console.debug("resolv process start ::::::: ");
+		//  console.debug("resolv process start ::::::: ");
 		if(_t)
 			_t.apply(this);
 	};
@@ -1829,37 +1831,49 @@ var ProcessStart = new ProcessInitiator();
 	// get loading script uri
 	// 
 	var R = igk.system.createNS("igk.winui.canvasEditor.R",{});
+	ProcessStart.bind('loadAssets'); 
+	var fc = function(){ 
+		// console.debug("loading lang .... ");
+		var asset = _NS.assetManager.getUri(""); 
+		igk.system.io.loadLangRes(asset, null, function(d){		 
+			igk.appendProperties(R, d);		
+			// console.debug(R);
+			ProcessStart.unbind("loadAssets");
+		});
+		// console.debug("LoadResources assets : "+uri +  " Lib: "+_libUri); 
+	};	
+	igk.ready(fc);
+
+	// ProcessStart.unbind("loadAssets");
+	return;
+	// setTimeout(function(){
+	// // try{
+	// 	// console.debug("load language res");
+	// igk.system.io.loadLangRes(uri, null, function(d){	
+	// 	// console.debug("--------------------load resources");
+	// 	// // console.debug(d);
+	// 	// // console.debug(R);
+	// 	igk.appendProperties(R, d);
+	// 	ProcessStart.unbind('loadAssets');
+	// }, function(){
+	// 	ProcessStart.unbind('loadAssets');
+	// });
 	
-	igk.ready(function(){
-	ProcessStart.bind('loadAssets');
-	var uri = igk.js.Location || igk.system.io.rootUri()+"Projects/igk_default/Views/canvaseditor/Scripts/assets/";
-	
-	// console.debug("asset location : "+ uri); 
-	setTimeout(function(){
-	// try{
-		// console.debug("load language res");
-	igk.system.io.loadLangRes(uri, null, function(d){	
-		// console.debug("--------------------load resources");
-		// // console.debug(d);
-		// // console.debug(R);
-		igk.appendProperties(R, d);
-		ProcessStart.unbind('loadAssets');
-	}, function(){
-		ProcessStart.unbind('loadAssets');
-	});
-	
-	// }catch(ex){
-		// console.debug('error loaded');
-	// }
+	// // }catch(ex){
+	// 	// console.debug('error loaded');
+	// // }
 	 
 	
-	}, 500);
+	// }, 500);
 	 
-	});
+	// });
 	
 })();
 
 
+//-----------------------------------------------------------------------
+// BASE
+//-----------------------------------------------------------------------
 
 igk.winui.initClassControl("igk-canvas-editor-app", function(){
 	// console.debug("init canvas-editor-app");
@@ -1878,15 +1892,13 @@ igk.winui.initClassControl("igk-canvas-editor-app", function(){
 		}else {
 			igk.appendProperties(q.o.style["--igk"],_e);
 		}
-	}
-	
-	
+	}	
 	// console.debug(q.o.style); 
-	//initiate the application
+	// initiate the application
 	ProcessStart.then(function(){
-		// console.debug("process canvas editor");
-	//wait for requirement before start application 	
-	(new CanvasEditorApp(q, _s)).initialize();
+		// console.debug(" -- start canvas initialize -- ");
+		// wait for requirement before start application 	
+		(new CanvasEditorApp(q, _s)).initialize();
 	});
 });
 
@@ -1895,7 +1907,9 @@ igk.winui.initClassControl("igk-canvas-editor-app", function(){
 
 })();
 
-
+//--------------------------------------------------------------------------
+// EIDTOR
+//--------------------------------------------------------------------------
 (function(){
 	function editorBuild(){
 		var ost = []; 
@@ -4304,7 +4318,7 @@ while(def.m< def.ln){
 			}
 		
 		};
-		
+		// set text of menu item
 		li.add("a").on("touchOrClick", this.click).selectable(false).setHtml( R[n] || n);
 		
 		

@@ -432,9 +432,9 @@ return c;
 					gleContext =  createGLContext(tc.o) || die("failed to created gl");
 										
 					 
-					
-					if (window.caches ){
-						// console.debug(a.settings);
+				
+					if (window.caches  && (window.location.protocol=="https:")){
+						// can cache shader only for https 
 						window.caches.open(a.settings.appCacheName).then(function(cache){
 							cache.match(uri+"/cacheslist").then(function(rep){
 								if (!rep){

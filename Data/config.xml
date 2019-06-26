@@ -1,1 +1,10 @@
-<config><clTargetNodeIndex>100</clTargetNodeIndex><clDisplayName /><clRegisterName>igk.igk_default</clRegisterName><clDataAdapterName>MYSQL</clDataAdapterName><clParentCtrl /><clVisiblePages>*</clVisiblePages><clDescription /><clDataSchema>true</clDataSchema><clDefaultPage>default</clDefaultPage><clNavigationAnimType>translation</clNavigationAnimType></config>
+<config>
+    <clTargetNodeIndex>1</clTargetNodeIndex>
+    <clRegisterName>igk.igk_default</clRegisterName>
+    <clDataAdapterName>MYSQL</clDataAdapterName>
+    <clVisiblePages>*</clVisiblePages>
+    <clDataSchema>true</clDataSchema>
+    <clDefaultPage>default</clDefaultPage>
+    <clNavigationAnimType>translation</clNavigationAnimType>
+    <auto_generate>1</auto_generate>
+</config>
