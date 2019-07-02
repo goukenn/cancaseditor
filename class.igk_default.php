@@ -113,7 +113,6 @@ class igk_default extends IGKDefaultPageController
 		$pane->flush();		
 		$pane->RenderAJX();
 		}
-		exit;
 	}
 	
 	function clear_navpage_ajx(){
@@ -138,7 +137,7 @@ class igk_default extends IGKDefaultPageController
 		if (igk_getr('ie', 0) == 1)
 		{
 			$pane->RenderAJX();
-			exit;
+			igk_exit();
 		}
 		
 		
@@ -150,7 +149,7 @@ ns_igk.winui.notify.showError("cant upload file IGK_UPLOADFILE not founds ");
 EOF;
 $s->RenderAJX();
 $pane->RenderAJX();
-			exit;
+			igk_exit();
 		}
 		$type = igk_getv($tab, "IGK_UP_FILE_TYPE","text/html");
 		$fname = igk_getv($tab, "IGK_FILE_NAME", "file.data");
@@ -181,7 +180,6 @@ $pane->RenderAJX();
 			$pane->flush();
 			$pane->RenderAJX();
 		}
-		exit;
 	}*/
 	//function
 	public function stayconnected(){
@@ -208,7 +206,7 @@ $pane->RenderAJX();
 		}
 		$this->View();		
 		igk_navto(igk_io_baseuri()."#mailing_form");
-		//exit;
+		
 	}
 	public function confirm_mail(){
 		$q = base64_decode(igk_getr("q"));

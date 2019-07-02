@@ -1,0 +1,4 @@
+<?php
+igk_hook(IGKEvents::HOOK_HTML_HEAD, null);
+?><div><?= R::gets("/!\ Requested page page not found !!! - {0} ", $uri) ?></div><?php
+igk_hook(IGKEvents::HOOK_HTML_FOOTER, null);

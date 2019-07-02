@@ -6,9 +6,6 @@
 // description: application environment for design
 "use strict";
 
-
-
-
 (function(){
 var _NS = 0;
 var _libUri=0;
