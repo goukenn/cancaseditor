@@ -60,7 +60,7 @@ igk_view_handle_actions($fname, ["update"=>function()use($ctrl){
 	igk_set_header(404);
 	if (preg_match("/\.json$/", $uri)){
 		igk_header_set_contenttype("json");		
-		echo json_encode(array("error"=>1, "uri"=>$uri, "msg"=>"default controller : not found")); //  "{'error':'1', 'msg':'file not found}";
+		echo json_encode(array("error"=>1, "uri"=>$uri, "msg"=>$this->name." : not found")); //  "{'error':'1', 'msg':'file not found}";
 		igk_exit();
 	}
 	
