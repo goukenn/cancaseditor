@@ -480,6 +480,10 @@ igk_svg_bind_svgs($doc);
 
 $t->clearChilds();
 
+igk_wln_e("canvas editor");
+
+exit;
+
 $cf = igk_io_dir(dirname(__FILE__)."/Data/R/Img/favicon.ico");
 $doc->setFavicon(IGKResourceUriResolver::getInstance()->resolve($cf, null));
 

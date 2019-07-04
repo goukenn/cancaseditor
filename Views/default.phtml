@@ -57,20 +57,28 @@ igk_view_handle_actions($fname, ["update"=>function()use($ctrl){
 	},
 	404=>function($uri=null){
 	
-	igk_set_header(404);
+	
 	if (preg_match("/\.json$/", $uri)){
+
+		$f = igk_io_basedir($uri."/../../");
+
+		igk_wln_e("file ", $f, 
+	"?".	file_exists($f),
+	realpath($f),
+	readlink($f)
+);
+
 		igk_header_set_contenttype("json");		
-		echo json_encode(array("error"=>1, "uri"=>$uri, "msg"=>$this->name." : not found")); //  "{'error':'1', 'msg':'file not found}";
+		echo json_encode(array("error"=>1, "uri"=>$uri, "msg"=>$this->name." : resources not found")); //  "{'error':'1', 'msg':'file not found}";
 		igk_exit();
 	}
-	
+	igk_set_header(404);
 	igk_reg_hook(IGKEvents::HOOK_HTML_HEAD, function(){
 		?><!DOCTYPE Html><html><head><title>ERROR 404</title></head><body><?php
 	});	
 	igk_reg_hook(IGKEvents::HOOK_HTML_FOOTER, function(){
 		?></body></html><?php
 	});
-	
 	$this->loader->view("error/404", ['uri'=>$uri]); 
 	igk_wl($this->_output);		
 	igk_exit();
