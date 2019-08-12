@@ -1,0 +1,126 @@
+//javascript inclusion
+// var version = "1.0";
+// var cacheName = `cancaseditor-${version}`;
+// var cachelist = cachelist || [];
+// console.debug(cachelist);
+
+var _NS = "canvas-app.sw.jsinc";
+
+
+self.addEventListener('install',function(e){
+	console.log('service worker installed: '+_NS);
+	
+	e.waitUntil(caches.open(cacheName).then(function(cache){
+		var progress = cachelist.length;
+		function updateProgress(resolv, reject){
+			progress--;					
+			if(progress<=0){
+				self.skipWaiting();
+				//console.debug("finish loading");
+				//important to activate the service.
+				resolv();
+			}
+			
+		};
+		
+		var p = new Promise(function(resolve, reject){
+			
+		
+		//console.debug("add cachelist.");
+	
+		
+	
+	
+		for(var j= 0 ; j < cachelist.length; j++){
+			// console.debug('loadcache '+cachelist[j]);
+			(function(x){
+				cache.add(cachelist[x]).then(function(){
+					//console.debug("loading... "+cachelist[x]);
+					updateProgress(resolve, reject);
+				}).catch(function(e){
+					//console.debug("error for : "+cachelist[x]);
+					updateProgress(resolve, reject);
+				});
+			})(j);
+			// igk.ajx.get(cachelist[j])
+		}
+		
+		//return cache.addAll(cachelist).then(function(){self.skipWaiting();});
+		
+		});
+		
+		
+		return p;
+	})
+	);
+});
+self.addEventListener('activate',function(e){
+	console.log('service worker activated');
+	//e.ports[0].postMessaage("service worker activated");
+});
+
+// Use ServiceWorker (or not) to fetch data
+self.addEventListener('fetch', function(event) {
+	//console.log('fetching data');
+  event.respondWith(
+	(function(c){
+		
+		return caches.open(cacheName)
+				  .then(function(cache){
+					//console.debug(cache.match(event.request, {ignoreSearch: true}));
+					//cachelist				
+					return cache.match(event.request.url, {ignoreSearch: false})
+				  .then(function(response){
+						// if (typeof(response)=='undefined'){
+							
+							// console.debug("fetch: notfound :"+event.request.url);
+							// if (!navigator.onLine){
+								// return new Response("{notfound} - "+event.request);
+							// }
+							// // if (/favicon.ico$/.test(event.request.url)){
+								// // console.debug("get in response : "+response + " for : "+event.request.url);
+								// // fetch("/igkdev/cancaseditor/favicon.ico").then(function(rep){
+									// // console.debug("put rep "+rep);
+									// // cache.put("/igkdev/cancaseditor/favicon.ico", rep);
+								// // });
+								// // return new Response("{notfound}");
+							// // }
+						// }
+						// //else{
+							// // console.debug("resolv if "+response + " "+event.request.url);
+						// // }				
+						// if (!response){
+							// return fetch(event.request.url).then(function(rep){
+								// return rep;
+							// }).catch(function(e){
+								// console.error("failed : "+e);
+							// });
+						// }					  
+						return response || fetch(event.request.url);
+						
+						// // .then(function(rep){
+							// // console.debug('chache result ');
+							// // console.debug(rep);
+							// // switch(rep.type){
+								// // case 'basic':
+								// // break;
+								// // case 'cors':
+								// // break;
+							// // }
+							// // cache.put(event.request.url, rep);
+							// return new Response(rep.blob());
+						// // });
+					}).catch(function(e){
+						console.debug(_NS+" : ERROR : "+e+ " "+event.request.url);
+					});
+		}).catch(function(e){
+			console.debug(_NS+" : ERROR : "+e);
+		});
+})());
+
+});
+
+// Register message service worker
+self.addEventListener('message', function(e){
+	// console.debug('recieve message : '+e.data);
+});

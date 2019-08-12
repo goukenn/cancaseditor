@@ -1,0 +1,45 @@
+{
+"server":"igkdev.com",
+"packages":[
+	{
+		"name":"balafondesigner",
+		"version": "1.0",
+		"date":"05/12/2018",
+		"coast":"free",
+		"dist": "/igk/balafonDesigner/dist",
+		"releaseCandidate":"v1.0"
+	},
+	{
+		"name":"electrical",
+		"version": "1.0",
+		"date":"05/12/2018",
+		"coast":"free",
+		"dist": "/igk/balafonDesigner/dist",
+		"releaseCandidate":"v1.0"
+	},
+	{
+		"name":"ecom",
+		"version": "1.0",
+		"date":"05/12/2018",
+		"coast":"free",
+		"dist": "/igk/balafonDesigner/dist",
+		"releaseCandidate":"v1.0"
+	},
+	{
+		"name":"cv",
+		"version": "1.0",
+		"date":"05/12/2018",
+		"coast":"free",
+		"dist": "/igk/balafonDesigner/dist",
+		"releaseCandidate":"v1.0"
+	},
+	{
+		"name":"cv",
+		"version": "1.0",
+		"date":"05/12/2018",
+		"coast":"free",
+		"dist": "/igk/balafonDesigner/dist",
+		"releaseCandidate":"v1.0"
+	}
+]
+}

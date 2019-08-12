@@ -1,0 +1,587 @@
+{
+  "ftp://ftp.igkdev.fr@igkdev": {
+    "sites": {
+      "igkdev": {
+        "src": {
+          "application": {
+            "projects": {
+              "igk_default": {
+                "cancaseditor": {},
+                "Views": {
+                  "cancaseditor": {
+                    ".header.pinc": {
+                      "type": "-",
+                      "size": 132,
+                      "lmtime": 0,
+                      "modified": false
+                    },
+                    "Contents": {},
+                    "Data": {},
+                    "Docs": {},
+                    "Lib": {},
+                    "Scripts": {
+                      ".canvas-app.sw.jsinc": {
+                        "type": "-",
+                        "size": 3637,
+                        "lmtime": 0,
+                        "modified": false
+                      },
+                      ".cancaseditor.js": {
+                        "type": "-",
+                        "size": 128244,
+                        "lmtime": 1564659137334,
+                        "modified": false
+                      },
+                      ".htaccess": {
+                        "type": "-",
+                        "size": 14,
+                        "lmtime": 0,
+                        "modified": false
+                      },
+                      "actions": {
+                        "drawing2D": {
+                          "alignment.js": {
+                            "type": "-",
+                            "size": 231,
+                            "lmtime": 0,
+                            "modified": false
+                          },
+                          "anchor.js": {
+                            "type": "-",
+                            "size": 490,
+                            "lmtime": 0,
+                            "modified": false
+                          },
+                          "global.js": {
+                            "type": "-",
+                            "size": 1063,
+                            "lmtime": 0,
+                            "modified": false
+                          },
+                          "zoom.js": {
+                            "type": "-",
+                            "size": 230,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "mecanismActions": {
+                          "drawing2d.js": {
+                            "type": "-",
+                            "size": 4016,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "menu": {}
+                      },
+                      "assets": {
+                        "192x192.png": {
+                          "type": "-",
+                          "size": 1150,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "192x192.png.gkds": {
+                          "type": "-",
+                          "size": 814,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "512x512.png": {
+                          "type": "-",
+                          "size": 9584,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "512x512.png.gkds": {
+                          "type": "-",
+                          "size": 19224,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "Img": {
+                          "circle.png": {
+                            "type": "-",
+                            "size": 20724,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "Lang": {
+                          "res.en.json": {
+                            "type": "-",
+                            "size": 2214,
+                            "lmtime": 1564659015874,
+                            "modified": false
+                          },
+                          "res.fr.json": {
+                            "type": "-",
+                            "size": 2746,
+                            "lmtime": 1564659003087,
+                            "modified": false
+                          }
+                        },
+                        "assets.js": {
+                          "type": "-",
+                          "size": 295,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "favicon.png": {
+                          "type": "-",
+                          "size": 13710,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "favicon.png.gkds": {
+                          "type": "-",
+                          "size": 30950,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "icon.png": {
+                          "type": "-",
+                          "size": 1049,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "icons.js": {
+                          "type": "-",
+                          "size": 280,
+                          "lmtime": 0,
+                          "modified": false
+                        }
+                      },
+                      "caches": {
+                        "caches.js": {
+                          "type": "-",
+                          "size": 4159,
+                          "lmtime": 0,
+                          "modified": false
+                        }
+                      },
+                      "color.js": {
+                        "type": "-",
+                        "size": 232,
+                        "lmtime": 0,
+                        "modified": false
+                      },
+                      "drawing2d": {
+                        "arc.js": {
+                          "type": "-",
+                          "size": 5928,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "bezier.js": {
+                          "type": "-",
+                          "size": 21474,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "circle.js": {
+                          "type": "-",
+                          "size": 7450,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "document.js": {
+                          "type": "-",
+                          "size": 4860,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "image.js": {
+                          "type": "-",
+                          "size": 2238,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "layer.js": {
+                          "type": "-",
+                          "size": 4964,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "line.js": {
+                          "type": "-",
+                          "size": 3064,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "linearbrush.js": {
+                          "type": "-",
+                          "size": 4518,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "mask.js": {
+                          "type": "-",
+                          "size": 62,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "menu": {
+                          "base.js": {
+                            "type": "-",
+                            "size": 216,
+                            "lmtime": 0,
+                            "modified": false
+                          },
+                          "test.js": {
+                            "type": "-",
+                            "size": 339,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "overlayLayers": {
+                          "pageLayer.js": {
+                            "type": "-",
+                            "size": 8255,
+                            "lmtime": 1562305738607,
+                            "modified": false
+                          },
+                          "snippets.js": {
+                            "type": "-",
+                            "size": 6073,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "plume.js": {
+                          "type": "-",
+                          "size": 10576,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "polygon.js": {
+                          "type": "-",
+                          "size": 6271,
+                          "lmtime": 1562305669428,
+                          "modified": false
+                        },
+                        "radialbrush.js": {
+                          "type": "-",
+                          "size": 5135,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "roundrect.js": {
+                          "type": "-",
+                          "size": 7775,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "selection.js": {
+                          "type": "-",
+                          "size": 23233,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "spline.js": {
+                          "type": "-",
+                          "size": 4409,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "star.js": {
+                          "type": "-",
+                          "size": 9004,
+                          "lmtime": 1562305597806,
+                          "modified": false
+                        },
+                        "text.js": {
+                          "type": "-",
+                          "size": 9602,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "tools": {},
+                        "video.js": {
+                          "type": "-",
+                          "size": 1728,
+                          "lmtime": 0,
+                          "modified": false
+                        }
+                      },
+                      "drawing3d": {
+                        "gle": {
+                          "actions": {
+                            "gle.menu.js": {
+                              "type": "-",
+                              "size": 39,
+                              "lmtime": 0,
+                              "modified": false
+                            }
+                          },
+                          "gleCone.js": {
+                            "type": "-",
+                            "size": 39,
+                            "lmtime": 0,
+                            "modified": false
+                          },
+                          "gleCube.js": {
+                            "type": "-",
+                            "size": 39,
+                            "lmtime": 0,
+                            "modified": false
+                          },
+                          "gleCylinder.js": {
+                            "type": "-",
+                            "size": 39,
+                            "lmtime": 0,
+                            "modified": false
+                          },
+                          "gleMesh.js": {
+                            "type": "-",
+                            "size": 39,
+                            "lmtime": 0,
+                            "modified": false
+                          },
+                          "gleObject.js": {
+                            "type": "-",
+                            "size": 13925,
+                            "lmtime": 0,
+                            "modified": false
+                          },
+                          "gleSphere.js": {
+                            "type": "-",
+                            "size": 661,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        }
+                      },
+                      "encoder": {
+                        "gkds.js": {
+                          "type": "-",
+                          "size": 6673,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "mp4.js": {
+                          "type": "-",
+                          "size": 1311,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "obj.js": {
+                          "type": "-",
+                          "size": 5942,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "readme.txt": {
+                          "type": "-",
+                          "size": 31,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "xml.js": {
+                          "type": "-",
+                          "size": 5899,
+                          "lmtime": 0,
+                          "modified": false
+                        }
+                      },
+                      "enums": {
+                        "blending.js": {
+                          "type": "-",
+                          "size": 657,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "zoomMode.js": {
+                          "type": "-",
+                          "size": 194,
+                          "lmtime": 1562305797243,
+                          "modified": false
+                        }
+                      },
+                      "gle": {},
+                      "gui": {
+                        "dialog.js": {
+                          "type": "-",
+                          "size": 4620,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "menu.js": {
+                          "type": "-",
+                          "size": 59,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "notify.js": {
+                          "type": "-",
+                          "size": 2006,
+                          "lmtime": 0,
+                          "modified": false
+                        }
+                      },
+                      "history": {
+                        "history.js": {
+                          "type": "-",
+                          "size": 415,
+                          "lmtime": 0,
+                          "modified": false
+                        }
+                      },
+                      "math": {
+                        "vector2.js": {
+                          "type": "-",
+                          "size": 335,
+                          "lmtime": 0,
+                          "modified": false
+                        }
+                      },
+                      "services": {
+                        "publisher.js": {
+                          "type": "-",
+                          "size": 878,
+                          "lmtime": 0,
+                          "modified": false
+                        }
+                      },
+                      "shaders": {},
+                      "tools": {
+                        "ColorEditorTool.js": {
+                          "type": "-",
+                          "size": 12757,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "EditElementSettingDialog.js": {
+                          "type": "-",
+                          "size": 1721,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "FilterEditorTool.js": {
+                          "type": "-",
+                          "size": 8183,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "LayerEditorTools.js": {
+                          "type": "-",
+                          "size": 2132,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "SearchEditorTool.js": {
+                          "type": "-",
+                          "size": 270,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "botomSizeViewEditorTool.js": {
+                          "type": "-",
+                          "size": 862,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "bottomColorEditorTool.js": {
+                          "type": "-",
+                          "size": 2849,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "bottomZoomEditorTool.js": {
+                          "type": "-",
+                          "size": 661,
+                          "lmtime": 0,
+                          "modified": false
+                        }
+                      },
+                      "utils.js": {
+                        "type": "-",
+                        "size": 61,
+                        "lmtime": 0,
+                        "modified": false
+                      },
+                      "views": {
+                        "color.js": {
+                          "type": "-",
+                          "size": 349,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "menu.js": {
+                          "type": "-",
+                          "size": 2219,
+                          "lmtime": 0,
+                          "modified": false
+                        }
+                      },
+                      "visitors": {
+                        "canvas.js": {
+                          "type": "-",
+                          "size": 2706,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "png.js": {
+                          "type": "-",
+                          "size": 2334,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "svg.js": {
+                          "type": "-",
+                          "size": 10384,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "xml.js": {
+                          "type": "-",
+                          "size": 2925,
+                          "lmtime": 0,
+                          "modified": false
+                        }
+                      }
+                    },
+                    "Styles": {},
+                    "assets": {
+                      "telerik.js": {
+                        "type": "-",
+                        "size": 5595,
+                        "lmtime": 1562717153213,
+                        "modified": false
+                      }
+                    },
+                    "caches": {},
+                    "cancaseditor": {},
+                    "default.phtml": {
+                      "type": "-",
+                      "size": 17152,
+                      "lmtime": 1564733978149,
+                      "modified": false
+                    },
+                    "modelapp": {},
+                    "svg.phtml": {
+                      "type": "-",
+                      "size": 670,
+                      "lmtime": 0,
+                      "modified": false
+                    },
+                    "temp": {},
+                    "wiki.phtml": {
+                      "type": "-",
+                      "size": 274,
+                      "lmtime": 0,
+                      "modified": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$version": 1
+}

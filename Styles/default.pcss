@@ -1,0 +1,180 @@
+<?php
+$menuZIndex = 100;
+$snippetZIndex = 10;
+$snippets = array(
+'size'=>'10',
+'touch_size'=>'16'
+);
+
+$var = function($n, $def='')use(& $root){
+	$h = igk_getv($root, '--'.$n) ?? $def;
+	
+	return "var(--{$n}, {$h})";
+};
+
+$root["--igk-background-color"] = "#444";
+$root["--igk-canvas-editor-app_menu-height"] = "32px";
+$root["--ce-input_background-color"] = "#eee";
+
+//$def[".igk-canvas-editor-app"] = "{sys:fit, posr} background-color: [var: --igk-canvas-editor-app_background, #444]; background-color: var(--igk-canvas-editor-app_background, #444); padding-left: 32px; padding-top: 32px; padding-bottom :  var(--igk-canvas-editor-app_menu-height, 32px)";
+$def[".igk-canvas-editor-app"] = "{sys:fit, posr, no-overflow} overscroll-behavior: none; background-color: var(--igk-canvas-editor-app_background, #444); padding-left: 32px; padding-top: 32px; padding-bottom : var(--igk-canvas-editor-app_menu-height, 32px)";
+$def[".igk-canvas-editor-app canvas:not(.posab)"] = "background-color: #676767; position:relative;";
+$def[".igk-canvas-editor-app div.tool"] = "{sys:posab}";
+
+$def[".igk-canvas-editor-app div.b"] = "{sys:posab, loc_b, loc_l, loc_r} font-size: 8pt; color:#ddd; line-height:32px; vertical-align:center;";
+
+
+
+$def[".igk-canvas-editor-app div.tool.t"] = "{sys:loc_t, loc_l, loc_r, no-selection} background-color: #444; z-index:{$menuZIndex}; padding-left:32px;";
+$def[".igk-canvas-editor-app div.tool.t .menu"] = "{sys:dispib, no-wrap, ellipsis} vertical-align:middle; /*for ie explorer*/ line-height: 32px; line-height:var(--igk-canvas-editor-app_menu-height, 32px);";
+$def[".igk-canvas-editor-app div.tool.t .menu"] = "{sys:dispib, no-wrap, ellipsis} vertical-align:middle; /*for ie explorer*/ line-height: 32px; line-height:var(--igk-canvas-editor-app_menu-height, 32px);";
+
+$def[".igk-canvas-editor-app div.tool.t .menu li"] = "{sys:dispib}";
+$def[".igk-canvas-editor-app div.tool.t .menu li.igk-hide"] = "display:none !important;";
+$def[".igk-canvas-editor-app div.tool.t .menu li.igk-disable a"] = "color:#555; background-color:#111;";
+$def[".igk-canvas-editor-app div.tool.t .menu li.igk-disable a:hover"] = "color:#555 !important; background-color:#111 !important;";
+$def[".igk-canvas-editor-app div.tool.t .menu > li:not(:first-child)"] = "margin-left: 4px";
+$def[".igk-canvas-editor-app div.tool.t .menu li > a"] = "{sys:dispb} color:#ddd; cursor:pointer; min-width:32px; padding: 0px 4px; font-size: 0.9em; ";
+$def[".igk-canvas-editor-app:not(.touchable-device) div.tool.t .menu li > a:hover"] = "color:#eee; background-color: #4c448f";//{sys:dispb} cursor:pointer; ";
+
+
+$def[".igk-canvas-editor-app div.tool.t .menu .submenu"]= "{sys:posab, dispn} background-color:#222; opacity:0; box-shadow: 0 0 6px black;"; 
+$def[".igk-canvas-editor-app div.tool.t .menu .submenu .sub_2"]= "left: 100%; top:0px;"; 
+$def[".igk-canvas-editor-app div.tool.t .menu .submenu > li"]= "{sys:dispb, posr} "; 
+$def[".igk-canvas-editor-app div.tool.t .menu .submenu > li a"]= "padding-left: 48px; padding-right:64px;"; 
+$def[".igk-canvas-editor-app:not(.touchable-device) div.tool.t .menu li:hover > .submenu"]= 
+$def[".igk-canvas-editor-app.touchable-device div.tool.t .menu li.igk-show > .submenu"]= 
+"{sys:dispb} opacity:1;"; 
+$def[".igk-canvas-editor-app:not(.touchable-device) div.tool.t .menu li:hover > .submenu.igk-hide"]= "opacity:0.2; display:none;"; //hide the submenu if igk-hide apply . with javascript
+
+//hide tool for mobile device
+$def[".xsm .igk-canvas-editor-app div.tool.t"] =
+$def[".sm .igk-canvas-editor-app div.tool.t"] = "{sys:dispn}";
+$def[".xsm .igk-canvas-editor-app"] = 
+$def[".sm .igk-canvas-editor-app"] = 
+"padding-top:0px;"; 
+
+$def[".igk-canvas-editor-app div.tool.b"] = "{sys:no-selection}";
+
+$def[".igk-canvas-editor-app .layerview"] = "padding-left: 16px; line-height:1; border:1px solid black; text-indent: -10px; max-height:230px; overflow-y:auto;";
+$def[".igk-canvas-editor-app .layerview > li.igk-active"] = "list-style-type: disc";
+$def[".igk-canvas-editor-app .layerview > li"] = "position:relative; list-style-type: none; padding: 10px;";
+$def[".igk-canvas-editor-app .layerview > li:hover"] = 
+$def[".igk-canvas-editor-app .layerview > li:hover:before"] = 
+"background-color:indigo;";
+$def[".igk-canvas-editor-app .layerview > li:before"] = "z-index:-1; left:-16px; top:0px; width:16px; height:100%; position:absolute; content:' ';";
+
+
+$def[".igk-canvas-editor-app hr"]= "margin:0px 4px; border:0px; border-bottom: 1px #555 solid;";
+
+$def[".igk-canvas-editor-app .colortool"] = "display:inline-block; vertical-align:middle; line-height:0; position:relative; ";
+$def[".igk-canvas-editor-app .colortool > .btn:first-child"] = "position:relative; margin-left:4px;";
+$def[".igk-canvas-editor-app .colortool .btn"] = "display:inline-block; width:16px; height:16px; border:1px solid black; background-color:white; ";
+$def[".igk-canvas-editor-app .colortool .btn.stroke"] = "{sys: posr} left: -4px; top: 4px; background-color:red;";
+
+$def[".igk-canvas-editor-app.touchable-device"] = "{sys:fith} padding:0px;";
+$def[".igk-canvas-editor-app.touchable-device canvas"] = "overflow:scroll; padding-top:10px;";
+$def[".igk-canvas-editor-app.touchable-device div.tool.b"]= "{sys:dispn};"; //hide the submenu if igk-hide apply . with javascript
+
+
+$def[".pageLayer-contextMenu"] = "{sys:no-overflow} [trans: opacity 0.5s ease-out]; opacity: 1.0; z-index:110; top:0px; left: 100px; background-color: #444; [resolv: box-shadow: 0px 0px 4px]; border-radius: 10px;";
+$def[".pageLayer-contextMenu:before"] = "{sys:posfix, loc_a} content:' '; opacity: 0.2; z-index: -1; background-color:black;";
+$def[".pageLayer-contextMenu a"] = "{sys:dispb} padding: 10px 4px; padding-left: 32px;  font-size: 0.9em; cursor:pointer;";
+$def[".pageLayer-contextMenu li"] = "{sys:dispb}";
+$def[".pageLayer-contextMenu li:hover > a"] = "background-color: indigo; color:white; ";
+$def[".pageLayer-contextMenu.igk-hide"] = "opacity: 0.0;";
+
+
+$def["body"] = "height:100% !important;";
+
+
+$def[".canvas-editor-gui_dialog"] = "{sys:posfix, loc_a, dispflex} justify-content:center; align-items:center; z-index: 100;";
+$def[".canvas-editor-gui_dialog:before"] = "{sys:posab, fit, loc_t, loc_l} content:' '; background-color:#222; opacity: 0.4; ";
+$def[".canvas-editor-gui_dialog > div.box"] =  "{sys:dispib, loc_t} background-color: #fcfcfc; border:1px solid #dedede; ".
+" box-shadow: 0 0 10px black;".
+" padding:10px; border-radius: 10px; ";
+
+$def[".canvas-editor-gui_dialog .title-bar"] = "font-family: [var: --igk-winui-bmc-typo]; {sys:no-selection}";
+$def[".canvas-editor-gui_dialog .title-bar .close"] = "cursor: pointer;";
+$def[".canvas-editor-gui_dialog .box .content"] = "min-width:300px; line-height:1;";
+
+
+$def["body > .dialog .igk-winui-bmc-group > div"] = "margin:4px 0px;";
+
+
+$theme->reg_keyFrames($def, "igk-canvas-editor_notify-anim", " from { left: 50%; } to {left: 0px; }");
+
+
+$def[".igk-canvas-editor_notifyhost"]="{sys:posab} right:0px; top:0px;";
+$def[".igk-canvas-editor_notify"] = "(:.no-selection) [trans:opacity 0.2s ease-in, box-shadow 0.5s] [anim:igk-canvas-editor_notify-anim 0.2s linear]".
+"opacity: 0.7; right:0; top: 0px; background-color:#444; line-height: 4em; color:#eee; padding:10px; padding-left:48px; margin-right: 10px; margin-top:10px; border-radius: 4px; ";
+$def[".igk-canvas-editor_notify:hover"] = "opacity : 1.0; box-shadow: 0 0 6px black;";
+$def[".igk-canvas-editor_notify.igk-hide"] = "opacity : 0.0;";
+
+// $def[".igk-canvas-editor_notify + .igk-canvas-editor_notify"] = "top: 100%";
+
+$PTR[".igk-canvas-editor-app"] = "display:none !important;";
+$PTR[".igk-canvas-editor-options"] = "display:none !important;";
+
+
+
+//- snippets
+$def[".igk-canvas-editor-app.touchable-device .snippet"] = "[transform:scale({$snippets['touch_size']},{$snippets['touch_size']})]";
+$def[".igk-canvas-editor-app .snippet"] = "{sys:posab}; cursor:pointer; z-index:{$snippetZIndex}; opacity: 0.5; [trans: opacity 0.2s ease-out];  width:1px; height:1px; transform-origin:center;".
+" [transform: scale(10,10)]; background-color:skyblue; ";
+
+
+$def[".igk-canvas-editor-app .snippet:hover"]= "opacity:1.0; ";
+$def[".igk-canvas-editor-app .snippet.igk-hide"] = "opacity: 0.0;";
+$def[".igk-canvas-editor-app .snippet.round"] = "border-radius: 50%";
+$def[".igk-canvas-editor-app .snippet.losange"] = "[transform: rotate(45deg) scale(8)] width:1px; height:1px;";
+//for safari trange behaviour
+// safari not support scale on object
+$trans = $snippets['size']/ 2;
+
+$def["body.safari .snippet" ] = "width:{$snippets['size']}px; height:{$snippets['size']}px;  [transform:translate(-{$trans}px, -{$trans}px)]";
+$trans = $snippets['touch_size']/ 2;
+$def["body.safari .igk-canvas-editor-app.touchable-device .snippet" ] = "width:{$snippets['touch_size']}px; height:{$snippets['touch_size']}px; [transform:translate(-{$trans}px, -{$trans}px)] ";
+$def["body.safari .snippet.round" ] = "";//width:10px; height:10px;  [transform:translate(-5px, -5px)]";
+
+
+
+
+
+$def["div.igk-default"] = "background-color: red; height: 800px;";
+
+//color dialog
+$def["div.canvas-editor-gui_dialog.dialog.color:before"] = "background-color:tranparent; opacity:0.0;";
+
+//tab button
+
+$def[".igk-tab-button"] = "{sys:dispib} font-size:0.62em";
+$def[".igk-tab-button .igk-btn"] = "background-color:#444;{sys:no-selection}";
+$def[".igk-tab-button .igk-btn.igk-active"] = "background-color:#eee; color:#444;";
+$def[".igk-tab-button .igk-btn:hover"] = "background-color:indigo; color:white";
+$def[".igk-tab-button .igk-btn:first-child"] = "border-radius: 4px 0 0 4px;";
+$def[".igk-tab-button .igk-btn:last-child"] = "border-radius: 0 4px 4px 0;";
+
+
+//color value label
+$def[".igk-color-value-label"] = "border-radius:4px; background-color:{$var('ce-input_background-color')}; padding:4px; width:auto;";
+$def[".igk-color-value-label > input"] = "{sys:alignc, no-border, dispb, fitw}  background-color:transparent;";
+
+$def[".rgb-color-picker"] = "{sys: dispib} line-height: 0; border-radius: 50%; border:none;";
+$def[".rgb-color-picker > img"] = "{sys:dispib} border-radius: 50%; border:none;";
+$def[".rgb-color-picker .btn-cur"] = "{sys:posab} left:50%;top:50%; width:4px; height:4px; padding:1px; border:none; background-color:transparent; [transform:translate(-2px, -2px)]";
+$def[".rgb-color-picker .btn-cur:before"] = "{sys:posab, dispb, fit } content:' '; background-color:black;";
+
+// $def["div.canvas-editor-gui_dialog.dialog.color .rgb-color-picker"] = "float:left;";
+// $def["div.canvas-editor-gui_dialog.dialog.color .igk-winui-track"] = "{sys: dispib} float:left; margin-left: 100px;  margin-left: 100px; width: 100%;";
+// $def["div.canvas-editor-gui_dialog.dialog.color .igk-winui-track > .track"] = "margin-bottom:8px; height:8px; background-color:#444";
+
+
+
+// color-track
+$def[".ce-color-track"] = "{sys:no-wrap} margin-bottom:4px; ";
+$def[".ce-color-track .igk-round-input"] = "{sys:dispib} margin-left:1em; padding:4px; border-radius: 4px; background-color:{$var('ce-input_background-color')}";
+$def[".ce-color-track .igk-round-input > input"] = "{sys:alignc,no-border, no-background} width:2em;";
+
+
+$def["div.input-field__track-value"] = "{sys:posab} background-color: #444; [resolv:user-select: none;] height:4px; left:0px; bottom:0px;";
