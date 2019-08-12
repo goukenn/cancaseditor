@@ -15,9 +15,68 @@
                       "lmtime": 0,
                       "modified": false
                     },
-                    "Contents": {},
-                    "Data": {},
-                    "Docs": {},
+                    "Contents": {
+                      "404.application.failed.php": {
+                        "type": "-",
+                        "size": 515,
+                        "lmtime": 0,
+                        "modified": false
+                      }
+                    },
+                    "Data": {
+                      ".htaccess": {
+                        "type": "-",
+                        "size": 14,
+                        "lmtime": 0,
+                        "modified": false
+                      },
+                      "R": {
+                        "Img": {
+                          "favicon.ico": {
+                            "type": "-",
+                            "size": 4034,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        }
+                      },
+                      "packages": {
+                        ".htaccess": {
+                          "type": "-",
+                          "size": 13,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "package.json": {
+                          "type": "-",
+                          "size": 857,
+                          "lmtime": 0,
+                          "modified": false
+                        }
+                      },
+                      "shared": {
+                        "image.png": {
+                          "type": "-",
+                          "size": 8508,
+                          "lmtime": 1546608591175,
+                          "modified": false
+                        }
+                      }
+                    },
+                    "Docs": {
+                      "New Rich Text Document.rtf": {
+                        "type": "-",
+                        "size": 7,
+                        "lmtime": 0,
+                        "modified": false
+                      },
+                      "documentation.docx": {
+                        "type": "-",
+                        "size": 13423,
+                        "lmtime": 0,
+                        "modified": false
+                      }
+                    },
                     "Lib": {},
                     "Scripts": {
                       ".cancas-app.sw.jsinc": {
@@ -28,21 +87,9 @@
                       },
                       ".cancaseditor.js": {
                         "type": "-",
-                        "size": 128244,
+                        "size": 128339,
                         "lmtime": 1565619881481,
-                        "modified": false
-                      },
-                      ".canvas-app.sw.jsinc": {
-                        "type": "-",
-                        "size": 3637,
-                        "lmtime": 0,
-                        "modified": false
-                      },
-                      ".canvaseditor.js": {
-                        "type": "-",
-                        "size": 128244,
-                        "lmtime": 0,
-                        "modified": false
+                        "modified": true
                       },
                       ".htaccess": {
                         "type": "-",
@@ -182,9 +229,9 @@
                       "drawing2d": {
                         "arc.js": {
                           "type": "-",
-                          "size": 5928,
+                          "size": 5952,
                           "lmtime": 0,
-                          "modified": false
+                          "modified": true
                         },
                         "bezier.js": {
                           "type": "-",
@@ -467,15 +514,15 @@
                         },
                         "EditElementSettingDialog.js": {
                           "type": "-",
-                          "size": 1721,
+                          "size": 1725,
                           "lmtime": 0,
-                          "modified": false
+                          "modified": true
                         },
                         "FilterEditorTool.js": {
                           "type": "-",
-                          "size": 8183,
+                          "size": 8181,
                           "lmtime": 0,
-                          "modified": false
+                          "modified": true
                         },
                         "LayerEditorTools.js": {
                           "type": "-",
@@ -555,31 +602,171 @@
                         }
                       }
                     },
-                    "Styles": {},
-                    "assets": {
-                      "telerik.js": {
+                    "Styles": {
+                      "default.color.pcss": {
                         "type": "-",
-                        "size": 5595,
-                        "lmtime": 1565619881481,
+                        "size": 42,
+                        "lmtime": 0,
+                        "modified": false
+                      },
+                      "default.pcss": {
+                        "type": "-",
+                        "size": 11396,
+                        "lmtime": 0,
                         "modified": false
                       }
                     },
-                    "caches": {},
+                    "assets": {
+                      "telerik.js": {
+                        "type": "-",
+                        "size": 5610,
+                        "lmtime": 1565619881481,
+                        "modified": true
+                      }
+                    },
+                    "caches": {
+                      "scripts": {
+                        "actions": {
+                          "drawing2D": {},
+                          "mecanismActions": {}
+                        },
+                        "assets": {
+                          "assets.js": {
+                            "type": "-",
+                            "size": 0,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "caches": {
+                          "caches.js": {
+                            "type": "-",
+                            "size": 0,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "color.js": {
+                          "type": "-",
+                          "size": 0,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "drawing2d": {
+                          "arc.js": {
+                            "type": "-",
+                            "size": 0,
+                            "lmtime": 0,
+                            "modified": false
+                          },
+                          "menu": {
+                            "base.js": {
+                              "type": "-",
+                              "size": 0,
+                              "lmtime": 0,
+                              "modified": false
+                            }
+                          },
+                          "overlayLayers": {}
+                        },
+                        "drawing3d": {
+                          "gle": {}
+                        },
+                        "encoder": {
+                          "gkds.js": {
+                            "type": "-",
+                            "size": 0,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "enums": {
+                          "blending.js": {
+                            "type": "-",
+                            "size": 0,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "gui": {
+                          "dialog.js": {
+                            "type": "-",
+                            "size": 0,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "history": {
+                          "history.js": {
+                            "type": "-",
+                            "size": 0,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "math": {
+                          "vector2.js": {
+                            "type": "-",
+                            "size": 0,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "tools": {
+                          "botomSizeViewEditorTool.js": {
+                            "type": "-",
+                            "size": 0,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "views": {
+                          "color.js": {
+                            "type": "-",
+                            "size": 0,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        },
+                        "visitors": {
+                          "canvas.js": {
+                            "type": "-",
+                            "size": 0,
+                            "lmtime": 0,
+                            "modified": false
+                          }
+                        }
+                      }
+                    },
                     "canvaseditor": {},
                     "default.phtml": {
                       "type": "-",
-                      "size": 17152,
-                      "lmtime": 1565619881480,
+                      "size": 17211,
+                      "lmtime": 1565625123877,
                       "modified": false
                     },
-                    "modelapp": {},
+                    "modelapp": {
+                      "default.phtml": {
+                        "type": "-",
+                        "size": 79,
+                        "lmtime": 0,
+                        "modified": false
+                      }
+                    },
                     "svg.phtml": {
                       "type": "-",
                       "size": 670,
                       "lmtime": 0,
                       "modified": false
                     },
-                    "temp": {},
+                    "temp": {
+                      ".htaccess": {
+                        "type": "-",
+                        "size": 14,
+                        "lmtime": 0,
+                        "modified": false
+                      }
+                    },
                     "wiki.phtml": {
                       "type": "-",
                       "size": 274,

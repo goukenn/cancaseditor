@@ -3,13 +3,14 @@
 
 (function(){
 //filter Editor Tool
-var AC = igk.winui.cancasEditor.Actions;
-var R = igk.winui.cancasEditor.R; //.Actions;
+var _NS = igk.winui.cancasEditor;
+var AC = _NS.Actions;
+var R = _NS.R; //.Actions;
 var Key = AC.Key;
 var CT = igk.system.convert;
+ 
 
-
-var GUI = igk.system.createNS("igk.winui.cancasEditor.tools",{});
+var GUI = igk.system.createNS(_NS.getType().getFullName()+".tools",{});
 var liveprop = null;
 function reset(frm, a, e){
 	// console.debug("reset");

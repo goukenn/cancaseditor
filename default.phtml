@@ -11,9 +11,10 @@ $scripts = igk_html_uri(dirname(__FILE__)."/Scripts");
 // ! solute to avoid warning
 extract([]);
 
-igk_html_js_lang("igk.winui.cancasEditor.R", ["btn_ok"=>"ok99999"]);
+igk_html_js_lang("igk.winui.cancasEditor.R", ["btn_ok"=>"OK"]);
 
-
+// clear cache for reloading ... 
+//igk_clear_cache();
 
 
 if (!$ctrl->Configs->auto_generate){
@@ -68,7 +69,7 @@ if (!$ctrl->Configs->auto_generate){
 // igk_exit();
 
 
-define("CE_SCRIPT_NAME", "canvas-editor"); //name of production scripts
+define("CE_SCRIPT_NAME", "cancas-editor"); //name of production scripts
 define("CE_CACHE_VERSION", "1.0"); //name of production script
 define("CE_CACHE_NAME", "cancaseditor-".CE_CACHE_VERSION.""); //name of production script
 define("CE_APP_NAME", "com.igkdev.cancaseditor"); //name of production script
@@ -529,9 +530,9 @@ $doc->setFavicon(new IGKHtmlRelativeUriValueAttribute(igk_io_dir(dirname(__FILE_
 
 // initialize the footer
 igk_reg_hook(IGKEvents::HOOK_HTML_FOOTER, function(){
-	igk_createnode("balafonjs")->setContent(
-	null // "var delall = browser.history.deleteAll || "
-	)->RenderAJX();
+	// igk_createnode("balafonjs")->setContent(
+	// null // "var delall = browser.history.deleteAll || "
+	// )->RenderAJX();
 
 	// igk_app()->server->REQUEST_URI = "/";
 	$s = igk_createnode("script")->activate("defer");

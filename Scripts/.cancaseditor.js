@@ -1632,7 +1632,7 @@ function loadMenu(ul, items, editor){
 	var sn = "";
 	var ACTIONS =_NS.Actions;
 	var tab = ACTIONS.getMenuActions();
-	var R = igk.system.createNS("igk.winui.cancasEditor.R",{});	
+	var R = igk.system.createNS(_NS.getType().getFullName()+".R",{});	
 	items.sort(ACTIONS.sortMenu(tab)); 	
 	ACTIONS.initMenuList(items, p , nodes, editor, ACTIONS.menuItem);	
 };
@@ -1644,6 +1644,10 @@ igk.appendProperties(CancasEditorApp.prototype, {
 		var q = this.host;
 		var self = this;		
 		var tools = {};
+		if (!initApplication){
+			alert("no init application");
+			return;
+		}
 		initApplication(this);
 		
 		q.setHtml("");
@@ -1827,7 +1831,7 @@ var ProcessStart = new ProcessInitiator();
 	//
 	// get loading script uri
 	// 
-	var R = igk.system.createNS("igk.winui.cancasEditor.R",{});
+	var R = igk.system.createNS(_NS.getType().getFullName()+".R",{});
 	ProcessStart.bind('loadAssets'); 
 	var fc = function(){ 
 		// console.debug("loading lang .... ");
@@ -4400,7 +4404,7 @@ while(def.m< def.ln){
 			var li=0; //li
 			var item = 0;
 			var sn = 0;
-			var R = igk.system.createNS("igk.winui.cancasEditor.R",{});
+			var R = igk.system.createNS(_NS.getType().getFullName()+".R",{});
 			
 		//console.debug(items);
 		//var tabindex = 201;

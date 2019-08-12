@@ -3,8 +3,9 @@
 
 (function(){
 //filter Editor Tool
-var AC = igk.winui.cancasEditor.Actions;
-var R = igk.winui.cancasEditor.R; //.Actions;
+var _NS = igk.winui.cancasEditor; 
+var AC = _NS.Actions;
+var R = _NS.R; //.Actions;
 var Key = AC.Key;
 var CT = igk.system.convert;
 
