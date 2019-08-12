@@ -20,7 +20,7 @@
                     "Docs": {},
                     "Lib": {},
                     "Scripts": {
-                      ".canvas-app.sw.jsinc": {
+                      ".cancas-app.sw.jsinc": {
                         "type": "-",
                         "size": 3637,
                         "lmtime": 0,
@@ -29,7 +29,19 @@
                       ".cancaseditor.js": {
                         "type": "-",
                         "size": 128244,
-                        "lmtime": 1564659137334,
+                        "lmtime": 1565619881481,
+                        "modified": false
+                      },
+                      ".canvas-app.sw.jsinc": {
+                        "type": "-",
+                        "size": 3637,
+                        "lmtime": 0,
+                        "modified": false
+                      },
+                      ".canvaseditor.js": {
+                        "type": "-",
+                        "size": 128244,
+                        "lmtime": 0,
                         "modified": false
                       },
                       ".htaccess": {
@@ -112,13 +124,13 @@
                           "res.en.json": {
                             "type": "-",
                             "size": 2214,
-                            "lmtime": 1564659015874,
+                            "lmtime": 1565619881480,
                             "modified": false
                           },
                           "res.fr.json": {
                             "type": "-",
                             "size": 2746,
-                            "lmtime": 1564659003087,
+                            "lmtime": 1565619881480,
                             "modified": false
                           }
                         },
@@ -295,7 +307,7 @@
                         "text.js": {
                           "type": "-",
                           "size": 9602,
-                          "lmtime": 0,
+                          "lmtime": 1565619881480,
                           "modified": false
                         },
                         "tools": {},
@@ -416,8 +428,8 @@
                         },
                         "notify.js": {
                           "type": "-",
-                          "size": 2006,
-                          "lmtime": 0,
+                          "size": 2110,
+                          "lmtime": 1565619881480,
                           "modified": false
                         }
                       },
@@ -520,7 +532,7 @@
                         "canvas.js": {
                           "type": "-",
                           "size": 2706,
-                          "lmtime": 0,
+                          "lmtime": 1565619881480,
                           "modified": false
                         },
                         "png.js": {
@@ -532,13 +544,13 @@
                         "svg.js": {
                           "type": "-",
                           "size": 10384,
-                          "lmtime": 0,
+                          "lmtime": 1565619881480,
                           "modified": false
                         },
                         "xml.js": {
                           "type": "-",
                           "size": 2925,
-                          "lmtime": 0,
+                          "lmtime": 1565619881480,
                           "modified": false
                         }
                       }
@@ -548,16 +560,16 @@
                       "telerik.js": {
                         "type": "-",
                         "size": 5595,
-                        "lmtime": 1562717153213,
+                        "lmtime": 1565619881481,
                         "modified": false
                       }
                     },
                     "caches": {},
-                    "cancaseditor": {},
+                    "canvaseditor": {},
                     "default.phtml": {
                       "type": "-",
                       "size": 17152,
-                      "lmtime": 1564733978149,
+                      "lmtime": 1565619881480,
                       "modified": false
                     },
                     "modelapp": {},
