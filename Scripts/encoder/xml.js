@@ -4,7 +4,7 @@
 // author: C.A.D.  BONDJE DOUE
 // version : 1.0
 // desc: represent xml decoder 
-// partof : canvasEditor 
+// partof : cancasEditor 
 
 (function(){
 
@@ -12,9 +12,9 @@
 // console.debug("encoder....");
 // promise
 var _P = igk.system.promiseCall; 
-var _NS = igk.winui.canvasEditor;
+var _NS = igk.winui.cancasEditor;
 
-var G = igk.system.createNS("igk.winui.canvasEditor.encoder", {
+var G = igk.system.createNS("igk.winui.cancasEditor.encoder", {
 "xml":function(){
 
 }
@@ -44,7 +44,7 @@ G.xml.decode = function(file, a){
 			q.setHtml(txt);
 			
 			var gkds = q.select("gkds").first();
-			if (!gkds || (gkds.getAttribute("app")!="canvasEditor")){
+			if (!gkds || (gkds.getAttribute("app")!="cancasEditor")){
 				P.error({msg: _NS.R.err_gkds_file_error});
 				return;
 			}
@@ -108,7 +108,7 @@ G.xml.decode = function(file, a){
 };
 
 
-var EXPORTS =  igk.winui.canvasEditor.Exports;
+var EXPORTS =  igk.winui.cancasEditor.Exports;
 
 function BaseSerie(item)
 {

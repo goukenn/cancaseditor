@@ -5,14 +5,14 @@
 
 (function(){
 	
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements",{});	
-var LY = igk.system.createNS("igk.winui.canvasEditor.View",{
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements",{});	
+var LY = igk.system.createNS("igk.winui.cancasEditor.View",{
 	
 });
 
 
 
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
 
 var defDebugAction = ACTIONS.defDebugAction; //function used to create menuAction 

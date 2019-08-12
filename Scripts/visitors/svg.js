@@ -2,7 +2,7 @@
 
 
 (function(){
-	var _NS = igk.winui.canvasEditor;
+	var _NS = igk.winui.cancasEditor;
 	
 	function svgDefPoint(pts){
 		var s = "";
@@ -116,14 +116,14 @@
 
 	// igk.system.createNS("demo", {
 		// segmentRendering: function(){
-			// var def , rc = new igk.winui.canvasEditor.DrawingElements.rectangle ();
+			// var def , rc = new igk.winui.cancasEditor.DrawingElements.rectangle ();
 			// rc.bound = {x:10, y:10, width:100, height: 50};
 			// def = new SegmentRenderingVisitor();
 			// rc.render(def);
 			// console.debug("rectangle: "+def.getDef());
 
 			// def.clearDef();
-			// rc = new igk.winui.canvasEditor.DrawingElements.roundrect();
+			// rc = new igk.winui.cancasEditor.DrawingElements.roundrect();
 			// rc.bound = {x:10, y:10, width:100, height: 50};
 			// rc.initialize();
 			
@@ -343,12 +343,12 @@ var visitor ={
 		return d;
 	};
 	
-igk.system.createNS("igk.winui.canvasEditor.visitors", {
+igk.system.createNS("igk.winui.cancasEditor.visitors", {
 	svg: function(list, inf){
-		var EXPORTS = igk.winui.canvasEditor.Exports;
-		var ELEM = igk.winui.canvasEditor.DrawingElements;
+		var EXPORTS = igk.winui.cancasEditor.Exports;
+		var ELEM = igk.winui.cancasEditor.DrawingElements;
 			var e = $igk(igk.dom.createXMLDocument("svg").documentElement); 
-            e.addComment("svg file:  generate with canvasEditor App");
+            e.addComment("svg file:  generate with cancasEditor App");
             e.addComment("Author: C.A.D. BONDJE DOUE");
             e.addComment("App: CancasEditor");
             e.addComment("Version: 1.0");

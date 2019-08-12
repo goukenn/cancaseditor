@@ -4,7 +4,7 @@
 
 
 function bottomSizeEditorTool(){
-	igk.winui.canvasEditor.Editor.Tool.apply(this);
+	igk.winui.cancasEditor.Editor.Tool.apply(this);
 	var lb = igk.createNode("span").addClass("b-size").setCss({
 		paddingLeft: "4px",
 		paddingRight: "4px",
@@ -34,5 +34,5 @@ function bottomSizeEditorTool(){
 	};
 };
 
-igk.winui.canvasEditor.Editor.regTool("Bottom", new bottomSizeEditorTool(), 4);
+igk.winui.cancasEditor.Editor.regTool("Bottom", new bottomSizeEditorTool(), 4);
 })();

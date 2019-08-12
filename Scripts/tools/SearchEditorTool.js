@@ -3,7 +3,7 @@
 
 (function(){
 //search Editor Tool
-var AC = igk.winui.canvasEditor.Actions;
+var AC = igk.winui.cancasEditor.Actions;
 var Key = AC.Key;
 var initc = 0;
 

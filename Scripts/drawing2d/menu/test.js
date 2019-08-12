@@ -2,7 +2,7 @@
 
 (function(){
 
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 	ACTIONS.regMenuAction("file.test", {index:3, 
 		initialize: function(a, k, host){
 			return 1 && a.settings.isDebug;

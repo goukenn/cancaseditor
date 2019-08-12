@@ -5,18 +5,18 @@
 
 (function(){
 	
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements",{});	
-var LY = igk.system.createNS("igk.winui.canvasEditor.Layers",{});
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements",{});	
+var LY = igk.system.createNS("igk.winui.cancasEditor.Layers",{});
 
 
 
-var CoreMathOperation = igk.winui.canvasEditor.CoreMathOperation;
-var ELEM  = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
-var SERI  = igk.winui.canvasEditor.Serializer;
-var Tools = igk.winui.canvasEditor.Tools;
-var UTILS = igk.winui.canvasEditor.Utils;
-var PATH  = igk.winui.canvasEditor.Utils.Path;
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
+var ELEM  = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
+var SERI  = igk.winui.cancasEditor.Serializer;
+var Tools = igk.winui.cancasEditor.Tools;
+var UTILS = igk.winui.cancasEditor.Utils;
+var PATH  = igk.winui.cancasEditor.Utils.Path;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 
 
 //clear window  selection
@@ -302,7 +302,7 @@ igk.system.createClass(Tools, {name:'OverlayMecanism', parent: Tools.fullname+".
 
 
 
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
 ACTIONS.regMenuAction("tools.overlayLayer", {index:108, separatorBefore:1, callback:function(a){
 	a.tool = new Tools.OverlayMecanism();

@@ -25,12 +25,12 @@ igk.appendProperties(CancasVisitor.prototype, {
 		return this.msrc;
 	}
 });
-igk.system.createNS("igk.winui.canvasEditor.visitors", {
+igk.system.createNS("igk.winui.cancasEditor.visitors", {
 	canvas: function(list, inf){
-		var EXPORTS = igk.winui.canvasEditor.Exports;
-		var ELEM = igk.winui.canvasEditor.DrawingElements;
+		var EXPORTS = igk.winui.cancasEditor.Exports;
+		var ELEM = igk.winui.cancasEditor.DrawingElements;
 			var e = new CancasVisitor();
-            e.addComment("svg file:  generate with canvasEditor App");
+            e.addComment("svg file:  generate with cancasEditor App");
             e.addComment("Author: C.A.D. BONDJE DOUE");
             e.addComment("App: CancasEditor");
             e.addComment("Version: 1.0");
@@ -106,7 +106,7 @@ igk.system.createNS("igk.winui.canvasEditor.visitors", {
 });
 
 
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
 ACTIONS.regMenuAction("file.export.toCancasExpression", {index:10, callback:function(a){
 	a.exportTo("canvas");

@@ -1,5 +1,5 @@
-// canvasEditor
-// namespace : igk.winui.canvasEditor
+// cancasEditor
+// namespace : igk.winui.cancasEditor
 // author: C.A.D  BONDJE DOUE
 // version : 1.0
 // startDate : 10/01/2018
@@ -9,7 +9,7 @@
 (function(){
 var _NS = 0;
 var _libUri=0;
-_NS = igk.system.createNS("igk.winui.canvasEditor", {}); // global _NS definition
+_NS = igk.system.createNS("igk.winui.cancasEditor", {}); // global _NS definition
 
 
 
@@ -1598,7 +1598,7 @@ function CancasEditorApp(q, o){
 		},
 		saveToXML: function(){
 			igk.io.file.download("application/xml", "project.xml", 
-			igk.winui.canvasEditor.visitors.xml(this.list));
+			igk.winui.cancasEditor.visitors.xml(this.list));
 		},
 		exportTo: function(type){
 			if (type in _NS.visitors){
@@ -1632,7 +1632,7 @@ function loadMenu(ul, items, editor){
 	var sn = "";
 	var ACTIONS =_NS.Actions;
 	var tab = ACTIONS.getMenuActions();
-	var R = igk.system.createNS("igk.winui.canvasEditor.R",{});	
+	var R = igk.system.createNS("igk.winui.cancasEditor.R",{});	
 	items.sort(ACTIONS.sortMenu(tab)); 	
 	ACTIONS.initMenuList(items, p , nodes, editor, ACTIONS.menuItem);	
 };
@@ -1736,7 +1736,7 @@ igk.appendProperties(CancasEditorApp.prototype, {
 		
 		
 		// var l = this.createElement("line"); 
-		// console.debug("? "+s.isInstanceOf(igk.winui.canvasEditor.DrawingElements.line));
+		// console.debug("? "+s.isInstanceOf(igk.winui.cancasEditor.DrawingElements.line));
 		
 		
 		this.refresh();	
@@ -1758,7 +1758,7 @@ igk.appendProperties(CancasEditorApp.prototype, {
 		else 
 			// this.tool = new _NS.Tools.CircleMecanism();		
 			this.tool = new _NS.Tools.RoundRectMecanism();		
-		//igk.winui.canvasEditor.Actions.invoke("editor.selectool.overlayLayer");
+		//igk.winui.cancasEditor.Actions.invoke("editor.selectool.overlayLayer");
 		
 	},
 	on: function(n, func, args){
@@ -1827,7 +1827,7 @@ var ProcessStart = new ProcessInitiator();
 	//
 	// get loading script uri
 	// 
-	var R = igk.system.createNS("igk.winui.canvasEditor.R",{});
+	var R = igk.system.createNS("igk.winui.cancasEditor.R",{});
 	ProcessStart.bind('loadAssets'); 
 	var fc = function(){ 
 		// console.debug("loading lang .... ");
@@ -1939,7 +1939,7 @@ igk.winui.initClassControl("igk-canvas-editor-app", function(){
 	};
 	
 	var tools={};
-	var EDITOR = igk.system.createNS("igk.winui.canvasEditor.Editor", {
+	var EDITOR = igk.system.createNS("igk.winui.cancasEditor.Editor", {
 		getTools: function(n){
 			if (!(n in tools)){
 				tools[n] = new editorBuild();
@@ -2434,7 +2434,7 @@ function _GetRadius(d){
 
 
 //export method
-igk.system.createNS("igk.winui.canvasEditor.Utils",{
+igk.system.createNS("igk.winui.cancasEditor.Utils",{
 		IsArray : IsArray,
 		getPoint: getPoint,
 		Path: {
@@ -2473,7 +2473,7 @@ igk.system.createNS("igk.winui.canvasEditor.Utils",{
 	var editor = {};
 	// drawable object on canvas editor and tools
 	var CoreMathOperation =_NS.CoreMathOperation;
-	var M = igk.system.createNS("igk.winui.canvasEditor.Tools", {
+	var M = igk.system.createNS("igk.winui.cancasEditor.Tools", {
 		
 		Mecanism: function(){
 			var _exports_ = null;
@@ -2560,7 +2560,7 @@ igk.system.createNS("igk.winui.canvasEditor.Utils",{
 	var MS_BTN = igk.winui.mouseButton;
 
 	
-	var Tools = igk.system.createNS("igk.winui.canvasEditor.Tools", {});
+	var Tools = igk.system.createNS("igk.winui.cancasEditor.Tools", {});
 	//reg
 	// Tools.RectangleMecanism.prototype = M.Mecanism.prototype;
 	
@@ -2584,11 +2584,11 @@ igk.system.createNS("igk.winui.canvasEditor.Utils",{
 			// mouse capture fuunction 
 			function _startCapture(){
 				igk.winui.mouseCapture.setCapture(_self.host.canvas.o);
-				igk.winui.canvasEditor.setCapture(_self.host.canvas.o);
+				igk.winui.cancasEditor.setCapture(_self.host.canvas.o);
 			};
 			function _freeCapture(){
 				igk.winui.mouseCapture.releaseCapture();
-				igk.winui.canvasEditor.releaseCapture();
+				igk.winui.cancasEditor.releaseCapture();
 			};
 			this.startCapture = _startCapture;
 			this.freeCapture = _freeCapture;
@@ -2952,7 +2952,7 @@ igk.system.createNS("igk.winui.canvasEditor.Utils",{
 					return !1;
 				}	
 				//	console.debug("go to default tool");
-				igk.winui.canvasEditor.Actions.invoke("editor.selectool.selection");
+				igk.winui.cancasEditor.Actions.invoke("editor.selectool.selection");
 				return !0;// this.host.tool = new _NS.Tools.Selection();
 			};
 			var regParent = this.registerEvents;
@@ -2977,7 +2977,7 @@ igk.system.createNS("igk.winui.canvasEditor.Utils",{
 				
 				s.on("currentLayerChanged", __stopEdition);	
 				s.on("itemEndEdition", __delete_item);
-				igk.winui.canvasEditor.Actions.bindEditor(s);
+				igk.winui.cancasEditor.Actions.bindEditor(s);
 				_key_actions = {};
 				this.registerKeyAction(_key_actions);				
 				this.host.Edit(null, this);
@@ -3249,7 +3249,7 @@ igk.system.createNS("igk.winui.canvasEditor.Utils",{
 };
 	
 	//serializer definition
-	var SERI = igk.system.createNS("igk.winui.canvasEditor.Serializer",{
+	var SERI = igk.system.createNS("igk.winui.cancasEditor.Serializer",{
 		
 		loadPathDef: function(v, callback){ // read svg path definition
 //
@@ -3700,11 +3700,11 @@ while(def.m< def.ln){
 		}		
 	});
 	
-	igk.winui.canvasEditor.Matrix = Matrix;
+	igk.winui.cancasEditor.Matrix = Matrix;
 	
 	
 	
-	var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {
+	var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {
 		drawing2D: function(){// default drawing 2D element base
 			if (this==window){
 				throw ("must be an instance");
@@ -4134,7 +4134,7 @@ while(def.m< def.ln){
 		}}
 		];
 	};
-	var EXPORTS = igk.system.createNS("igk.winui.canvasEditor.Exports", {	
+	var EXPORTS = igk.system.createNS("igk.winui.cancasEditor.Exports", {	
 		rectangle: function(){
 			var t = elementExport();
 			t  = t.concat(getStrokeAndFillExport()).concat([
@@ -4322,7 +4322,7 @@ while(def.m< def.ln){
 	};
 
 	var _lastkey = 0;
-	var AC = igk.system.createNS("igk.winui.canvasEditor.Actions", {
+	var AC = igk.system.createNS("igk.winui.cancasEditor.Actions", {
 			menuItem : menuItem,
 			defDebugAction: function(func, initialize, prop){
 				var idx = -1;
@@ -4400,7 +4400,7 @@ while(def.m< def.ln){
 			var li=0; //li
 			var item = 0;
 			var sn = 0;
-			var R = igk.system.createNS("igk.winui.canvasEditor.R",{});
+			var R = igk.system.createNS("igk.winui.cancasEditor.R",{});
 			
 		//console.debug(items);
 		//var tabindex = 201;
@@ -4718,8 +4718,8 @@ while(def.m< def.ln){
 	
 	
 	
-	igk.defineProperty(igk.winui.canvasEditor.Actions, "Key", {get: function(){ return Key; }});
-	igk.winui.canvasEditor.Actions.getKeyFromEvent = __getkey;
+	igk.defineProperty(igk.winui.cancasEditor.Actions, "Key", {get: function(){ return Key; }});
+	igk.winui.cancasEditor.Actions.getKeyFromEvent = __getkey;
 	
 	AC.regActions(Key.Ctrl | Key.C, "editor.copy", function(a,e){
 		if (e.target && e.target.tagName && (e.target.tagName.toLowerCase() == "input")){
@@ -4859,7 +4859,7 @@ while(def.m< def.ln){
 					var ext = igk.system.io.getExtension(file.name);
 					// console.debug(ext);
 					if (ext in _NS.encoder){
-						igk.winui.canvasEditor.encoder[ext].decode(file, a).then(function(){
+						igk.winui.cancasEditor.encoder[ext].decode(file, a).then(function(){
 							a.title = file.name;
 						}).error(function(){
 							console.error("failed to open file : "+file.name);
@@ -5003,7 +5003,7 @@ while(def.m< def.ln){
 			
 			// for chrome new for time out to allow picture
 			
-			dv.add("h1").setHtml(_title); //"canvasEditor - Project");
+			dv.add("h1").setHtml(_title); //"cancasEditor - Project");
 			dv.add("img").on("load", function(){
 				// console.debug("ready image ready");
 			}).setCss({

@@ -1,7 +1,7 @@
 //linear brush edition
 // author: C.A.D. BONDJE DOUE
 // 26/11/2018
-// part of igk.winui.canvasEditor apps
+// part of igk.winui.cancasEditor apps
 // desc: definition of linear brush mecanism
 
 
@@ -10,8 +10,8 @@
 (function(){
 	var linBrush = {};	
 
-	var CoreMathOperation = igk.winui.canvasEditor.CoreMathOperation;
-	var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
+	var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
+	var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
 
 	
 	
@@ -54,7 +54,7 @@
 	});
 	
 	
-var Tools = igk.winui.canvasEditor.Tools;
+var Tools = igk.winui.cancasEditor.Tools;
 
 // console.debug(Tools.RectangleMecanism);
 //selection mecanism : used for selections
@@ -146,9 +146,9 @@ this.getPoints=function(e){
 
 
 
-var SERI = igk.winui.canvasEditor.Serializer;
+var SERI = igk.winui.cancasEditor.Serializer;
 // exports
-var EXPORTS = igk.winui.canvasEditor.Exports;
+var EXPORTS = igk.winui.cancasEditor.Exports;
  EXPORTS.register("linearbrush", function(){
 	var c = EXPORTS.initExport().concat([
 			{name:'startPoint', serializer: SERI.vector2Serializer },
@@ -162,7 +162,7 @@ var EXPORTS = igk.winui.canvasEditor.Exports;
 
 
 //register actions
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
 ACTIONS.regActions(Key.Shift | Key.Alt | Key.L, "editor.selectool.linearbrush", function (a){a.tool = new Tools.linearBrushMecanism(); });
 

@@ -1,7 +1,7 @@
 //linear brush edition
 // author: C.A.D. BONDJE DOUE
 // 26/11/2018
-// part of igk.winui.canvasEditor apps
+// part of igk.winui.cancasEditor apps
 // desc: definition of round rectangle mecanism
 
 
@@ -9,9 +9,9 @@
 
 (function(){
 
-var _NS = igk.winui.canvasEditor;
-var CoreMathOperation = igk.winui.canvasEditor.CoreMathOperation;
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
+var _NS = igk.winui.cancasEditor;
+var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
 var Tools = _NS.Tools;
 var ACTIONS = _NS.Actions;
 var Key = ACTIONS.Key; 
@@ -264,7 +264,7 @@ igk.system.createClass(Tools, {name:'RoundRectMecanism', parent: Tools.Rectangle
 		_base_["registerKeyAction"] =this.registerKeyAction;
 		this.registerKeyAction = function(actions){
 			_base_["registerKeyAction"].apply(this, [actions]);
-			var M_ACT = igk.winui.canvasEditor.actions.mecanismActions.drawin2D;
+			var M_ACT = igk.winui.cancasEditor.actions.mecanismActions.drawin2D;
 			actions[Key.R] = _resetRoundRectangle; 
 			actions[Key.T] = _toggleRoundMode; 
 		};

@@ -1,6 +1,6 @@
 (function(){
  
-var L = igk.system.createNS("igk.winui.canvasEditor.enums", {
+var L = igk.system.createNS("igk.winui.cancasEditor.enums", {
 	zoomMode: null
 } );
 L["zoomMode"] = igk.defineEnum(null, {

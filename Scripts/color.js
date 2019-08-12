@@ -3,7 +3,7 @@
 (function(){
 
 
-var CL = igk.system.createNS("igk.winui.canvasEditor.colors",{});
+var CL = igk.system.createNS("igk.winui.cancasEditor.colors",{});
 CL.black  = "#000";
 CL.red  = "#F00";
 CL.yellow  = "#FF0";

@@ -1,11 +1,11 @@
 "use strict";
 (function(){
 	
-	var H = igk.system.createNS("igk.winui.canvasEditor.history", {
+	var H = igk.system.createNS("igk.winui.cancasEditor.history", {
 		
 	});
 	
-	var ACK = igk.winui.canvasEditor.Actions;
+	var ACK = igk.winui.cancasEditor.Actions;
 	var Key = ACK.Key;
 	
 	ACK.regActions(Key.Ctrl | Key.Z, "editor.undo", function(a){

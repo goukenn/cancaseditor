@@ -1,6 +1,6 @@
 "use strict";
 (function(){
-var _NS = igk.winui.canvasEditor;
+var _NS = igk.winui.cancasEditor;
 var CoreMathOperation = _NS.CoreMathOperation;
 var ELEM =  _NS.DrawingElements;
 var SERI = _NS.Serializer;

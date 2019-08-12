@@ -1,7 +1,7 @@
 "use strict";
 //sphere
 (function(){
-	var _NS = igk.winui.canvasEditor;
+	var _NS = igk.winui.cancasEditor;
 	var ACTIONS = _NS.Actions;
 	igk.system.createNS(_NS.fullname+".drawing3d.gle",{});
 	

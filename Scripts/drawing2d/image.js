@@ -1,10 +1,10 @@
 "use strict";
 (function(){
 
-var CoreMathOperation = igk.winui.canvasEditor.CoreMathOperation;
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
-var SERI = igk.winui.canvasEditor.Serializer;
-var Tools = igk.winui.canvasEditor.Tools;
+var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
+var SERI = igk.winui.cancasEditor.Serializer;
+var Tools = igk.winui.cancasEditor.Tools;
 
 
 
@@ -75,7 +75,7 @@ igk.system.createClass(Tools, {name:'ImageMecanism', parent: Tools.RectangleMeca
 
 
 //line exports
-var EXPORTS = igk.winui.canvasEditor.Exports;
+var EXPORTS = igk.winui.cancasEditor.Exports;
  EXPORTS.register("image", function(){
 	var c = EXPORTS.initExport().concat([
 	{name:"blendingMode", 'default':'source-over'},

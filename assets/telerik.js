@@ -170,8 +170,8 @@ function DialogListener(){
 
 }
 
-Telerik.confirm("baseic", {
-    title: "demonstration",
-    content:'Welcome to IGKDEV\'s - Balafon CancasEditorg',
-    listener: new DialogListener()
-});
+// Telerik.confirm("baseic", {
+//     title: "demonstration",
+//     content:'Welcome to IGKDEV\'s - Balafon CancasEditorg',
+//     listener: new DialogListener()
+// });

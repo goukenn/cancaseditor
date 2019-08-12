@@ -1,13 +1,13 @@
 "use strict";
 // console.debug("::::::::::::::::::::");
 (function(){
-	if (igk.winui.canvasEditor.NotAvailable)
+	if (igk.winui.cancasEditor.NotAvailable)
 	return;
 
 //notification
 var _notifylist = [];
-var _NS = igk.winui.canvasEditor;
-var GUI = igk.system.createNS("igk.winui.canvasEditor.gui", {
+var _NS = igk.winui.cancasEditor;
+var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 	notify: function(a, msg){
 		_notifylist.push(this);
 		var _index = _notifylist.length-1;

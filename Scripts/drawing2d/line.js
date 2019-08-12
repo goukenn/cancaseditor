@@ -1,9 +1,9 @@
 "use strict";
 (function(){
 
-var CoreMathOperation = igk.winui.canvasEditor.CoreMathOperation;
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
-var SERI = igk.winui.canvasEditor.Serializer;
+var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
+var SERI = igk.winui.cancasEditor.Serializer;
 
 igk.system.createClass(ELEM, {name:"line", parent:ELEM.drawing2D }, function(){
 		ELEM.drawing2D.apply(this);
@@ -43,7 +43,7 @@ igk.system.createClass(ELEM, {name:"line", parent:ELEM.drawing2D }, function(){
 
 
 
-var Tools = igk.winui.canvasEditor.Tools;
+var Tools = igk.winui.cancasEditor.Tools;
 
 // console.debug(Tools.RectangleMecanism);
 //selection mecanism : used for selections
@@ -97,7 +97,7 @@ igk.system.createClass(Tools, {name:'LineMecanism', parent: Tools.RectangleMecan
 
 
 //line exports
-var EXPORTS = igk.winui.canvasEditor.Exports;
+var EXPORTS = igk.winui.cancasEditor.Exports;
  EXPORTS.register("line", function(){
 	var c = EXPORTS.initExport().concat([
 			{name:"stroke", "default": "#000"}, 
@@ -112,7 +112,7 @@ var EXPORTS = igk.winui.canvasEditor.Exports;
 
 
 //register actions
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
 ACTIONS.regActions(Key.Shift | Key.L, "editor.selectool.line", function (a){a.tool = new Tools.LineMecanism(); });
 

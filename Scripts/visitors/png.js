@@ -42,7 +42,7 @@ function storeView(inf, list, t){
 		igk.dom.body().appendChild(canvas.o);
 	//}
 	
-	var o = new igk.winui.canvasEditor.primitive(ctx);
+	var o = new igk.winui.cancasEditor.primitive(ctx);
 	
 	o.getDocumentSize = function(){
 		return {
@@ -84,7 +84,7 @@ function storeView(inf, list, t){
 	return null;
 };
 
-igk.system.createNS("igk.winui.canvasEditor.visitors", {
+igk.system.createNS("igk.winui.cancasEditor.visitors", {
 	png: function(list, inf){
 		return storeView(inf, list, 'image/png');		
 	},
@@ -95,7 +95,7 @@ igk.system.createNS("igk.winui.canvasEditor.visitors", {
 
 
 	
-var AC =  igk.winui.canvasEditor.Actions;
+var AC =  igk.winui.cancasEditor.Actions;
 AC.regMenuAction("file.export.toPng", {callback: function(a){
 		a.exportTo("png");
 }, index:20});	

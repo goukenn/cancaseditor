@@ -30,7 +30,7 @@ var BLENDING = {
 	"luminosity":1
 };
 
-var L = igk.system.createNS("igk.winui.canvasEditor.enums", {
+var L = igk.system.createNS("igk.winui.cancasEditor.enums", {
 	blendings: null
 } );
 

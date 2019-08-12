@@ -3,7 +3,7 @@
 (function(){
 //obj decoder : from blender
 
-var G = igk.system.createNS("igk.winui.canvasEditor.encoder", {
+var G = igk.system.createNS("igk.winui.cancasEditor.encoder", {
 "obj":function(){
 
 }

@@ -1,8 +1,8 @@
 "use strict";
 //section mecanism
 (function(){
-	var _NS = igk.winui.canvasEditor;
-	var Matrix = _NS.Matrix; //igk.winui.canvasEditor;
+	var _NS = igk.winui.cancasEditor;
+	var Matrix = _NS.Matrix; //igk.winui.cancasEditor;
 	
 	var AC = _NS.Actions;
 	var Key = AC.Key;
@@ -479,7 +479,7 @@ igk.system.createClass(Tools, {name:'Selection', parent: Tools.RectangleMecanism
 	 	
 	igk.appendChain(this, "registerKeyAction", function(actions){
 		var self=  this;
-		var M_ACT = igk.system.getNS("igk.winui.canvasEditor.actions.mecanismActions.drawin2D");
+		var M_ACT = igk.system.getNS("igk.winui.cancasEditor.actions.mecanismActions.drawin2D");
 		actions[Key.Ctrl | Key.NumPad0] =  _resetZoom;
 		actions[Key.Ctrl | Key.Alt | Key.NumPad0] =  _resetFitAreaZoom;
 		actions[Key.Ctrl | Key.Plus] =  _zoomIn;
@@ -970,7 +970,7 @@ igk.system.createClass(Tools, {name:'Selection', parent: Tools.RectangleMecanism
 
 	
 	AC.regActions(Key.Alt | Key.Shift  | Key.S, "editor.selectool.selection",  function(a){			
-		a.tool = new igk.winui.canvasEditor.Tools.Selection();
+		a.tool = new igk.winui.cancasEditor.Tools.Selection();
 	});
 	
 })();

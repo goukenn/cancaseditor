@@ -2,7 +2,7 @@
 //mp4 decoder
 var _P = igk.system.promiseCall; 
 // console.debug("encoder....");
-var G = igk.system.createNS("igk.winui.canvasEditor.encoder", {
+var G = igk.system.createNS("igk.winui.cancasEditor.encoder", {
 "gkds":function(){
 
 }
@@ -141,7 +141,7 @@ function _loadChilds(t, e, a, converter){
 
 
 function getExport(l){
-	var EXPORTS =  igk.winui.canvasEditor.Exports;
+	var EXPORTS =  igk.winui.cancasEditor.Exports;
 	var n = l.getType();
 	var g = EXPORTS.getExports(n);
 	

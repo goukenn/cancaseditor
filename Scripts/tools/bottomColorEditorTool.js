@@ -2,7 +2,7 @@
 (function(){
 
 //color Editor Tool
-var AC = igk.winui.canvasEditor.Actions;
+var AC = igk.winui.cancasEditor.Actions;
 var Key = AC.Key;
 var initc = 0;
 
@@ -10,7 +10,7 @@ function bottomColorEditorTool(){
 	// console.debug("init "+initc);
 	initc++;
 	
-	igk.winui.canvasEditor.Editor.Tool.apply(this);
+	igk.winui.cancasEditor.Editor.Tool.apply(this);
 	var lb = igk.createNode("span").addClass("colortool").setCss({
 		paddingLeft: "4px",
 		paddingRight: "4px",
@@ -87,5 +87,5 @@ function bottomColorEditorTool(){
 }
 
 // register for bottom tool
-igk.winui.canvasEditor.Editor.regTool("Bottom", new bottomColorEditorTool(), 1);
+igk.winui.cancasEditor.Editor.regTool("Bottom", new bottomColorEditorTool(), 1);
 })();

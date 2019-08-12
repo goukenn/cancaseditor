@@ -1,13 +1,13 @@
 "use strict";
 (function(){
 
-var _NS = igk.winui.canvasEditor;
+var _NS = igk.winui.cancasEditor;
 var CoreMathOperation = _NS.CoreMathOperation;
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
 var SERI = _NS.Serializer;
 var Matrix = _NS.Matrix;
 var R = _NS.R;
-var GUI =  igk.system.createNS("igk.winui.canvasEditor.gui", {});
+var GUI =  igk.system.createNS("igk.winui.cancasEditor.gui", {});
 var CT = igk.system.convert;
 var assets = _NS.assetManager;
 
@@ -73,7 +73,7 @@ igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer },
 			console.debug("failed to add a "+ i.getType());
 			return 0;
 		}
-		igk.winui.canvasEditor.DrawingElements.drawing2DContainer.prototype.add.apply(this, [i]);	
+		igk.winui.cancasEditor.DrawingElements.drawing2DContainer.prototype.add.apply(this, [i]);	
 		// var e = this.Elements;
 		// e.push(i);
 		// if (e.item)
@@ -102,7 +102,7 @@ igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer },
 
 
 // exports
-var EXPORTS = igk.winui.canvasEditor.Exports;
+var EXPORTS = igk.winui.cancasEditor.Exports;
  EXPORTS.register("document", function(){
 	var c = EXPORTS.initExport().concat([
 	"stroke", 
@@ -114,7 +114,7 @@ var EXPORTS = igk.winui.canvasEditor.Exports;
 });
 
 
-var AC = igk.winui.canvasEditor.Actions;
+var AC = igk.winui.cancasEditor.Actions;
 var Key = AC.Key;
 
 
@@ -151,7 +151,7 @@ function DocumentSettingDialog(a, document){
 	.addControlLabel("height", document.height);
 	
 	if ('blendingMode' in this){
-		var g = igk.winui.canvasEditor.enums.blendings.getComboboxEnumValue();							
+		var g = igk.winui.cancasEditor.enums.blendings.getComboboxEnumValue();							
 		engine.addGroup().
 		addCombobox("blendingMode", this.blendingMode, g );		
 	}

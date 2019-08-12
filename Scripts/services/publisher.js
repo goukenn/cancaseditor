@@ -1,6 +1,6 @@
 "uses strict";
 (function(){
-	var _NS = igk.system.require('igk.winui.canvasEditor.services'); 
+	var _NS = igk.system.require('igk.winui.cancasEditor.services'); 
 	var publisher = function(a){
 		// console.debug("create a publisher :::::::::::::::::::::::::::::::::::::::::::::::");
 		var _elist = {};//event list

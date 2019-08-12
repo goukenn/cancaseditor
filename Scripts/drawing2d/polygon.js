@@ -1,13 +1,13 @@
 "use strict";
 (function(){
 
-var CoreMathOperation = igk.winui.canvasEditor.CoreMathOperation;
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
-var SERI = igk.winui.canvasEditor.Serializer;
-var Tools = igk.winui.canvasEditor.Tools;
-var UTILS = igk.winui.canvasEditor.Utils;
-var PATH  = igk.winui.canvasEditor.Utils.Path;
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
+var SERI = igk.winui.cancasEditor.Serializer;
+var Tools = igk.winui.cancasEditor.Tools;
+var UTILS = igk.winui.cancasEditor.Utils;
+var PATH  = igk.winui.cancasEditor.Utils.Path;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
 
 igk.system.createClass(ELEM, {name:"polygon", parent:ELEM.fullname+".circle" }, function(){
@@ -138,7 +138,7 @@ igk.system.createClass(Tools, {name:'PolygonMecanism', parent: Tools.fullname+".
 		_base_["registerKeyAction"] =this.registerKeyAction;
 		this.registerKeyAction = function(actions){
 			_base_["registerKeyAction"].apply(this, [actions]);
-			var M_ACT = igk.winui.canvasEditor.actions.mecanismActions.drawin2D;
+			var M_ACT = igk.winui.cancasEditor.actions.mecanismActions.drawin2D;
 			actions[Key.Plus] = M_ACT.countPropertyUp;
 			actions[Key.Minus] = M_ACT.countPropertyDown;
 			actions[Key.Shift | Key.Plus] = M_ACT.tensionPropertyUp;
@@ -183,7 +183,7 @@ igk.system.createClass(Tools, {name:'PolygonMecanism', parent: Tools.fullname+".
 		}
 });
 	
-var EXPORTS = igk.winui.canvasEditor.Exports;
+var EXPORTS = igk.winui.cancasEditor.Exports;
 EXPORTS.register("polygon", function(){
 var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 		{name:"center",	serializer: SERI.vector2Serializer, unserialize: SERI.vector2Unserializer }, 

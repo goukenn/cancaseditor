@@ -1,10 +1,10 @@
 "use strict";
 
 (function(){
-var CoreMathOperation = igk.winui.canvasEditor.CoreMathOperation;
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
-var SERI = igk.winui.canvasEditor.Serializer;
-var Matrix = igk.winui.canvasEditor.Matrix;
+var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
+var SERI = igk.winui.cancasEditor.Serializer;
+var Matrix = igk.winui.cancasEditor.Matrix;
 
 
 function DefSegment(){
@@ -266,7 +266,7 @@ function _closePath(a){
 	
 
 //mecanism
-var Tools = igk.winui.canvasEditor.Tools;
+var Tools = igk.winui.cancasEditor.Tools;
 // text mecanism
 igk.system.createClass(Tools, {name:'PlumeMecanism', parent: Tools.RectangleMecanism }, function(){
 		var overlay = -1;
@@ -421,13 +421,13 @@ igk.appendChain(this, "registerKeyAction", function(actions){
 
 //actions
 //register actions
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
 ACTIONS.regActions(Key.Alt | Key.Shift | Key.P, "editor.selectool.plume", function (a){a.tool = new Tools.PlumeMecanism(); });
 
 
 
-var EXPORTS = igk.winui.canvasEditor.Exports;
+var EXPORTS = igk.winui.cancasEditor.Exports;
 EXPORTS.register("plume", function(){
 var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 		{name:"close", 'default': !1 },	
@@ -480,7 +480,7 @@ return c;
 
 
 
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 ACTIONS.regMenuAction("tools.plume", {index:6, callback:function(){
 	ACTIONS.invoke("editor.selectool.plume");
 }});

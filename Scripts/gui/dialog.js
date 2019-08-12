@@ -3,7 +3,7 @@
 
 (function(){
 //dialog control
-var AC = igk.winui.canvasEditor.Actions;
+var AC = igk.winui.cancasEditor.Actions;
 var Key = AC.Key;
 var initc = 0;
 var MS_BTN = igk.winui.mouseButton;
@@ -11,7 +11,7 @@ var MS_BTN = igk.winui.mouseButton;
 //filter expression 
 
 
-var GUI = igk.system.createNS("igk.winui.canvasEditor.gui", {
+var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 	dialog: function(){
 		var _loctimeout=0;
 		function __updatelocation(){

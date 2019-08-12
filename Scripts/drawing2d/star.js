@@ -2,12 +2,12 @@
 "use strict";
 (function(){
 
-var CoreMathOperation = igk.winui.canvasEditor.CoreMathOperation;
-var ELEM  = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
-var SERI  = igk.winui.canvasEditor.Serializer;
-var Tools = igk.winui.canvasEditor.Tools;
-var UTILS = igk.winui.canvasEditor.Utils;
-var PATH  = igk.winui.canvasEditor.Utils.Path;
+var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
+var ELEM  = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
+var SERI  = igk.winui.cancasEditor.Serializer;
+var Tools = igk.winui.cancasEditor.Tools;
+var UTILS = igk.winui.cancasEditor.Utils;
+var PATH  = igk.winui.cancasEditor.Utils.Path;
 
 
 igk.system.createClass(ELEM, {name:"star", parent:ELEM.fullname+".circle" }, function(){
@@ -207,7 +207,7 @@ igk.system.createClass(Tools, {name:'StarMecanism', parent: Tools.fullname+".Cir
 			// if (ba){
 				// ba.apply(this, [actions]);
 			// }
-			var M_ACT = igk.winui.canvasEditor.actions.mecanismActions.drawin2D;
+			var M_ACT = igk.winui.cancasEditor.actions.mecanismActions.drawin2D;
 			// actions[Key.Escape] = function(a){
 				// if (a.type == "keyup"){
 					// if (a.elem){
@@ -302,7 +302,7 @@ Tools.registerEditorAttribute("star", Tools.StarMecanism);
 
 
 
-var EXPORTS = igk.winui.canvasEditor.Exports;
+var EXPORTS = igk.winui.cancasEditor.Exports;
 EXPORTS.register("star", function(){
 var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 		{name:'center', serializer: SERI.vector2Serializer , unserialize : SERI.vector2Unserializer},	
@@ -318,7 +318,7 @@ return c;
 
 
 //register actions
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
 ACTIONS.regActions(Key.Alt | Key.Shift | Key.K, "editor.selectool.star", function (a){a.tool = new Tools.StarMecanism(); });
 

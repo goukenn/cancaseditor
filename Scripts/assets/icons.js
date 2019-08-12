@@ -3,7 +3,7 @@
 
 (function(){
 	
-	igk.system.createNS("igk.winui.canvasEditor.assets",{});
+	igk.system.createNS("igk.winui.cancasEditor.assets",{});
 	
 	
 	//load assets

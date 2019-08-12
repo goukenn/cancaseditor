@@ -3,7 +3,7 @@
 (function(){
 //mp4 decoder
 // console.debug("encoder....");
-var G = igk.system.createNS("igk.winui.canvasEditor.encoder", {
+var G = igk.system.createNS("igk.winui.cancasEditor.encoder", {
 "mp4":function(){
 
 }

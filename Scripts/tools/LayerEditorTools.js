@@ -4,7 +4,7 @@
 
 
 function LayerEditorTool(){
-	igk.winui.canvasEditor.Editor.Tool.apply(this);
+	igk.winui.cancasEditor.Editor.Tool.apply(this);
 	var lb = igk.createNode("span").addClass("layertool").setCss({
 		paddingLeft: "4px",
 		paddingRight: "4px",
@@ -83,5 +83,5 @@ function LayerEditorTool(){
 	}
 }
 
-igk.winui.canvasEditor.Editor.regTool("Bottom", new LayerEditorTool());
+igk.winui.cancasEditor.Editor.regTool("Bottom", new LayerEditorTool());
 })();

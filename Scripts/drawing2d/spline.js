@@ -1,17 +1,17 @@
 (function(){
 
 
-if (igk.winui.canvasEditor.NotAvailable)
+if (igk.winui.cancasEditor.NotAvailable)
 	return;
 
 
 
-var CoreMathOperation = igk.winui.canvasEditor.CoreMathOperation;
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
-var SERI = igk.winui.canvasEditor.Serializer;
-var Tools = igk.winui.canvasEditor.Tools;
-var UTILS = igk.winui.canvasEditor.Utils;
-var PATH = igk.winui.canvasEditor.Utils.Path;
+var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
+var SERI = igk.winui.cancasEditor.Serializer;
+var Tools = igk.winui.cancasEditor.Tools;
+var UTILS = igk.winui.cancasEditor.Utils;
+var PATH = igk.winui.cancasEditor.Utils.Path;
 var distance = CoreMathOperation.GetDistance;
 
 
@@ -133,7 +133,7 @@ igk.system.createClass(Tools, {name:'SplineMecanism', parent: Tools.RectangleMec
 Tools.registerEditorAttribute("spline", Tools.SplineMecanism);
 
 //export properties
-var EXPORTS = igk.winui.canvasEditor.Exports;
+var EXPORTS = igk.winui.cancasEditor.Exports;
 EXPORTS.register("spline", function(){
 var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 		{name:"points",	serializer: SERI.vector2Serializer}, 
@@ -147,7 +147,7 @@ return c;
 
 
 //register actions
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
 ACTIONS.regActions(Key.Alt | Key.Shift | Key.M, "editor.selectool.spline", function (a){a.tool = new Tools.SplineMecanism(); });
 

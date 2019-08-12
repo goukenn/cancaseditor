@@ -2,9 +2,9 @@
 (function(){
 
 //bezier / plume elementv
-var _NS = igk.system.require('igk.winui.canvasEditor');
+var _NS = igk.system.require('igk.winui.cancasEditor');
 var CoreMathOperation = _NS.CoreMathOperation;
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
 var SERI = _NS.Serializer;
 var Matrix = _NS.Matrix;
 
@@ -561,7 +561,7 @@ igk.system.createClass(ELEM, {name:"bezier", parent: ELEM.rectangle }, function(
 
 
 //mecanism
-var Tools = igk.winui.canvasEditor.Tools;
+var Tools = igk.winui.cancasEditor.Tools;
 // text mecanism
 igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMecanism }, function(){
 	//Tools.RectangleMecanism.apply(this);
@@ -848,12 +848,12 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 
 //actions
 //register actions
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
 ACTIONS.regActions(Key.Alt | Key.Shift | Key.B, "editor.selectool.bezier", function (a){a.tool = new Tools.BezierMecanism(); });
 
 
-var EXPORTS = igk.winui.canvasEditor.Exports;
+var EXPORTS = igk.winui.cancasEditor.Exports;
 EXPORTS.register("bezier", function(){
 var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 		{name:"close", 'default': !1 },	
@@ -936,7 +936,7 @@ var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 return c;
 });
 
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 ACTIONS.regMenuAction("tools.bezier", {index:6, callback:function(){
 	ACTIONS.invoke("editor.selectool.bezier");
 }});

@@ -1,10 +1,10 @@
 (function(){
 
 
-var CoreMathOperation = igk.winui.canvasEditor.CoreMathOperation;
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
-var SERI = igk.winui.canvasEditor.Serializer;
-var Matrix = igk.winui.canvasEditor.Matrix;
+var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
+var SERI = igk.winui.cancasEditor.Serializer;
+var Matrix = igk.winui.cancasEditor.Matrix;
 
 function getFontDefinition(o){
 	var s = null;
@@ -273,7 +273,7 @@ igk.system.createClass(ELEM, {name:"text", parent: ELEM.rectangle }, function(){
 
 
 // exports
-var EXPORTS = igk.winui.canvasEditor.Exports;
+var EXPORTS = igk.winui.cancasEditor.Exports;
  EXPORTS.register("text", function(){
 	var c = EXPORTS.initExport().concat([
 	{name:"opacity", "default": 1}, 
@@ -294,7 +294,7 @@ var EXPORTS = igk.winui.canvasEditor.Exports;
 
 
 //mecanism
-var Tools = igk.winui.canvasEditor.Tools;
+var Tools = igk.winui.cancasEditor.Tools;
 // text mecanism
 igk.system.createClass(Tools, {name:'TextMecanism', parent: Tools.RectangleMecanism }, function(){
 	var overlay = -1;
@@ -355,7 +355,7 @@ Tools.registerEditorAttribute("text", Tools.TextMecanism);
 
 //actions
 //register actions
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
 ACTIONS.regActions(Key.Alt | Key.Shift | Key.T, "editor.selectool.text", function (a){a.tool = new Tools.TextMecanism(); });
 

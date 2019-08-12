@@ -3,7 +3,7 @@
 
 //zoom menu
 
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 
 ACTIONS.regMenuAction("view.zoom", {index:20, callback:function(){
 	 

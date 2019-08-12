@@ -3,13 +3,13 @@
 
 (function(){
 //filter Editor Tool
-var AC = igk.winui.canvasEditor.Actions;
-var R = igk.winui.canvasEditor.R; //.Actions;
+var AC = igk.winui.cancasEditor.Actions;
+var R = igk.winui.cancasEditor.R; //.Actions;
 var Key = AC.Key;
 var CT = igk.system.convert;
 
 
-var GUI = igk.system.createNS("igk.winui.canvasEditor.tools",{});
+var GUI = igk.system.createNS("igk.winui.cancasEditor.tools",{});
 var liveprop = null;
 function reset(frm, a, e){
 	// console.debug("reset");
@@ -75,7 +75,7 @@ GUI.EditElementSettingDialog = function(a, e, R){
 
 
 
-var AC = igk.winui.canvasEditor.Actions;
+var AC = igk.winui.cancasEditor.Actions;
 var Key = AC.Key;
 
 

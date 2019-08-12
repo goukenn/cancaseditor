@@ -3,8 +3,8 @@
 
 (function(){
 //filter Editor Tool
-var AC = igk.winui.canvasEditor.Actions;
-var R = igk.winui.canvasEditor.R; //.Actions;
+var AC = igk.winui.cancasEditor.Actions;
+var R = igk.winui.cancasEditor.R; //.Actions;
 var Key = AC.Key;
 var CT = igk.system.convert;
 
@@ -17,7 +17,7 @@ AC.regMenuAction("window.filter", { callback: function(a)
 		var prop = ['sepia','blur', 'contrast', 'brightness', 'grayscale','hue-rotate','invert','saturate', 'opacity'];
 	
 	
-		var GUI =  igk.winui.canvasEditor.gui;
+		var GUI =  igk.winui.cancasEditor.gui;
 		var d = igk.createNode("div");
 		var frm = d.add("form");
 		var engine = igk.winui.engine.getEngine("bmc", frm, R); // get prefered engine 

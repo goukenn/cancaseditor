@@ -2,17 +2,17 @@
 (function(){
 
 //drawing2d mecanism actions base
-var CoreMathOperation = igk.winui.canvasEditor.CoreMathOperation;
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
-var SERI = igk.winui.canvasEditor.Serializer;
-var Tools = igk.winui.canvasEditor.Tools;
-var UTILS = igk.winui.canvasEditor.Utils;
-var PATH  = igk.winui.canvasEditor.Utils.Path;
-var ACTIONS = igk.winui.canvasEditor.Actions;
+var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
+var SERI = igk.winui.cancasEditor.Serializer;
+var Tools = igk.winui.cancasEditor.Tools;
+var UTILS = igk.winui.cancasEditor.Utils;
+var PATH  = igk.winui.cancasEditor.Utils.Path;
+var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
 
 //definine mecanism action 
-var M_ACT = igk.system.createNS("igk.winui.canvasEditor.mecanismActions.drawin2D",{
+var M_ACT = igk.system.createNS("igk.winui.cancasEditor.mecanismActions.drawin2D",{
 	countPropertyUp : function(e){
 		if (e.elem){
 			if (e.type == "keyup"){

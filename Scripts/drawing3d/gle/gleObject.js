@@ -1,14 +1,14 @@
 //linear brush edition
 // author: C.A.D. BONDJE DOUE
 // 26/11/2018
-// part of igk.winui.canvasEditor apps
+// part of igk.winui.cancasEditor apps
 // desc: definition of round rectangle mecanism
 
 
 "use strict";
 
 (function(){
-	var _NS = igk.system.require('igk.winui.canvasEditor');
+	var _NS = igk.system.require('igk.winui.cancasEditor');
 	if (_NS.NotAvailable){
 		
 		console.debug(" bleObject - is not available");		

@@ -22,17 +22,17 @@
 		// console.debug("datae : "+igk.system.Date.format(Date.now(), "Y:m:d"));
 	//throw ("b");
 	
-    igk.system.createNS("igk.winui.canvasEditor.visitors", {
+    igk.system.createNS("igk.winui.cancasEditor.visitors", {
         xml: function(list, inf){
-			var EXPORTS = igk.winui.canvasEditor.Exports;
-			var ELEM = igk.winui.canvasEditor.DrawingElements;
+			var EXPORTS = igk.winui.cancasEditor.Exports;
+			var ELEM = igk.winui.cancasEditor.DrawingElements;
 
             var e = $igk(igk.dom.createXMLDocument("gkds").documentElement); 
-			e.setAttribute("app", "canvasEditor");
+			e.setAttribute("app", "cancasEditor");
 			e.setAttribute("app-version", "1.0");
 			e.setAttribute("xmlns:igk", "https://www.igkdev.com/schema");
 			e.setAttribute("xmlns", "https://schema.igkdev.com/cancaseditor/2018");
-            e.addComment("gkds file:  generate with canvasEditor App");
+            e.addComment("gkds file:  generate with cancasEditor App");
             e.addComment("Author: C.A.D. BONDJE DOUE");
             e.addComment("App: CancasEditor");
             e.addComment("Version: 1.0");

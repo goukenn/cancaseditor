@@ -1,10 +1,10 @@
 "use strict";
 (function(){
 
-var CoreMathOperation = igk.winui.canvasEditor.CoreMathOperation;
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
-var SERI = igk.winui.canvasEditor.Serializer;
-var Matrix = igk.winui.canvasEditor.Matrix;
+var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
+var SERI = igk.winui.cancasEditor.Serializer;
+var Matrix = igk.winui.cancasEditor.Matrix;
 var BLENDING = {
 	"source-over":1,
 	"source-in":1,
@@ -127,7 +127,7 @@ igk.system.createClass(ELEM, {name:"layer", parent: ELEM.drawing2DContainer }, f
 
 
 // exports
-var EXPORTS = igk.winui.canvasEditor.Exports;
+var EXPORTS = igk.winui.cancasEditor.Exports;
  EXPORTS.register("layer", function(){
 	var c = EXPORTS.initExport().concat([
 	{name:"opacity", "default": 1}, 
@@ -154,7 +154,7 @@ var EXPORTS = igk.winui.canvasEditor.Exports;
 	return c;
 });
 
-var AC = igk.winui.canvasEditor.Actions;
+var AC = igk.winui.cancasEditor.Actions;
 var Key = AC.Key;
 
 AC.regMenuAction("layer.new", { callback: function(a){

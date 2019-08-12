@@ -1,9 +1,9 @@
 "use strict";
 //circle element
 (function(){
-	var _NS = igk.winui.canvasEditor;
+	var _NS = igk.winui.cancasEditor;
 	var CoreMathOperation = _NS.CoreMathOperation;
-	var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements", {});
+	var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
 	var SERI =  _NS.Serializer;
 	var Tools = _NS.Tools;
 	var UTILS = _NS.Utils;
@@ -20,9 +20,9 @@
 		this.fillMode = ELEM.fillMode.evenodd;
 		var strokeWidth = 1;
 		var path = null;
-		var UTILS = igk.winui.canvasEditor.Utils;
+		var UTILS = igk.winui.cancasEditor.Utils;
 		var self = this;
-		var _NS = igk.winui.canvasEditor;
+		var _NS = igk.winui.cancasEditor;
 		
 		function _GetMaxRadius(){
 			return UTILS.getMaxRadius(self.radius);			
@@ -174,7 +174,7 @@
 	igk.system.createClass(Tools, {name:'CircleMecanism', parent: Tools.RectangleMecanism}, function(){
 		//M.Rectangle.apply(this);
 		var startMultiRadius = !1;
-		var IsArray = igk.winui.canvasEditor.Utils.IsArray;
+		var IsArray = igk.winui.cancasEditor.Utils.IsArray;
 		
 		this.createElement = function(){
 			return this.host.add("circle");
@@ -193,7 +193,7 @@
 			var tab = [];
 			tab.push(elem.center);
 			var radius = elem.radius;
-			var UTILS = igk.winui.canvasEditor.Utils;
+			var UTILS = igk.winui.cancasEditor.Utils;
 			
 			if(UTILS.IsArray(radius)){
 				
@@ -288,7 +288,7 @@
 	
 		
 	ACTIONS.regActions(Key.Alt | Key.Shift  | Key.C, "editor.selectool.circle",  function(a){			
-		a.tool = new igk.winui.canvasEditor.Tools.CircleMecanism();
+		a.tool = new igk.winui.cancasEditor.Tools.CircleMecanism();
 	});
 	Tools.registerEditorAttribute("circle", "CircleMecanism");
 	

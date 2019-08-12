@@ -2,7 +2,7 @@
 
 (function(){
 	//extends canvas editor with cache functionality
-	var _NS = igk.system.createNS("igk.winui.canvasEditor", {
+	var _NS = igk.system.createNS("igk.winui.cancasEditor", {
 		caches : function(){			
 		}
 	});

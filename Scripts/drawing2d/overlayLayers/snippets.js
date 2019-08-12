@@ -5,8 +5,8 @@
 
 (function(){
 	
-var ELEM = igk.system.createNS("igk.winui.canvasEditor.DrawingElements",{});	
-var LY = igk.system.createNS("igk.winui.canvasEditor.Layers",{
+var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements",{});	
+var LY = igk.system.createNS("igk.winui.cancasEditor.Layers",{
 	
 });
 
@@ -117,7 +117,7 @@ igk.system.createClass(LY, {name:"snippets", parent: ELEM.drawing2DContainer}, f
 			
 			dom.on("touchstart", function(e){
 				// console.debug("snippet touch start");
-				if(igk.winui.canvasEditor.isCapturing())
+				if(igk.winui.cancasEditor.isCapturing())
 					return;			
 				_startCapture();
 			
@@ -142,7 +142,7 @@ igk.system.createClass(LY, {name:"snippets", parent: ELEM.drawing2DContainer}, f
 			},{passive:1});
 			dom.on("touchmove", function(e){
 				var th = e.touches;
-				if ((igk.winui.canvasEditor.getCapture() != this) || (th.length!=1)){
+				if ((igk.winui.cancasEditor.getCapture() != this) || (th.length!=1)){
 					return;
 				}
 				var c = th[0]; 
@@ -172,16 +172,16 @@ igk.system.createClass(LY, {name:"snippets", parent: ELEM.drawing2DContainer}, f
 		
 		function _startCapture(){
 			igk.winui.mouseCapture.setCapture(dom.o);
-			igk.winui.canvasEditor.setCapture(dom.o);
+			igk.winui.cancasEditor.setCapture(dom.o);
 		};
 		function _freeCapture(){
 			igk.winui.mouseCapture.releaseCapture();
-			igk.winui.canvasEditor.releaseCapture();
+			igk.winui.cancasEditor.releaseCapture();
 		}
 		return dom.addClass(cl).on("click", function(){
 			//alert("click ok");
 		}).setCss({"pointerEvents":"all"}).on("mousedown", function(e){
-			if(igk.winui.canvasEditor.isCapturing())
+			if(igk.winui.cancasEditor.isCapturing())
 				return;
 			
 			_startCapture();
@@ -206,7 +206,7 @@ igk.system.createClass(LY, {name:"snippets", parent: ELEM.drawing2DContainer}, f
 			switch(MS_BTN(e)){
 				case MS_BTN.Left:
 				
-				if (igk.winui.canvasEditor.getCapture() == this){
+				if (igk.winui.cancasEditor.getCapture() == this){
 					e.handle = true;
 					_update(e);
 					e.stopPropagation();
@@ -219,7 +219,7 @@ igk.system.createClass(LY, {name:"snippets", parent: ELEM.drawing2DContainer}, f
 			
 			switch(MS_BTN(e)){
 				case MS_BTN.Left:	
-				if (igk.winui.canvasEditor.getCapture() == this){				
+				if (igk.winui.cancasEditor.getCapture() == this){				
 					_freeCapture();
 					_update(e);
 					e.stopPropagation();

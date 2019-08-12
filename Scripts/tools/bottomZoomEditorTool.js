@@ -4,7 +4,7 @@
 
 
 function bottomZoomEditorTool(){
-	igk.winui.canvasEditor.Editor.Tool.apply(this);
+	igk.winui.cancasEditor.Editor.Tool.apply(this);
 	var lb = igk.createNode("span").addClass("b-zoom").setCss({
 		paddingLeft: "4px",
 		paddingRight: "4px",
@@ -26,5 +26,5 @@ function bottomZoomEditorTool(){
 	};
 };
 
-igk.winui.canvasEditor.Editor.regTool("Bottom", new bottomZoomEditorTool(), 3);
+igk.winui.cancasEditor.Editor.regTool("Bottom", new bottomZoomEditorTool(), 3);
 })();

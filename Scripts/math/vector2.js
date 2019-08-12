@@ -1,6 +1,6 @@
 (function(){
 //math function 
-var _NS  = igk.system.createNS("igk.winui.canvasEditor", {});
+var _NS  = igk.system.createNS("igk.winui.cancasEditor", {});
 var _Math = igk.system.createNS(_NS.fullname+".math",{});
 
 
