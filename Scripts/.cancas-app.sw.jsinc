@@ -1,10 +1,12 @@
-//javascript inclusion
+// file: cancas-app.sw.jsinc 
+// description : javascript inclusion service worker
+// register service worker
 // var version = "1.0";
 // var cacheName = `cancaseditor-${version}`;
 // var cachelist = cachelist || [];
 // console.debug(cachelist);
 
-var _NS = "canvas-app.sw.jsinc";
+var _NS = "cancas-app.sw.jsinc";
 
 
 self.addEventListener('install',function(e){

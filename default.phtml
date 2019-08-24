@@ -8,7 +8,7 @@ $bge = igk_require_module("igk/bge");
 
 $scripts = igk_html_uri(dirname(__FILE__)."/Scripts");
 // igk_wln_e("autogenerate: ", $ctrl->Configs->auto_generate);
-// ! solute to avoid warning
+// !solute to avoid warning code warning in vs code editor
 extract([]);
 
 igk_html_js_lang("igk.winui.cancasEditor.R", ["btn_ok"=>"OK"]);
@@ -19,9 +19,9 @@ igk_html_js_lang("igk.winui.cancasEditor.R", ["btn_ok"=>"OK"]);
 
 if (!$ctrl->Configs->auto_generate){
 	if (!igk_io_is_subdir(igk_io_basedir(), $ln = $scripts)){
-	$_rs = 	IGKResourceUriResolver::getInstance();
-		igk_wln_e(__FILE__.":".__LINE__,  "s", $ln);
-		foreach (igk_io_getfiles($ln, "/\.(js(on)?|xml|js|bmp|png|jpg|jpgeg)$/") as $file){
+		$_rs = 	IGKResourceUriResolver::getInstance();
+		// igk_wln_e(__FILE__.":".__LINE__,  "s", $ln);
+		foreach (igk_io_getfiles($ln, "/\.(js(on)?|xml|js|bmp|png|jpg|jpeg)$/") as $file){
 			 
 			$_rs->resolve($file, null);
 		}
@@ -90,9 +90,9 @@ return $n;
  
 // force directory on the current canvas editor
 igk_io_force_dir_entry($ctrl, $fname);
-
-
-
+//reset current view
+$this->setFlag(self::CURRENT_VIEW, null);
+// igk_wln_e($this->getCurrentView(), "currentview", $fname);
 //--------------------------------------------------------------------------------------------
 //action handle ------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------
@@ -191,9 +191,9 @@ EFO
 		igk_wl(igk_io_read_allfile($icon));
 		igk_exit();
 	},
-	"canvas-app.sw.js"=>function()use($entryuri, $fname, $doc, $bge, $bmc){
+	"cancas-app.sw.js"=>function()use($entryuri, $fname, $doc, $bge, $bmc){
 		header("Content-Type: text/javascript");
-		$icon =dirname(__FILE__)."/Scripts/.canvas-app.sw.jsinc";
+		$icon =dirname(__FILE__)."/Scripts/.cancas-app.sw.jsinc";
 		$buri = igk_io_root_entryuri();
 		$ruri  = $buri.dirname($fname)."/";
 		
@@ -211,7 +211,7 @@ EFO
 		$tab[] = $ruri."manifest.json";	
 		$tab[] = $ruri."about";	
 		$tab[] = $ruri."wiki";
-		$tab[] = $ruri."canvas-app.sw.js"; //not caching service worker
+		$tab[] = $ruri."cancas-app.sw.js"; //do not cache service worker
 		$tab[] = $ruri."favicon.ico";
 	
 		// igk_wln($tab);
@@ -434,7 +434,7 @@ if (IGKUserAgent::IsOldSafariAgent()){
 	
 }
 //testing params----------------------------------------------------------------------------------------------------------------------
-// $params = array("canvas-app.sw.js");
+// $params = array("cancas-app.sw.js");
 
 
 $styles = dirname(__FILE__)."/Styles";
@@ -444,12 +444,11 @@ igk_doc_load_temp_script($doc, array(
 	"folder"=>$scripts,
 	"mergescript"=>CE_SCRIPT_NAME,
 	"controller"=>$ctrl,
-	"callback"=>function($doc, $folder, $created){
+	"callback"=>function($doc, $folder, $created){ 
 	$cachedir = igk_io_cacheddist_jsdir();
 	$is_prod = igk_environment()->is("production");
-	
-
 	if ($is_prod || !igk_io_is_subdir(igk_io_basedir(), $cachedir)){
+ 
 		$dir = $cachedir."/".CE_SCRIPT_NAME;
 		$resolver = IGKResourceUriResolver::getInstance();
 		if (!$is_prod){
@@ -459,8 +458,7 @@ igk_doc_load_temp_script($doc, array(
 				if (igk_io_path_ext($b)=="js"){
 					$doc->addTempScript($b)->activate("defer");
 				} 
-			} 
-			// igk_wln_e("done", $folder);
+			}  
 		}else{
 			$doc->addTempScript($cachedir."/".CE_SCRIPT_NAME."/".CE_SCRIPT_NAME.".js");
 
@@ -470,7 +468,8 @@ igk_doc_load_temp_script($doc, array(
 				}				
 				$this->Configs->auto_generate = 1; 
 			}
-			//igk_wln_e("auto resolve", $this->Configs->auto_generate);
+			// igk_wln_e("auto resolve", $created, $this->Configs->auto_generate,
+			// $this->Configs->auto_generate);
 		}
 		// $file = $resolver->resolveOnly($cachedir."/".CE_SCRIPT_NAME."/.cache");
 		// if (file_exists($file))
@@ -524,7 +523,7 @@ $t->clearChilds();
 // $uri = IGKResourceUriResolver::getInstance()->resolve($cf, null);
 
 // igk_wln_e("favicon uri : ", $uri);
-$doc->setFavicon(new IGKHtmlRelativeUriValueAttribute(igk_io_dir(dirname(__FILE__)."/Data/R/Img/favicon.ico")));
+$doc->setFavicon(new IGKHtmlRelativeUriValueAttribute(igk_html_uri(dirname(__FILE__)."/Data/R/Img/favicon.ico")));
 
 //igk_wln_e("canvas editor : ", $doc->head->Render());
 
