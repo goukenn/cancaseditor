@@ -25,6 +25,10 @@
         return s+";";
     };
     function each(t, c){
+        if (! (t instanceof Array)){
+            t = Array(t);
+        }
+
         for(var i = 0; i < t.length ; i++){
             c.apply(t[i]);
         }
@@ -56,7 +60,9 @@
 
             if ($igk){ 
                 $igk(document).on("keyup", function(e){
-                    _listener.keyup(_dialogs[_dialogs.length-1], e);
+                    if (_dialogs && (_dialogs.length> 0) && _listener){
+                        _listener.keyup(_dialogs[_dialogs.length-1], e);
+                    }
                 });
             } 
         }
@@ -89,8 +95,9 @@
             e.stopPropagation();
         });
         dial.addEventListener("click", function(e){
-            if (_listener){
-                _listener.click(q, e);
+            var _l = _listener ;
+            if (_l && ('click' in _l)){
+                _l.click(q, e);
             }
         });
         this.appendClass = function(cl){
@@ -107,6 +114,8 @@
             _cbar.innerHTML = n;
         };
         this.setListener = function(l){
+            if (l == null)
+                l= new DialogListener();
             _listener = l;
         };
         this.show = function(){
@@ -119,7 +128,9 @@
             if (this.listener){
                 this.listener.close(this);
             }
-            _box.parentNode.removeChild(_box);
+            if (_box.parentNode){
+                _box.parentNode.removeChild(_box);
+            }
         };
         this.querySelector = function(f){
             return _box.querySelector(f);
@@ -128,6 +139,9 @@
 
 
     telerik.confirm=function(n, p){
+        // n : id for the dialog
+        // p : properties
+        // call sample : Telerik.confirm('about', {title:'About', content:'the html content data: '})
         var _dialog = new telerik.Dialog();
         _dialog.id = n;
         var _c = p.content || " ";
@@ -142,25 +156,44 @@
         _dialog.setContent(_c);
         _dialog.setListener(p.listener || null);
 
+        // console.debug(_dialog.querySelector("input.confirm"));
+
         each(_dialog.querySelector("input.confirm"), function(){
-            this.value = "confirm";
+            this.value = telerik.R.__("Confirm");
+            this.focus();
+            // console.debug("bind config.....................");
         });
         each(_dialog.querySelector("input.cancel"), function(){
-            this.value = "cancel";
+            this.value = telerik.R.__("Cancel");
         });
 
         _dialog.show();
     };
 
+    telerik.showDialog = function(n, m){
+        var _dialog = new telerik.Dialog();
+        _dialog.id = n;
+        _dialog.setContent(m);
+        _dialog.setListener(null);
+        _dialog.show();
+    };
+
     // for loading resources 
-    telerik.R = {};
+    telerik.R = {
+        __: function(n){
+            if (n in telerik.R){
+                return telerik.R.n;
+            }
+            return n;
+        }
+    };
 })();
 
 
 function DialogListener(){ 
-    this.click = function(t, e){
-        t.close();
-    };
+    // this.click = function(t, e){
+    //     t.close();
+    // };
     this.keyup = function(t, e){
         if (e.keyCode == 27){
             t.close();

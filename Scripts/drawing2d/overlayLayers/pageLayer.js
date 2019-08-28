@@ -306,7 +306,14 @@ var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
 ACTIONS.regMenuAction("tools.overlayLayer", {index:108, separatorBefore:1, callback:function(a){
 	a.tool = new Tools.OverlayMecanism();
-}});
+},
+initialize:  function(a, key, menuHost){   
+	menuHost.initialize=function(){		
+		menuHost.enable = false; // comming soon
+	};
+	return true;
+}
+});
 
 
 

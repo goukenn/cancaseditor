@@ -353,7 +353,9 @@ return c;
 		// console.debug("shader loaded ::::::");
 	// });
 
-	ACTIONS.regMenuAction("tools.drawing3d.gleObject", {index:8, callback:function(){
+	ACTIONS.regMenuAction("tools.drawing3d.gleObject", {
+		index:8,
+		callback:function(){
 		ACTIONS.invoke("editor.selectool.gleobject");
 	}, initialize: function(a, key, menuHost){
 		// console.debug("initialze menu .................................");

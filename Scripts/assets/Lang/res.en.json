@@ -74,5 +74,6 @@
 "view.anchor": "Anchor",
 "window.filter": "Filter",
 "window.search": "Search ...",
-"help.wiki":"Wiki"
+"help.wiki":"Wiki",
+"_setting_m": "Configure your preferences. Login required."
 }

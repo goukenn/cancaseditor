@@ -5109,16 +5109,19 @@ while(def.m< def.ln){
 	
 	
 	AC.regMenuAction("settings.settings", {callback:function(a){
-		alert("configure your settings will come soon ");
-		var GUI =_NS.gui;
+
+		Telerik.showDialog('setting', _NS.R._setting_m);
+
+		// alert("configure your settings will come soon ");
+		// var GUI =_NS.gui;
 		
-		igk.ajx.get(a.setting.appUri+"/settings", null, function(){
-			if(this.isReady()){
-				var q = xhr.responseXML;
+		// igk.ajx.get(a.setting.appUri+"/settings", null, function(){
+		// 	if(this.isReady()){
+		// 		var q = xhr.responseXML;
 				
-				dialog = GUI.dialog.showDialog(R.title_settings, q);
-			}
-		})
+		// 		dialog = GUI.dialog.showDialog(R.title_settings, q);
+		// 	}
+		// })
 	}});
 	
 }

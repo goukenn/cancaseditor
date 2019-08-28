@@ -89,5 +89,6 @@
 "file.testNotify":"Test de notification",
 "file.test":"Test d'action",
 "file.import.importCollada":"Collada (*.dae)",
-"file.import.importWaveFront":"Blender wavefront (*.obj)"
+"file.import.importWaveFront":"Blender wavefront (*.obj)",
+"_setting_m": "Configurer vos préferences. Connexion requise"
 }
