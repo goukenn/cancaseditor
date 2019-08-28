@@ -1,4 +1,8 @@
+// desc: export as svg visitor
+
+
 "use strict";
+
 
 
 (function(){
@@ -26,6 +30,17 @@
 		if ('strokeWidth' in this){
 			p.setAttribute("stroke-width", this.strokeWidth);
 		}
+		if ('matrix' in this){
+			var mat = this.matrix;
+			if (!mat.isIdentity()){
+				p.setAttribute("transform", getMatrixDefinition(mat));
+			}
+		}
+		// console.debug(this);
+
+	};
+	function getMatrixDefinition(m){
+		return "matrix("+ m.element.join(" ")+")";
 	};
 	
 	function segmentToSvgString(segments){

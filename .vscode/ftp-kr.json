@@ -1,4 +1,5 @@
 {
+    
     "host":"ftp.igkdev.fr",
     "username":"igkdev",
     "password":"CQ10bonajehost25",
@@ -6,7 +7,7 @@
     "protocol": "ftp",
     "port":0,
     "fileNameEncoding": "utf8",
-    "autoUpload": true,
+    "autoUpload": false,
     "autoDelete": false,
     "autoDownload": false,
     "ignore": [

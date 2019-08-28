@@ -452,13 +452,14 @@ igk_doc_load_temp_script($doc, array(
 		$dir = $cachedir."/".CE_SCRIPT_NAME;
 		$resolver = IGKResourceUriResolver::getInstance();
 		if (!$is_prod){
-			// igk_wln_e("resolving all", $is_prod);
-			foreach(igk_io_getfiles($folder, "/\.(js(on)?|xml|xls|img|jpg|png)$/") as $b){
+			//igk_wln_e("resolving all", $is_prod);
+			foreach($cfiles = igk_io_getfiles($folder, "/\.(js(on)?|xml|xls|img|jpg|png|pjs|php)$/") as $b){
 				$resolver->resolve($b, null);
 				if (igk_io_path_ext($b)=="js"){
 					$doc->addTempScript($b)->activate("defer");
 				} 
-			}  
+			}   
+			
 		}else{
 			$doc->addTempScript($cachedir."/".CE_SCRIPT_NAME."/".CE_SCRIPT_NAME.".js");
 

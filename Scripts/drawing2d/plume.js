@@ -162,6 +162,9 @@ this.updateTransformElement = function(){
 	
 	if (!m.isIdentity()){
 		segments.each_all(function(){
+			if (!this.point){
+				this.point = this.item.point; // {x:0, y:0};
+			}
 			this.point = CoreMathOperation.TransformPoint(this.point, m);
 		});	
 	}
