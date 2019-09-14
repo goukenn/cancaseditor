@@ -1,8 +1,8 @@
 <?php
-$doc->Title = "403";
+ 
+$doc->Title = "403 - Error";
 $t->clearChilds();
 $cont = $t->addDiv()->addContainer();
 $cont->addSingleRow()->addDiv()->Content = R::gets("Access Deny");
-
 $t->RenderAJX();
 $t->clearChilds();

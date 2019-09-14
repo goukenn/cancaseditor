@@ -1,4 +1,10 @@
 <?php
+if (empty($uri = igk_ctrl_get_app_uri(app_balafon::class))){
+	return;
+}
+
+ 
+
 
 $ctn = $t->addDiv()->addContainer();
 $row = $ctn->addRow();

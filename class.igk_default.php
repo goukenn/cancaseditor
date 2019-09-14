@@ -4,29 +4,28 @@
 class igk_default extends IGKDefaultPageController 
 // class igk_default extends IGKApplicationController 
 	//implements IIGKHTMLHorizontalPaneListener
-{
-	
-	private $m_db;
+{ 
 	
 	public function getName(){return get_class($this);}
 	
 	public function getDb(){
-		if ($this->m_db== null)
-			$this->m_db = new igk_default_db_u($this);
-		return $this->m_db;
+		static $db = null;
+		if ($db === null)
+			$sb = new igk_default_db_u($this);
+		return $db;
 	}
 	
 	
-	protected function InitComplete(){
-		parent::InitComplete();		
-		//please enter your controller declaration complete here
+	// protected function InitComplete(){
+		// parent::InitComplete();		
+		// please enter your controller declaration complete here
 		
-	}
+	// }
 	///@@@ init target node
-	protected function initTargetNode(){
-		$node =  parent::initTargetNode();
-		return $node;
-	}	
+	// protected function initTargetNode(){
+		// $node =  parent::initTargetNode();
+		// return $node;
+	// }	
 
 	//----------------------------------------
 	//Please Enter your code declaration here
@@ -182,37 +181,36 @@ $pane->RenderAJX();
 		}
 	}*/
 	//function
-	public function stayconnected(){
-		$o = igk_get_robj();
-		if (IGKValidator::IsEmail($o->clEmail ))
-		{
-			$d = igk_db_table_select_row("tbigk_mailinglists", $o, $this);
+	// public function stayconnected(){
+		// $o = igk_get_robj();
+		// if (IGKValidator::IsEmail($o->clEmail ))
+		// {
+			// $d = igk_db_table_select_row("tbigk_mailinglists", $o, $this);
 			
-			if (igk_db_table_select_row("tbigk_mailinglists", $o, $this) == null)
-			{
-				igk_db_insert($this, "tbigk_mailinglists", $o);
-				igk_notifyctrl("mailing:response")->addMsgr("mailupdated");
+			// if (igk_db_table_select_row("tbigk_mailinglists", $o, $this) == null)
+			// {
+				// igk_db_insert($this, "tbigk_mailinglists", $o);
+				// igk_notifyctrl("mailing:response")->addMsgr("mailupdated");
 				
-				$this->send_notification_mail($o->clEmail);
-				igk_resetr();
-			}
-			else{
+				// $this->send_notification_mail($o->clEmail);
+				// igk_resetr();
+			// }
+			// else{
 			
-				igk_notifyctrl("mailing:response")->addError("mail already present ...");
-			}		
-		}
-		else{
-			igk_notifyctrl("mailing:response")->addError("not a valid mail...");
-		}
-		$this->View();		
-		igk_navto(igk_io_baseuri()."#mailing_form");
+				// igk_notifyctrl("mailing:response")->addError("mail already present ...");
+			// }		
+		// }
+		// else{
+			// igk_notifyctrl("mailing:response")->addError("not a valid mail...");
+		// }
+		// $this->View();		
+		// igk_navto(igk_io_baseuri()."#mailing_form");
 		
-	}
-	public function confirm_mail(){
-		$q = base64_decode(igk_getr("q"));
-
-		igk_wln_e("confirm mail");
-	}
+	// }
+	// public function confirm_mail(){
+		// $q = base64_decode(igk_getr("q"));
+		// igk_wln_e("confirm mail");
+	// }
 	// public function send_notification_mail($mail){
 	
 		// $doc = new IGKHtmlDoc($this->App, true);

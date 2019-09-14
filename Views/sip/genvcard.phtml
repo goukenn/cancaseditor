@@ -1,0 +1,91 @@
+<?php
+
+
+// if (!igk_server()->method("POST")){
+	// igk_set_header(500, 'operation not valid');
+	// igk_exit();
+// }
+$s = "";
+$card = [
+	array("Name"=>"BONDJE","FirstName"=>"CHARLES A.D.", "LastName"=>"BONDJE DOUE", "TEL"=>[
+		["value"=>"+32486684697","pref"=>1], 
+		["value"=>"+32471078643"] 
+	], "EMAIL"=>["bondje.doue@gmail.com"])
+];
+$LF= "\n";
+$n = 'phone';
+define("VCARD_VERSION" , "3.0");
+$edata = array("TEL", "EMAIL", "ORG");
+$SEP = "";
+$generate_vcard = function($row) use ($edata){
+	$r = (object)$row;
+	$vcinfo = (object)array();
+	if ($r->Name){
+		$vcinfo->N = $r->Name.";C.A.D;CO;CA;CI";
+		if ($r->FullName){
+			$vcinfo->FN = $r->FullName;
+		}else{
+			$vcinfo->FN = $r->Name;
+		}
+	}
+	foreach($edata as $kr){
+	$c = igk_getv($r, $kr);
+	// TEL FLAGS: PHONE, VOICE, PREF, HOME
+	if (is_array($c)){
+		
+		foreach($c as $t){
+		
+			$o = (object)array(
+			"data"=>$kr=="TEL"? ";PHONE":"",
+			"value"=>""
+			);
+			if (is_string($t))
+				$o->value = $t;
+			else{
+				$o->value = igk_getv($t, "value");
+				if (igk_getv($t,"pref")){
+					$o->data .= ";PREF";
+				}
+				if (igk_getv($t,"voice")){
+					$o->data .= ";VOICE";
+				}
+				if (igk_getv($t,"home")){
+					$o->data .= ";HOME";
+				}				
+			}
+			$vcinfo->$kr[] = $o;
+		}
+	}else if (is_string($c) && !empty($c)){
+		$vcinfo->$kr[] = (object)array(
+			"data"=>";PHONE;VOICE;PREF",
+			"value"=>$c
+			);
+	}
+	}
+	// igk_wln_e($vcinfo);
+	return $vcinfo;
+};
+
+foreach($card as $row){
+	$s.= $SEP;
+	$s.="BEGIN:VCARD".$LF;
+	$s.="VERSION:".VCARD_VERSION.$LF;
+	
+	
+	$vcinfo = $generate_vcard($row);
+	
+	if ($vcinfo->N)
+	$s.="N:".$vcinfo->N.$LF; //name
+	if ($vcinfo->FN)
+	$s.="FN:".$vcinfo->FN.$LF;
+	foreach($edata as $m){
+		if ($vcinfo->$m)
+		foreach($vcinfo->$m as $t){
+			$s.="{$m}{$t->data}:".$t->value.$LF;
+		}
+	}
+	$s.="END:VCARD";
+	$SEP = $LF;
+}
+
+igk_download_content($n.'.vcf', strlen($s), $s);

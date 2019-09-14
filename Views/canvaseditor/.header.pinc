@@ -1,6 +1,0 @@
-<?php
-
-$favicon = igk_io_fullpath2uri(dirname(__FILE__)."/Data/R/Img/favicon.ico");
-
-// igk_exit();
-$doc->setFavicon($favicon);

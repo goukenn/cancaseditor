@@ -1,0 +1,46 @@
+<?php
+
+if (isset($_FILES) && count($_FILES)>0){
+	
+	
+	igk_io_move_uploaded_file($_FILES['file']['tmp_name'], dirname(__FILE__)."/temp/input.vcf");
+	
+}
+
+
+$t->clearChilds();
+
+
+$frm = $t->addDiv()->addForm();
+$frm["method"]="POST";
+
+igk_html_form_initfield($frm);
+
+igk_html_build_form($frm->addDiv()->add("ul"), array(
+	"file"=>array("type"=>"file", "attribs"=>array("accept"=>".vcf"))
+)); 
+
+$frm->addInput("btn.send", "submit", R::gets("Send"));
+
+
+$txt = igk_io_read_allfile('C:\Users\IGKBondje\Desktop\00001.vcf');
+$tab = array();
+$ob = null;
+foreach(explode("\n", $txt) as $line){
+	
+	$c = explode(":", $line);
+	
+	if (preg_match("/^END/",$c[0])){
+		$ob = null;
+	} else if (preg_match("/BEGIN/", $c[0])){
+		$ob = new StdClass();
+		$ob->Type = $c[1];
+		$tab[] = $ob;
+	}else {
+		$cp = explode(";", $c[0]);
+		$ob->{$cp[0]} = implode(";", array_slice($c, 1));
+	}
+	
+}
+// igk_wln($tab);
+$t->addBindArticle($this, dirname(__FILE__)."/Articles/vcardview.phtml", $tab);

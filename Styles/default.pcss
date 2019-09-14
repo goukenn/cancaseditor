@@ -3,13 +3,19 @@
 // igk_ilog("include default.pcss : ".__FILE__);
 
 // default theme color defintion
-if($ctrl && ($referer ==  $ctrl->getAppUri())){
-	return;
+if (is_object($ctrl)){
+	if($ctrl && ($referer ==  $ctrl->getAppUri())){
+		return;
+	}
+}else
+{
+	
 }
   
 
  
-$cl["defHeaderColor"] = "#982077";
+$cl["defHeaderColor"] = "#982077"; //header bar 
+
 // header
 $def[$css_m." .igk-header"] = "background-color:[cl:defHeaderColor]";
 // $def[$css_m." .igk_default"]="background-color:#323232";

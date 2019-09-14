@@ -6,5 +6,9 @@ igk_google_addfont($doc, "Anton", 400);
 igk_google_addfont($doc, "Roboto");
 
 //define header
-$doc->setHeaderColor("#FF6500"); 
+$doc->setHeaderColor("#FF6500"); // Orange
+
+/// from
+$doc->setHeaderColor("#982077");
+$doc->setHeaderColor("#AE368D");
  

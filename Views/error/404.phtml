@@ -1,4 +1,6 @@
 <?php
+
 igk_hook(IGKEvents::HOOK_HTML_HEAD, null);
-?><div><?= R::gets("/!\ Requested page page not found !!! - {0} ", $uri) ?></div><?php
+?><!-- igk_default -->
+<div class="igk_default error" ><?= R::gets("/!\\ Oups core page not found !!! - {0} ", $uri) ?></div><?php
 igk_hook(IGKEvents::HOOK_HTML_FOOTER, null);
