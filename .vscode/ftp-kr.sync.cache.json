@@ -81,15 +81,15 @@
                     "Scripts": {
                       ".cancas-app.sw.jsinc": {
                         "type": "-",
-                        "size": 3637,
+                        "size": 3726,
                         "lmtime": 0,
-                        "modified": false
+                        "modified": true
                       },
                       ".cancaseditor.js": {
                         "type": "-",
-                        "size": 128339,
-                        "lmtime": 1565619881481,
-                        "modified": true
+                        "size": 128419,
+                        "lmtime": 1567015452597,
+                        "modified": false
                       },
                       ".htaccess": {
                         "type": "-",
@@ -170,14 +170,14 @@
                         "Lang": {
                           "res.en.json": {
                             "type": "-",
-                            "size": 2214,
-                            "lmtime": 1565619881480,
+                            "size": 2276,
+                            "lmtime": 1567015452612,
                             "modified": false
                           },
                           "res.fr.json": {
                             "type": "-",
-                            "size": 2746,
-                            "lmtime": 1565619881480,
+                            "size": 2811,
+                            "lmtime": 1567015452612,
                             "modified": false
                           }
                         },
@@ -298,8 +298,8 @@
                         "overlayLayers": {
                           "pageLayer.js": {
                             "type": "-",
-                            "size": 8255,
-                            "lmtime": 1562305738607,
+                            "size": 8406,
+                            "lmtime": 1567015452709,
                             "modified": false
                           },
                           "snippets.js": {
@@ -311,9 +311,9 @@
                         },
                         "plume.js": {
                           "type": "-",
-                          "size": 10576,
+                          "size": 10654,
                           "lmtime": 0,
-                          "modified": false
+                          "modified": true
                         },
                         "polygon.js": {
                           "type": "-",
@@ -401,8 +401,8 @@
                           },
                           "gleObject.js": {
                             "type": "-",
-                            "size": 13925,
-                            "lmtime": 0,
+                            "size": 13932,
+                            "lmtime": 1567015452803,
                             "modified": false
                           },
                           "gleSphere.js": {
@@ -411,6 +411,12 @@
                             "lmtime": 0,
                             "modified": false
                           }
+                        },
+                        "drawing3d.js": {
+                          "type": "-",
+                          "size": 560,
+                          "lmtime": 1567015452803,
+                          "modified": false
                         }
                       },
                       "encoder": {
@@ -505,6 +511,12 @@
                         }
                       },
                       "shaders": {},
+                      "test.js": {
+                        "type": "-",
+                        "size": 595,
+                        "lmtime": 0,
+                        "modified": false
+                      },
                       "tools": {
                         "ColorEditorTool.js": {
                           "type": "-",
@@ -590,9 +602,9 @@
                         },
                         "svg.js": {
                           "type": "-",
-                          "size": 10384,
+                          "size": 10689,
                           "lmtime": 1565619881480,
-                          "modified": false
+                          "modified": true
                         },
                         "xml.js": {
                           "type": "-",
@@ -619,9 +631,9 @@
                     "assets": {
                       "telerik.js": {
                         "type": "-",
-                        "size": 5610,
-                        "lmtime": 1565619881481,
-                        "modified": true
+                        "size": 6682,
+                        "lmtime": 1567015452928,
+                        "modified": false
                       }
                     },
                     "caches": {
@@ -741,9 +753,9 @@
                     "canvaseditor": {},
                     "default.phtml": {
                       "type": "-",
-                      "size": 17211,
+                      "size": 17406,
                       "lmtime": 1565625123877,
-                      "modified": false
+                      "modified": true
                     },
                     "modelapp": {
                       "default.phtml": {
