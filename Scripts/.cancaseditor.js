@@ -143,6 +143,12 @@ function CancasPrimitive(m_ctx){
 	igk.appendProperties(this, {
 		getDocumentSize: function(){
 			return {w: 0 , h : 0};
+		},		
+		getDocumentName: function(){
+			if (this.document){
+				return this.document.id;
+			}
+			return "empty";
 		},
 		clip: function(path, fillmode){
 			m_ctx.clip(path, fillmode);
@@ -812,16 +818,16 @@ function CancasEditorApp(q, o){
 	
 	if (q.istouchable()){
 		q.addClass("touchable-device");
-		m_istouchable = 1;
-		
+		m_istouchable = 1;		
 		//cancel auto reload for the surface mecanism management
 		q.on('touchstart', function(e){	
 			e.preventDefault();
 			e.stopPropagation();
 		});
-		
-		 
 	}
+
+
+
 	this.setDebug = function(m){
 		if (!o.isDebug){
 			return;
@@ -946,6 +952,7 @@ function CancasEditorApp(q, o){
 	q.addEvent("selectChanged", event);
 	q.addEvent("elementAdded", event);
 	q.addEvent("elementRemoved", event);
+	q.addEvent("surfaceStartEdition", event);
 	
 	this.removeOverlay = function(over, index){
 		var tab = this.overlayLayer;
@@ -1338,7 +1345,15 @@ function CancasEditorApp(q, o){
 		}
 	};
 	
-	
+	this.raiseEvent = raiseEvent;
+	//register event to application
+	this.regEvent = function(e, p){
+		q.reg_event(e, p);
+	};
+	//unregister event to application
+	this.unregEvent = function(e, p){
+		q.unreg_event(e, p );
+	};
 
 	
 	// append properties . primitive drawing function 
@@ -1602,10 +1617,11 @@ function CancasEditorApp(q, o){
 		},
 		exportTo: function(type){
 			if (type in _NS.visitors){
-				
+				 
+
 				var e = {
 					mimetype: 'text/plain',
-					name : 'project.txt'
+					name : this.getDocumentName() // 'project.txt'
 				};
 				var gs = this.getDocumentSize();
 				e.width = gs.w;
@@ -1830,15 +1846,15 @@ var ProcessStart = new ProcessInitiator();
 (function(){
 	//
 	// get loading script uri
-	// 
+	//----------------------- 
 	var R = igk.system.createNS(_NS.getType().getFullName()+".R",{});
 	ProcessStart.bind('loadAssets'); 
 	var fc = function(){ 
-		// console.debug("loading lang .... ");
+		
 		var asset = _NS.assetManager.getUri(""); 
-		igk.system.io.loadLangRes(asset, null, function(d){		 
-			igk.appendProperties(R, d);		
-			// console.debug(R);
+		// console.debug("loading lang .... "+asset);
+		igk.system.io.loadLangRes(asset, null, function(d){	
+			igk.appendProperties(R, d);	 
 			ProcessStart.unbind("loadAssets");
 		});
 		// console.debug("LoadResources assets : "+uri +  " Lib: "+_libUri); 
@@ -2618,7 +2634,7 @@ igk.system.createNS("igk.winui.cancasEditor.Utils",{
 			
 			//var m_mscapture=0;
 			function mouseDown(e){
-			    // console.debug(e.type+":Button: "+e.buttons+ " : "+MS_BTN(e));
+			     console.debug(e.type+":Button: "+e.buttons+ " : "+MS_BTN(e));
 				e.loc = _self.host.getDeviceLocation(e.clientX, e.clientY);
 				e.ms_btn = MS_BTN(e);
 				_self.handleMouseDown(e);				
@@ -2706,14 +2722,13 @@ igk.system.createNS("igk.winui.cancasEditor.Utils",{
 				
 			};
 			function touchStart(e){
-				 console.debug('touchstart');
+				// dispatch event
+				_self.host.raise("surfaceStartEdition", e);
+				console.debug('touchstart');
 				// if (!e.passive){
 					// e.preventDefault();
 					// e.stopPropagation();
 				// }
-				
-				
-				 
 				
 				//start drawing on move
 				
@@ -2949,7 +2964,9 @@ igk.system.createNS("igk.winui.cancasEditor.Utils",{
 				
 			};
 			this.onCreate = function(def){
-					// handle this to create multiple element
+				// handle this to create multiple element
+				// Note: set def.handle to 1 to stop creation layer
+				console.debug("on create");
 			};
 			this.goToDefaultMecanism = function(){
 				if (this.getType().toLowerCase() == 'selection'){
@@ -4235,6 +4252,22 @@ while(def.m< def.ln){
 	
 
 	
+
+	// hide all contextext menu
+	function _hideall(li, menuKey){
+		li.rmClass("igk-show");
+		li.select("^.menu").first().select(".igk-show").each_all(function(){
+			this.rmClass("igk-show");
+		});				
+		editorMenu[menuKey] = {};
+
+		if (editorMenu.docHandler){
+			$igk(document).unreg_event("touchOrClick", _handleDocumentClick);
+			editor.unregEvent("surfaceStartEdition", _handleCloseMenu);
+		}
+		editorMenu.docHandler = null;
+	};
+	
 	//menu item object
 	// @n: name of the menu
 	// @li: cibling node
@@ -4244,48 +4277,85 @@ while(def.m< def.ln){
 	function menuItem(n, li, editor, c, nodes){
 		var editorMenuIndex = editorMenu.indexOf(editor);
 		var menuKey = '';
-		if (editorMenuIndex ==-1){
-			
+		if (editorMenuIndex ==-1){			
 			editorMenu.push(editor);
-			editorMenuIndex = editorMenu.length - 1;
-			menuKey = "menu"+editorMenuIndex;
-			editorMenu[menuKey]	= {};
-		}else{
-			menuKey = "menu"+editorMenuIndex;
+			editorMenuIndex = editorMenu.length - 1;						
+		}
+		menuKey = "menu"+editorMenuIndex;
+		if (!editorMenu[menuKey]){
+			editorMenu[menuKey]	= {
+				"editor":editor
+			}; 
+			
 		}
 		this.name = n;
 		this.editor = editor;
 		this.callback = c;
 		var self = this;
-		var R =_NS.R;
-		
+		var R =_NS.R;		
+		var selected = 0; // selected li parent for touchable parent 
 		this.action = menuActions[n];
+
 		
-		// var MENUACTION = regMenuAction
 		
 		this.click = function(e){ 
-		if (e.type == "touchend"){
-			var selected = editorMenu[menuKey].selectedLi;
-			if (selected== li)
-				return;
-			if (selected)
-				selected.rmClass("igk-show");
-			if (!li.supportClass("igk-show")){
-				// console.debug("add class");
-				li.addClass("igk-show");
-				editorMenu[menuKey].selectedLi = li;
-			}
-			// console.debug("support child ?"+self.name+" "+ (nodes[self.name].ul==0));
-			
-		}
-			// console.debug(self.name);
-			// InvokeAction(self.name, self
+			// console.debug("click on "+ e.type);
 			e.preventDefault();
 			e.stopPropagation();
+			if (!editorMenu.docHandler){
+				// console.debug("register doc handle");
+				$igk(document).on("touchOrClick", _handleDocumentClick);
+				editor.regEvent("surfaceStartEdition", _handleCloseMenu);
+				editorMenu.docHandler = 1;
+			}
+			selected = 0;
+			selected = editorMenu[menuKey].selectedLi;
+			// console.debug("touch ---- "+e.type);
+			// if (selected == li){
+			// 	// not allowed action is already hit - some action can be done twice
+			// 	return;
+			// } 
+			//current selected li menu for the menu key
+			editorMenu[menuKey].selectedLi = li;
+			editorMenu[menuKey].n = n;
+			editorMenu.menuKey = menuKey;
+			if (selected){
+				selected.rmClass("igk-show");
+			}			
+			var p = li.select("^.submenu").first();
+			if (p){
+				p.select("^li").first().addClass("igk-show");
+			}			
 			
-			
+
+			if (e.type == "touchend"){
+
+				if (li.select(".submenu").first()){
+					li.addClass("igk-show");
+				}else{
+					//hide all 
+					_hideall(li, menuKey);
+				}
+			 } else {
+				 // click case 
+				 
+				 if (li.select(".submenu").first()){
+					li.addClass("igk-show");
+				}else{
+					//hide all 
+					_hideall(li, menuKey);
+					if(p){
+						p.addClass("igk-hide").timeOut(500, function(){
+							p.rmClass("igk-hide");
+						});
+					} 
+				}
+			}
+
+
 			var tab =_NS.Actions.getMenuActions();
 			var _invoke = 1;
+			var _t = $igk(this); // a link to resolv
 			if (self.name in tab){
 				var fc = tab[self.name];
 				if ('@menuHost' in  fc){
@@ -4298,33 +4368,142 @@ while(def.m< def.ln){
 						fc = fc.callback || null;
 					}
 				}
+
+
+
+
+
+				//_hideall(li, menuKey);
+			setTimeout(function(){
+				if (fc)
+					fc.apply(self.editor, [self.editor, self]);
+				if (self.callback){
+					self.callback.apply(this);
+				};
+			}, 20);
+		};
+			
+
+		//	return; 
+// 		if (e.type == "touchend"){
+// 			selected = editorMenu[menuKey].selectedLi;
+// 			if (selected== li)
+// 				return;
+// 			if (selected){
+// 				// remove the selected item li 
+// 			 	selected.rmClass("igk-show");
+// 			}
+// 			if (!li.supportClass("igk-show")){
+// 				// console.debug(">>add igk-show");
+// 				li.addClass("igk-show");
+// 				editorMenu[menuKey].selectedLi = li;
+// 				selected =  li;
+// 			}
+// //		    console.debug("support child ?"+self.name+" "+ (nodes[self.name].ul==0));
+			
+// 		}
+			// console.debug(self.name);
+			// InvokeAction(self.name, self
+			// e.preventDefault();
+			// e.stopPropagation();
+			
+			
+			// var tab =_NS.Actions.getMenuActions();
+			// var _invoke = 1;
+			// var _t = $igk(this); // a link to resolv
+			// if (self.name in tab){
+			// 	var fc = tab[self.name];
+			// 	if ('@menuHost' in  fc){
+			// 		if (!fc['@menuHost'].enable){
+			// 			_invoke = 0;
+			// 		}
+			// 	}
+			// 	if (fc){
+			// 		if(typeof(fc) != 'function'){
+			// 			fc = fc.callback || null;
+			// 		}
+			// 	}
 				
-				if (_invoke){
-					if (fc)
-						fc.apply(self.editor, [self.editor, self]);
+			// 	if (_invoke){
+			// 		var sub = _t.select("^.submenu").first();
+				
 					
-					var sub = $igk(this).select("^.submenu").first();
-					if (sub){
-						// console.debug("subparent found");
-						sub.addClass("igk-hide").timeOut(500, function(){
-							sub.rmClass("igk-hide");
-						});
-					}
-					if (self.callback){
-						self.callback.apply(this);
-					};
+					
+			// 		if (sub){
+			// 			if (_t.istouchable()){
+			// 				// sub.addClass("igk-show");
+			// 				// console.debug("show sub ");
+			// 				sub.addClass("igk-show");
+			// 				if (selected){
+			// 					//mainting visibility of the selected 
+			// 					if( $igk(_t.o.parentNode).select("ul").first()){
+			// 						console.debug("found child ..ul found .......");
+			// 						selected.addClass("igk-show");
+			// 					}else{
+			// 						console.debug("not found : close all menu to root");
+			// 						selected.rmClass("igk-show");
+
+
+			// 						sub.addClass("igk-hide").timeOut(500, function(){
+			// 							sub.rmClass("igk-hide");
+			// 						});
+
+			// 					}
+								
+
+			// 				}
+
+			// 			} else {
+			// 				sub.addClass("igk-hide").timeOut(500, function(){
+			// 					sub.rmClass("igk-hide");
+			// 				});
+			// 			}
+			// 		} else {
+
+			// 			console.debug("no sub element parent found");
+			// 		}
+
+			// 		console.debug("root li");
+			// 		console.debug(selected);
+			// 		// if (fc)
+			// 		// 	fc.apply(self.editor, [self.editor, self]);
+			// 		if (self.callback){
+			// 			self.callback.apply(this);
+			// 		};
 				
 				
-				}
-			}
+			// 	}
+			// }
 		
 		};
 		// set text of menu item
-		li.add("a").on("touchOrClick", this.click).selectable(false).setHtml( R[n] || n);
-		
-		
+		li.add("a")
+		.selectable(false)
+		.setHtml( R[n] || n)
+		.on("touchOrClick", this.click);
 	};
 
+	function _handleDocumentClick(e){		
+		if (!editorMenu.menuKey){
+			return;
+		}
+		var l = editorMenu[editorMenu.menuKey].selectedLi;
+		if (l && (l.o != e.target.parentNode)){			
+			_hideall(l, editorMenu.menuKey);
+			e.preventDefault();
+			e.stopPropagation();
+			delete(editorMenu.menuKey);
+		}		
+	};
+
+	function _handleCloseMenu(){
+		var l = editorMenu[editorMenu.menuKey].selectedLi;
+		if (l){
+			_hideall(l, editorMenu.menuKey);
+		}
+	};
+
+	
 	var _lastkey = 0;
 	var AC = igk.system.createNS("igk.winui.cancasEditor.Actions", {
 			menuItem : menuItem,
@@ -4787,7 +4966,10 @@ while(def.m< def.ln){
 	AC.regMenuAction("document", {index:10});
 	AC.regMenuAction("layer", {index:20});
 	AC.regMenuAction("help", {index:1000});
-	AC.regMenuAction("file.export", {index: 100});
+	AC.regMenuAction("file.export", {index: 100, callback: function(){
+		//alert("try to export");
+		// console.debug(this);
+	}});
 	
 	AC.regMenuAction("file.export.toXml", {callback:function(a){
 		a.saveToXML();

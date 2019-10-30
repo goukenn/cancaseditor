@@ -19,12 +19,15 @@ var visitor ={
 };
 
 function storeView(inf, list, t){
-		//add it offscreen for chrome in other to render.
+	// add it offscreen for chrome in other to render.
 	var canvas = igk.createNode("canvas");
 	var ctx = canvas.o.getContext("2d");
 	var W = inf.width || 420;
 	var H = inf.height || 320;
 	
+	// console.debug(inf);
+	// return;
+
 	canvas.o.width = W;
 	canvas.o.height = H;
 	
@@ -57,10 +60,10 @@ function storeView(inf, list, t){
 		list[i].render(o);
 	}
 	inf.mimetype= t;//"image/png";
-	inf.name = (t=='image/jpeg'? "project.jpg": " project.png");
+	var ext = (t=='image/jpeg'? ".jpg": " .png");
 	if (canvas.o.msToBlob){ //presensce of ms blop image
 		//edge workaround
-		 window.navigator.msSaveBlob(canvas.o.msToBlob(), inf.name);
+		 window.navigator.msSaveBlob(canvas.o.msToBlob(), inf.name+ext);
 		 canvas.remove();
 		 return null;
 	}
@@ -69,12 +72,12 @@ function storeView(inf, list, t){
 	canvas.remove();
 	
 	inf.mimetype= t;//"image/png";
-	inf.name = (t=='image/jpeg'? "project.jpg": " project.png");
+	
 	
 	var a = igk.createNode("a");
 	igk.dom.body().appendChild(a.o); // not require in IE 
 	// console.debug(n);
-	a.o.download = inf.name;// "project.png";
+	a.o.download = inf.name+ext;// "project.png";
 	a.o.href = data;
 	a.o.type = t;
 	// console.debug(a.o.href);
@@ -97,12 +100,12 @@ igk.system.createNS("igk.winui.cancasEditor.visitors", {
 	
 var AC =  igk.winui.cancasEditor.Actions;
 AC.regMenuAction("file.export.toPng", {callback: function(a){
-		a.exportTo("png");
+	a.exportTo("png");
 }, index:20});	
 
 AC.regMenuAction("file.export.toJPeg", {callback: function(a){
-		a.exportTo("jpeg");
-}, index:20});
+	a.exportTo("jpeg");
+}, index:21});
 
 })();
 

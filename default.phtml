@@ -533,10 +533,9 @@ igk_reg_hook(IGKEvents::HOOK_HTML_FOOTER, function(){
 	// igk_createnode("balafonjs")->setContent(
 	// null // "var delall = browser.history.deleteAll || "
 	// )->RenderAJX();
-
 	// igk_app()->server->REQUEST_URI = "/";
 	$s = igk_createnode("script")->activate("defer");
-	$s["src"] = IGKResourceUriResolver::getInstance()->resolve(dirname(__FILE__)."/assets/telerik.js");
+	$s["src"] = IGKResourceUriResolver::getInstance()->resolve(dirname(__FILE__)."/assets/js/telerik.js");
 	$s->renderAJX();
 });
 

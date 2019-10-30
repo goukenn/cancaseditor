@@ -1,0 +1,2 @@
+allow from all
+AddType text/javascript js

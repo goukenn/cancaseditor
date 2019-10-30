@@ -177,6 +177,7 @@
 		var IsArray = igk.winui.cancasEditor.Utils.IsArray;
 		
 		this.createElement = function(){
+			console.debug("create circle");
 			return this.host.add("circle");
 		};
 		this.update = function(elem, endPos, type){

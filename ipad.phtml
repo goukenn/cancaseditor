@@ -1,0 +1,34 @@
+<?php
+$t->clearChilds();
+
+
+$t->addScript()->Content = <<<EOF
+igk.ready(function(){
+    var q = \$igk("#result").first();
+    var m ="<ul>";
+
+    var b =  \$igk(document.body).getComputedStyle("android");
+
+    for (var i in document.body.style){
+        m += "<li>"+i +"</li>";
+    }
+
+    m+="</ul>";
+
+    \$igk(document.body).setCss({webkitOverflowScrolling:'touch'});
+    \$igk(document.body).on("touchmove", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    q.setHtml("result : "+m);//+\$igk(document.body).getComputedStyle("touchAction"));
+});
+EOF;
+$def = $doc->Theme;
+$def[".man"] = "[resolv: overflow-scrolling: touch !important]; background-color:indigo !important;";
+
+$doc->body->setClass("man");
+
+$t->addDiv()->setId("result");
+$t->setClass("-man");
+// $t->setStyle("[resolv:overflow-scrolling: touch]");//]

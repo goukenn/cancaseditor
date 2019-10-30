@@ -9,6 +9,7 @@
                 "cancaseditor": {},
                 "Views": {
                   "cancaseditor": {
+                    ".dist": {},
                     ".header.pinc": {
                       "type": "-",
                       "size": 112,
@@ -72,7 +73,19 @@
                       },
                       "documentation.docx": {
                         "type": "-",
-                        "size": 13423,
+                        "size": 16893,
+                        "lmtime": 0,
+                        "modified": true
+                      },
+                      "~$cumentation.docx": {
+                        "type": "-",
+                        "size": 162,
+                        "lmtime": 0,
+                        "modified": false
+                      },
+                      "~WRL1970.tmp": {
+                        "type": "-",
+                        "size": 16659,
                         "lmtime": 0,
                         "modified": false
                       }
@@ -87,9 +100,9 @@
                       },
                       ".cancaseditor.js": {
                         "type": "-",
-                        "size": 128419,
+                        "size": 131120,
                         "lmtime": 1567015452597,
-                        "modified": false
+                        "modified": true
                       },
                       ".htaccess": {
                         "type": "-",
@@ -623,9 +636,9 @@
                       },
                       "default.pcss": {
                         "type": "-",
-                        "size": 11396,
+                        "size": 11746,
                         "lmtime": 0,
-                        "modified": false
+                        "modified": true
                       }
                     },
                     "assets": {
@@ -757,6 +770,12 @@
                       "lmtime": 1565625123877,
                       "modified": true
                     },
+                    "mini.php": {
+                      "type": "-",
+                      "size": 9686,
+                      "lmtime": 0,
+                      "modified": false
+                    },
                     "modelapp": {
                       "default.phtml": {
                         "type": "-",
@@ -778,6 +797,12 @@
                         "lmtime": 0,
                         "modified": false
                       }
+                    },
+                    "tst.txt": {
+                      "type": "-",
+                      "size": 3,
+                      "lmtime": 0,
+                      "modified": false
                     },
                     "wiki.phtml": {
                       "type": "-",

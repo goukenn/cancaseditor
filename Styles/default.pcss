@@ -24,7 +24,7 @@ $def[".igk-canvas-editor-app div.tool"] = "{sys:posab}";
 $def[".igk-canvas-editor-app div.b"] = "{sys:posab, loc_b, loc_l, loc_r} font-size: 8pt; color:#ddd; line-height:32px; vertical-align:center;";
 
 
-
+//+ menu definition
 $def[".igk-canvas-editor-app div.tool.t"] = "{sys:loc_t, loc_l, loc_r, no-selection} background-color: #444; z-index:{$menuZIndex}; padding-left:32px;";
 $def[".igk-canvas-editor-app div.tool.t .menu"] = "{sys:dispib, no-wrap, ellipsis} vertical-align:middle; /*for ie explorer*/ line-height: 32px; line-height:var(--igk-canvas-editor-app_menu-height, 32px);";
 $def[".igk-canvas-editor-app div.tool.t .menu"] = "{sys:dispib, no-wrap, ellipsis} vertical-align:middle; /*for ie explorer*/ line-height: 32px; line-height:var(--igk-canvas-editor-app_menu-height, 32px);";
@@ -46,6 +46,12 @@ $def[".igk-canvas-editor-app:not(.touchable-device) div.tool.t .menu li:hover > 
 $def[".igk-canvas-editor-app.touchable-device div.tool.t .menu li.igk-show > .submenu"]= 
 "{sys:dispb} opacity:1;"; 
 $def[".igk-canvas-editor-app:not(.touchable-device) div.tool.t .menu li:hover > .submenu.igk-hide"]= "opacity:0.2; display:none;"; //hide the submenu if igk-hide apply . with javascript
+
+// for touchabe device
+$def[".igk-canvas-editor-app.touchable-device .igk-show"] = "background-color:red";
+$def[".igk-canvas-editor-app.touchable-device .igk-show > ul"] = "{sys:dispb} opacity:1;";
+
+
 
 //hide tool for mobile device
 $def[".xsm .igk-canvas-editor-app div.tool.t"] =
@@ -72,7 +78,8 @@ $def[".igk-canvas-editor-app .colortool > .btn:first-child"] = "position:relativ
 $def[".igk-canvas-editor-app .colortool .btn"] = "display:inline-block; width:16px; height:16px; border:1px solid black; background-color:white; ";
 $def[".igk-canvas-editor-app .colortool .btn.stroke"] = "{sys: posr} left: -4px; top: 4px; background-color:red;";
 
-$def[".igk-canvas-editor-app.touchable-device"] = "{sys:fith} padding:0px;";
+//+ touchable device 
+$def[".igk-canvas-editor-app.touchable-device"] = "{sys:fith} padding:0px; padding-top:36px; ";
 $def[".igk-canvas-editor-app.touchable-device canvas"] = "overflow:scroll; padding-top:10px;";
 $def[".igk-canvas-editor-app.touchable-device div.tool.b"]= "{sys:dispn};"; //hide the submenu if igk-hide apply . with javascript
 
