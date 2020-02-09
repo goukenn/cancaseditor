@@ -44,8 +44,8 @@
 	function createGLContext(canvas){
 		var e = {
 			alpha: true, // important to render overloay image
-		enableDebug:false,
-		antialias:true
+			enableDebug:false,
+			antialias:true
 		};
 		return canvas.getContext("webgl", e) || canvas.getContext('experimental-webgl',e );
 	};
@@ -406,7 +406,15 @@ return c;
 	
 	var SHADERS = igk.system.createNS(_NS.fullname+'.bge.shaders', {});
 	
-	
+	 function webgl_close_context(gl) {
+        var c = 0;
+        if (gl) {
+            c = gl.getExtension('WEBGL_lose_context');
+            if (c) { 
+				c.loseContext(); 
+			}
+        }
+    };
 	
 	//------------------------------------------------------------------------
 	//initialize gle to an application context. gle is for webgl embeded
@@ -429,9 +437,15 @@ return c;
 					var uri = eval(igk.scripts["@injectlocation"]);
 					if (!uri || uri.length==0)
 						return; 
-					
-					// console.debug("the uri "+uri);
 					gleContext =  createGLContext(tc.o) || die("failed to created gl");
+					
+					//unregister context 
+					igk.winui.reg_event(window, "beforeunload", function () {
+						// hit F5 -   
+						webgl_close_context(gleContext);
+						// canvas.closeContext();  
+					});
+					
 										
 					 
 				

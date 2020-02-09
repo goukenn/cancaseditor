@@ -1,3 +1,19 @@
 <?php
-$favicon = igk_io_fullpath2uri(dirname(__FILE__)."/Data/R/Img/favicon.ico");
-$doc->setFavicon($favicon);
+$pwa = igk_require_module("igk/PWA");
+$bmc = igk_require_module("igk/BMC");
+$bge = igk_require_module("igk/bge");
+
+$def = $doc->Theme;
+$def->resetAll();
+
+
+$cf = igk_io_dir(dirname(__FILE__)."/Data/R/Img/favicon.ico");
+$doc->setFavicon($cf);
+igk_google_addfont($doc, "Roboto");
+igk_google_addfont($doc, "Material Icons");
+igk_doc_enable_mobile_app($doc);
+igk_doc_add_ie_meta_compatibility($doc);
+ 
+ 
+igk_bge_init($doc);
+$bmc->initdoc($doc);

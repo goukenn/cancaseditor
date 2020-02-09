@@ -1,33 +1,39 @@
 <?php 
 //file : default cancaseditor view 
 //Project : canvas editor project view
- // header("Content-Type: text/plain");
-$pwa = igk_require_module("igk/PWA");
-$bmc = igk_require_module("igk/BMC");
-$bge = igk_require_module("igk/bge");
+use function igk_resources_gets as __;
+
+
+include_once(".header.pinc");
+
 
 $scripts = igk_html_uri(dirname(__FILE__)."/Scripts");
-// igk_wln_e("autogenerate: ", $ctrl->Configs->auto_generate);
-// !solute to avoid warning code warning in vs code editor
+// !solution to avoid warning code warning in vs code editor
 extract([]);
+ 
 
-igk_html_js_lang("igk.winui.cancasEditor.R", ["btn_ok"=>"OK"]);
+
+ 
+// igk_html_js_lang("igk.winui.cancasEditor.R", [
+// "btn_ok"=>__("OK"),
+// "file"=>__("File"),
+// ]);
 
 // clear cache for reloading ... 
 //igk_clear_cache();
+// $ctrl->Configs->auto_generate = 0;
+// if (!$ctrl->Configs->auto_generate){
+// 	if (!igk_io_is_subdir(igk_io_basedir(), $ln = $scripts)){
+// 		$_rs = 	IGKResourceUriResolver::getInstance();
+// 		foreach (igk_io_getfiles($ln, "/\.(js(on)?|xml|js|bmp|png|jpg|jpeg)$/") as $file){			 
+// 			$_rs->resolve($file, null);
+// 		} 
+// 	}
+// 	$ctrl->Configs->auto_generate = 1; 
+// }
 
 
-if (!$ctrl->Configs->auto_generate){
-	if (!igk_io_is_subdir(igk_io_basedir(), $ln = $scripts)){
-		$_rs = 	IGKResourceUriResolver::getInstance();
-		// igk_wln_e(__FILE__.":".__LINE__,  "s", $ln);
-		foreach (igk_io_getfiles($ln, "/\.(js(on)?|xml|js|bmp|png|jpg|jpeg)$/") as $file){
-			 
-			$_rs->resolve($file, null);
-		}
-	}
-	$ctrl->Configs->auto_generate = 1; 
-}
+// igk_wln_e("force auto generate ");
 
 // igk_reg_hook("generateLink", function($e){
 // 	// igk_html_debug(": generated link");
@@ -65,7 +71,6 @@ if (!$ctrl->Configs->auto_generate){
 
 
 // igk_hook(IGKEvents::HOOK_HTML_HEAD);
-
 // igk_exit();
 
 
@@ -178,20 +183,20 @@ igk_view_handle_actions($fname, Array(
 	}
 
 EFO
-);
-	
-	
-	 
-	igk_exit();
+);	igk_exit();
 	},
 	
 	"favicon.ico"=>function(){
 		$icon =dirname(__FILE__)."/Scripts/assets/favicon.png";
 		igk_header_set_contenttype("png");	
+		igk_header_cache(1200 * 60);
 		igk_wl(igk_io_read_allfile($icon));
 		igk_exit();
 	},
 	"cancas-app.sw.js"=>function()use($entryuri, $fname, $doc, $bge, $bmc){
+
+		igk_wln_e("error");
+
 		header("Content-Type: text/javascript");
 		$icon =dirname(__FILE__)."/Scripts/.cancas-app.sw.jsinc";
 		$buri = igk_io_root_entryuri();
@@ -418,27 +423,64 @@ EFO
 // }
 
 
+
 // igk_wln("rootdir : ".igk_io_rootdir());
 // igk_wln("basedir : ".igk_io_basedir());
 // igk_exit();
+ 
+$t->clearChilds();
+$t["class"] = "+fit +google-Roboto -igk-page";
+$doc->title = "cancasEditor - [".igk_app()->Configs->website_title."]"; 
+$doc->setHeaderColor("#444");
+igk_svg_bind_svgs($doc); 
+ 
+
+
 
 if (IGKUserAgent::IsOldSafariAgent()){	
-	$t->clearChilds();
-	
 	$dv = $t->addDiv();
 	$row = $dv->addContainer()->addRow();
-	
 	igk_include_view($this, $row, $dir."/Contents/404.application.failed.php");
-	
-	return;
-	
+	return;// safari application no available. 	
 }
 //testing params----------------------------------------------------------------------------------------------------------------------
 // $params = array("cancas-app.sw.js");
+$_DIR = dirname(__FILE__);
+
+$styles = $_DIR."/Styles";
+$folder  = $_DIR."/Scripts";
+$resolver = IGKResourceUriResolver::getInstance();
+$cachedir = igk_io_cacheddist_jsdir();
+if (igk_environment()->is("production")){
+	$sdir = $cachedir."/".CE_SCRIPT_NAME;
+	if (!is_dir($sdir)){
+		IGKIO::CreateDir($sdir);
+		$resolver->resolve($sdir);	
+		igk_cache_gen_cache($folder, $sdir ,null, "igk_cache_js_callback");
+		
+	}
+	
+	$folder = $cachedir;
+}
 
 
-$styles = dirname(__FILE__)."/Styles";
+$tab = $this->getParam("jsscript");
+$clist = [];
+if (!$tab){
+	$clist = igk_io_getfiles($folder, "/\.js$/");
+}
+else{
+	$clist = $tab;
+}
+foreach($clist as $f){
+	 $tab[]  = $f;
+	 $doc->addTempScript($f)->activate("defer");
+}
+$this->setParam("jsscript", $tab);
 
+
+
+/*
 ///loading script folder 
 igk_doc_load_temp_script($doc, array(
 	"folder"=>$scripts,
@@ -461,14 +503,28 @@ igk_doc_load_temp_script($doc, array(
 			}   
 			
 		}else{
-			$doc->addTempScript($cachedir."/".CE_SCRIPT_NAME."/".CE_SCRIPT_NAME.".js");
-
-			if ($created || !$this->Configs->auto_generate){				
-				foreach (igk_io_getfiles($folder, "/\.(json|xml|js|bmp|png|jpg|jpeg)$/") as $file){						 
-					$resolver->resolve($file, null);
-				}				
-				$this->Configs->auto_generate = 1; 
+			igk_wln_e("genereate cache folder .....");
+			$sdir = $cachedir."/".CE_SCRIPT_NAME;
+			if (!is_dir($sdir)){
+				//generate script cache
+				igk_cache_gen_cache($folder, $sdir ,null, igk_cache_js_callback::class);
+				
 			}
+			
+			$resolver->resolve($sdir);
+			
+			$doc->addTempScript($cachedir."/".CE_SCRIPT_NAME."/".CE_SCRIPT_NAME.".js");
+			// if ($created || !$this->Configs->auto_generate){				
+				// foreach (igk_io_getfiles($folder, "/\.(json|xml|js|bmp|png|jpg|jpeg)$/") as $file){						 
+					// $resolver->resolve($file, null);
+				// }				
+				// $this->Configs->auto_generate = 1; 
+			// }
+			
+			
+			
+			
+			
 			// igk_wln_e("auto resolve", $created, $this->Configs->auto_generate,
 			// $this->Configs->auto_generate);
 		}
@@ -494,46 +550,21 @@ igk_doc_load_temp_script($doc, array(
 	}
 
 }), CE_SCRIPT_NAME, 1);
+//*/
  
-$doc->setBaseAsset(dirname(__FILE__)."/Scripts/assets");
+$doc->setBaseAsset($_DIR."/Scripts/assets");
 
-// igk_wln_e($doc->getParam("scripts/assets"));
 
-//theme definition callback
-$def = $doc->Theme;
-$def->resetAll();
-igk_bge_init($doc);
-$bmc->initdoc($doc);
-
+ 
 
 $themefile = get_theme_file($this) ?? "default.pcss";
 igk_css_reg_global_style_file( $styles."/".$themefile, $doc->Theme);
 
 
-$doc->title = "cancasEditor - [".igk_app()->Configs->website_title."]";
 
-igk_google_addfont($doc, "Roboto"); 
-$doc->setHeaderColor("#444");
-
-igk_svg_bind_svgs($doc); 
-
-$t->clearChilds();
-  
-
-// $cf = igk_io_dir(dirname(__FILE__)."/Data/R/Img/favicon.ico");
-// $uri = IGKResourceUriResolver::getInstance()->resolve($cf, null);
-
-// igk_wln_e("favicon uri : ", $uri);
-$doc->setFavicon(new IGKHtmlRelativeUriValueAttribute(igk_html_uri(dirname(__FILE__)."/Data/R/Img/favicon.ico")));
-
-//igk_wln_e("canvas editor : ", $doc->head->Render());
-
+   
 // initialize the footer
-igk_reg_hook(IGKEvents::HOOK_HTML_FOOTER, function(){
-	// igk_createnode("balafonjs")->setContent(
-	// null // "var delall = browser.history.deleteAll || "
-	// )->RenderAJX();
-	// igk_app()->server->REQUEST_URI = "/";
+igk_reg_hook(IGKEvents::HOOK_HTML_FOOTER, function(){ 
 	$s = igk_createnode("script")->activate("defer");
 	$s["src"] = IGKResourceUriResolver::getInstance()->resolve(dirname(__FILE__)."/assets/js/telerik.js");
 	$s->renderAJX();
@@ -544,14 +575,10 @@ function get_theme_file($ctrl){
 	return null;
 }
 
-igk_doc_enable_mobile_app($doc);
-igk_doc_add_ie_meta_compatibility($doc);
 
 
-// igk_wln_e("fullpath to full uri ", 
-// igk_io_fullpath2fulluri(dirname(__FILE__)."/Scripts"));
 
-$t->setClass("+fit +google-Roboto -igk-page");
+
 $n = $t->addCancasEditorApp(igk_json_encode((object)[
 "Name"=>"Canca Editor Demonstration",
 "Version"=>CE_APP_VERSION,
@@ -563,21 +590,6 @@ $n = $t->addCancasEditorApp(igk_json_encode((object)[
 "menu"=>["status", "menu", "tools"]
 ]));
 
-$n->addCenterBox()->Content = R::gets("Initializing ...");
+$n->addCenterBox()->Content = __("Initializing ...");
 
-
-///options block
-
-// $block = $t->addDiv()->setClass("option-block posab loc_b loc_r");
-// $tool = $block->setStyle("padding-bottom: 64px;padding-right: 24px;")->addBmcRoundTool();
-// $ul = $tool->add("ul")->setClass("igk-canvas-editor-options");
-// $ul["igk-no-contextmenu"] = 1;
-// $tab = ["drop", "text", "align", "font","settings"];
-// foreach($tab as $k=>$v){
-	// $li = $ul->add("li")->setClass($v);
-	// if ($v=="drop"){
-		// $li->on["click"] = "\$igk(this.parentNode).toggleClass('igk-hide'); cancel();";
-	// }
-	// $li->addA("#")->setAttribute("igk:tool", $v)->Content = igk_svg_use($v);
-// }
-
+ 

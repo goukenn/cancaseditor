@@ -103,6 +103,9 @@ var M_ACT = igk.system.createNS("igk.winui.cancasEditor.actions.mecanismActions.
 			e.handle = 0;
 		}
 	}
+	, disabled : function(e){
+		e.handle = 1;
+	}
 	, editElement : function(e){
 		if(e.type == "keyup"){
 			if (e.elem){

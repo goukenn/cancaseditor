@@ -1,7 +1,8 @@
+//+ bezier element
 "use strict";
 (function(){
 
-//bezier / plume elementv
+//bezier / plume element 
 var _NS = igk.system.require('igk.winui.cancasEditor');
 var CoreMathOperation = _NS.CoreMathOperation;
 var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});

@@ -47,6 +47,9 @@ function _initLib(o){
 var _assetManager = {}; // assetmnager
 var _location = igk.system.module.getModule().dir; //store module location;
 
+// console.debug("location: " +_location);
+
+
 var _p_reg = {}; // pattern register
 var _pattern = {
 	getres: function(n){
@@ -75,8 +78,7 @@ var _pattern = {
 }; // pattern canvas
 igk.appendProperties(_assetManager,{
 	getUri: function(u){
-		var _loc = _libUri ||_location;
-		// console.debug("get uri "+u + " for "+_libUri);
+		var _loc = _libUri || _location;
 		return _loc+"/assets/"+u;
 	}
 });
@@ -782,6 +784,11 @@ function CancasEditorApp(q, o){
 	m_editors.push(this);
 	_initLib(o);
 	
+
+	
+	igk.publisher.register(igk.publisher.events.mediachanged, function (e) {
+		// TODO : media changed
+	});
 	//private member
 	var m_tool = null;
 	var m_selectedItem = null;
@@ -2548,7 +2555,17 @@ igk.system.createNS("igk.winui.cancasEditor.Utils",{
 						actions[Key.F] = M_ACT.toogleFillMode;
 						actions[Key.Ctrl | Key.E] = M_ACT.editElement;
 						
-						
+						// disable actions
+						actions[Key.Alt | Key.Left] = 
+						actions[Key.Alt | Key.Up] = 
+						actions[Key.Alt | Key.Down] = 
+						actions[Key.Alt | Key.Right] = 				 
+						M_ACT.disabled;
+
+						actions[Key.Ctrl | Key.N] = function(e){
+							console.debug("hit new "+ e.type);
+							e.handle = 1;
+						}
 						
 			
 				}
@@ -2634,8 +2651,7 @@ igk.system.createNS("igk.winui.cancasEditor.Utils",{
 			
 			//var m_mscapture=0;
 			function mouseDown(e){
-			     console.debug(e.type+":Button: "+e.buttons+ " : "+MS_BTN(e));
-				e.loc = _self.host.getDeviceLocation(e.clientX, e.clientY);
+			    e.loc = _self.host.getDeviceLocation(e.clientX, e.clientY);
 				e.ms_btn = MS_BTN(e);
 				_self.handleMouseDown(e);				
 			};
@@ -2876,8 +2892,7 @@ igk.system.createNS("igk.winui.cancasEditor.Utils",{
 						host: _self.host,
 						elem: _elem,
 						handle:1
-					};
-					//console.debug("handle : "+ _key_actions[k].name);
+					}; 
 					_key_actions[k].apply(_self, [ev]);
 					
 					if (ev.handle){
@@ -2994,6 +3009,14 @@ igk.system.createNS("igk.winui.cancasEditor.Utils",{
 					s.canvas.on("mousemove", mouseMove);
 				}
 				s.canvas.on("contextmenu", _stopContext);
+
+				// igk.winui.reg_event(window, "keydown" , function(e){
+				// 	console.debug("handle data from base");
+				// 	e.preventDefault();
+				// 	e.stopPropagation();
+
+				// });
+
 				$igk(document).on("keyup keydown", __handleKey);//.on("keydown", __handleKey);
 				
 				s.on("currentLayerChanged", __stopEdition);	

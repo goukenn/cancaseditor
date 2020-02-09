@@ -3,11 +3,11 @@
     "host":"ftp.igkdev.fr",
     "username":"igkdev",
     "password":"CQ10bonajehost25",
-    "remotePath": "/sites/igkdev/src/application/projects/igk_default/Views/cancaseditor/",
+    "remotePath": "/sites/igkdev.com/src/application/Projects/igk_default/Views/cancaseditor/",
     "protocol": "ftp",
     "port":0,
     "fileNameEncoding": "utf8",
-    "autoUpload": false,
+    "autoUpload": true,
     "autoDelete": false,
     "autoDownload": false,
     "ignore": [
