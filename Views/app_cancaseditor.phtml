@@ -5,10 +5,9 @@ if (!file_exists(dirname(__FILE__)."/cancaseditor/default.phtml"))
 
 $ctn =$t->addDiv()->addContainer();
 $dv = $ctn->addRow()->addCol()->addDiv();
-
 $dv->addSectionTitle(4)->Content = "Cancas Editor";
-$dv = $ctn->addRow()->addCol();
-igk_html_article($this, "cancaseditor.presentation",$dv->addDiv());
+$dv = $ctn->addRow()->addCol()->addDiv()->addArticle($this, "cancaseditor.presentation.template",[]);
+// igk_html_article($this, "cancaseditor.presentation",$dv->addDiv());
 
 
-$ctn->addRow()->addCol()->addDiv()->addA($this->getAppUri("cancaseditor"))->Content = R::gets("Open");
+// $ctn->addRow()->addCol()->addDiv()->addA($this->getAppUri("cancaseditor"))->Content = R::gets("Open");

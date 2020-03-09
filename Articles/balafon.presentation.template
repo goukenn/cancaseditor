@@ -1,0 +1,9 @@
+<h2 class="dispn" >BALAFON</h2>
+<div>
+<quote>
+	{{ 'Php Web development plateform' | uppercase }} 
+	<div>
+	<igk:domainLink igk:args="[func: return igk_ctrl_get_app_uri('app_balafon') ?? '/#';]"> {{ 'Learn more' }} </igk:domainLink>
+	</div>
+</quote>
+</div>

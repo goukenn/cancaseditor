@@ -1,56 +1,62 @@
 <?php
-// namespace IGK;
-// use IGK;  
-// throw new Exception("Not Valid operation");
+use function igk_resources_gets as __; //language resolution 
+
+
+//char not allowed on name
+ // igk_wln("data" , igk_sys_getconfig("mail_contact"));
+ // igk_wln_e("data" , igk_mail_noreply_address());
 
 igk_reg_hook(IGKEvents::HOOK_HTML_META, function(){
 	echo "<meta name='igk-app-version' content='igkdev2.0' />";
-});  
-
-// if (igk_app()->server->REDIRECT_STATUS == 403){
-	// igk_wln_e("access deny.");
-// }
-
-// session_destroy();	
-
-// igk_wln($params);
-// igk_trace();
-// igk_wln_e("done ", __FILE__);
+});
+igk_doc_set_favicon($doc, $this->getResourcesDir()."/Img/favicon.ico");
+$t->clearChilds();
 
  
-/*
-header("Content-Type: text/html");
-?>
-<html>
-<head>
-<script type="text/javascript" src="http://localhost:5858/Lib/igk/Scripts/igk.js" type="javascript" ></script>
-</head>
-<body>The sample data is :::: 4588
-
-<div id="ou" />
-<script type="text/javascript" type="javascript" >
-$igk('#ou').setHtml("RIRIR");
-</script>
-<div style="max-height:400px; overflow:auto" >
-<?php
-igk_wln($_SERVER);
-?>
-</div>
-</body>
-</html>
-<?php
-
-echo "sample";
- 
-*/
-// igk_trace();
-// igk_wln($params);
-
-igk_view_handle_actions($fname, ["update"=>function()use($ctrl){
+  
+igk_view_handle_actions($fname, ["update"=>
+function()use($ctrl){
 	/*/igk_wln("update-------------------------%>");//*/
 	igk_navto($ctrl->getAppUri());
 	igk_exit();
-}, "(@error)"=>[
+}, 
+"contactme"=>function(){
+	if (!igk_environment()->is("POST") && !igk_html_valid_cref(1)){
+		return;
+	}
+	extract(igk_getr_kv(["firstname"=>"","lastname"=>"", "email"=>"", "message"=>""]));
+ 
+	$error = [];
+	//
+	// validation 
+	//
+	if(!IGKValidator::IsEmail($email)) $error['email'] = "email not valid";
+	if (empty($message) || (strlen($message)>200)) $error['message'] = "message not valid";
+	
+	// validate the name - 
+	if (strpos($firstname, ".") !==false)$error['firstname'] = "firstname not valid";
+	if (strpos($lastname, ".") !==false)$error['lastname'] = "lastname not valid";
+	
+	
+	if (count($error) == 0){
+			if(igk_mail_sendmail(
+				igk_sys_getconfig("mail_contact"), 
+				igk_mail_noreply_address(),
+				"Subject : Contact-Me",
+				$message)){
+				igk_resetr();
+				igk_notifyctrl("mailcontact")->addMsg("Thank you for your");
+		}else{
+			
+		igk_notifyctrl("mailcontact")->addError("Error: mail not send");
+		}
+	} else {
+		igk_notifyctrl("mailcontact")->addError("Error: contact form not valid");
+	}
+	
+	igk_ajx_replace_uri($this->getAppUri("#contact_form"));
+},
+"(@error)"=>[
 	403=>function($uri=null){
 		igk_wln_e("access denied");		
 		igk_exit();
@@ -88,7 +94,7 @@ igk_view_handle_actions($fname, ["update"=>function()use($ctrl){
 $doc->theme->def->clear(); 
 $t->clearChilds();
 $t->addJSLogger(true);
-
+$t->addDiv()->addContainer()->addSingleRowCol("fitw")->addDiv()->setClass("cookie-warn alignm")->addArticle($this, "cookie.warn"); 
 // $t->addObData(function(){
 	// $this->loader->view(IGK_LIB_DIR."/Articles/templates/page_template.phtml", array(
 	// "docType"=>"html",
@@ -132,6 +138,15 @@ $doc->Title = "IGKDEV";
 $t->addNotifyHost();
 
 
+// igk_wl(igk_html_eval_article(
+// IGKCtrlTypeBase::GetAdditionalDefaultViewContent(), [
+// "author"=>igk_sys_getconfig("developer", IGK_AUTHOR), 
+// "date"=>date("Y-m-d H:i:s"),
+// "version"=>1.0,
+// ]));
+// igk_wl(IGKCtrlTypeBase::GetAdditionalDefaultViewContent());
+// exit;
+
  
 
 
@@ -170,6 +185,28 @@ igk_hook(IGKEvents::HOOK_APP_PRESENTATION, [$this, $dv]);
 
 igk_ctrl_view_load_pattern($this, $dv, "app");
 
+$dv = $t->addDiv()->setClass("contact")->setStyle("margin-top: 2em;");
+$cn = $dv->addContainer();
+
+$frm = $cn->addSingleRowCol("igk-col-3-3 alignc")->addForm();
+$frm["action"] = $this->getAppUri($fname."/contactme");
+$frm["class"] = "contact_form alignl dispib";
+// $frm["onsubmit"] = "javascript: return false;";
+$frm->setId("contact_form");
+$frm->addNotifyHost("mailcontact");
+
+$frm->addDiv()->setClass("alignc")->setStyle("margin-bottom: 3em")->addSectionTitle(4)->Content = __("Contact Us");
+
+igk_html_form_initfield($frm);
+igk_html_form_buildformfield($frm, [
+	"firstname"=>["attribs"=>["maxlength"=>20, "placeholder"=>__("firstname") ], "label_text"=>__("firstname")],
+	"lastname"=>["attribs"=>["maxlength"=>40, "placeholder"=>__("lastname")], "label_text"=>__("lastname")],
+	"email"=>["type"=>"email", "placeholder"=>"your mail", "attribs"=>["maxlength"=>60],"label_text"=>__("email")], 
+	"message"=>["type"=>"textarea", "attribs"=>["maxlength"=>200], "label_text"=>__("message")]
+]);
+$c = $frm->addDiv()->setClass("action-bar");
+$c->addLabel()->setContent("");
+$c->addButton("btn.send")->setAttribute("type", "submit")->setContent(__("Send"));
 
 include(dirname(__FILE__)."/.footer.pinc");
 unset($body);

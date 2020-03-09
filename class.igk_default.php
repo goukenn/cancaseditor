@@ -3,7 +3,7 @@
 //file is a part of the controller tab list
 class igk_default extends IGKDefaultPageController 
 // class igk_default extends IGKApplicationController 
-	//implements IIGKHTMLHorizontalPaneListener
+//implements IIGKHTMLHorizontalPaneListener
 { 
 	
 	public function getName(){return get_class($this);}

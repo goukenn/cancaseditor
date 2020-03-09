@@ -1,0 +1,9 @@
+<h2 class="dispn" >BALAFON</h2>
+<div>
+<quote>
+	{{ 'Online Graphical Editor' | uppercase }}
+	<div>
+	<igk:domainLink igk:args="[[:@ctrl->getAppUri('cancaseditor')]]"> {{ 'Learn more' }} </igk:domainLink>
+	</div>
+</quote>
+</div>

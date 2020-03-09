@@ -1,9 +1,8 @@
 <?php
 
-$t->ClearChilds();
-// igk_ctrl_init_css($this, $t, "+".strtolower(basename(__FILE__)));
+$t->ClearChilds(); 
 $page = igk_io_basenamewithoutext(__FILE__);
-$doc->Title =igk_str_capitalize(R::gets($page))." - IGKDEV";
+$doc->Title = ucfirst(R::gets($page))." - IGKDEV";
 $doc->Metas->Description = R::gets($page ." page");
 
 igk_google_addfont($doc, "Roboto");
@@ -11,9 +10,4 @@ $t["class"] = "google-Roboto";
 
 include(dirname(__FILE__)."/.header.pinc");
 
-include(dirname(__FILE__)."/.footer.pinc");
-
-
-
-
-?>
+include(dirname(__FILE__)."/.footer.pinc"); 

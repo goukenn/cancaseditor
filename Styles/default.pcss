@@ -8,18 +8,29 @@ if (is_object($ctrl)){
 		return;
 	}
 }else
-{
+{}
+// igk_ilog(implode("\n", [
+// "include ..... ".igk_env_count(__FILE__),
+// igk_io_request_uri(),
+// ]));
+// return;
+$site_theme = igk_sys_getconfig("globaltheme");
+
+
+$cl["mainColor"] = "#982077"; 
+$cl["defHeaderBgColor"] = "#982077"; 
+$cl["defHeaderColor"] = "#FFF";  
+
+if (file_exists($file = dirname(__FILE__)."/".$site_theme.".theme")){
+	include($file);
+}else{
 	
 }
-  
-
- 
-$cl["defHeaderColor"] = "#982077"; //header bar 
 
 // header
-$def[$css_m." .igk-header"] = "background-color:[cl:defHeaderColor]";
+$def[$css_m." .igk-header"] = "background-color:[cl:defHeaderBgColor]; color: [cl:defHeaderColor];";
 // $def[$css_m." .igk_default"]="background-color:#323232";
-$def[$css_m." .igk_default .footer"] = "color:#d9d9d9; background-color:#444; padding:24px 0px; font-size:normal; line-height:0;";
+$def[$css_m." .igk_default .footer"] = "color:#d9d9d9; background-color:#444; padding:24px 0px; font-size: 1em; line-height:0;";
 
 
 $def[$css_m." .igk-section-title"]="font-family:'Roboto', sans-serif; font-weight:300;";
@@ -98,6 +109,28 @@ switch($globaltheme){
 }
  
  $def[$css_m.""]="";
- 
+$def[$css_m." .contact"]="background-color:#222;";
 
-?>
+$def[".contact_form"] = "padding: 3em 0px; margin: auto;"; 
+$def[".contact_form label"]="display:inline-block; padding-right : 1em; vertical-align:top; min-width: 260px;";
+$def[".contact_form input, .contact_form textarea"]="padding:4px; min-width: 320px; margin-bottom:1em;";
+
+
+$def[".contact_form .content > div"] = "text-align:center;";
+$def[".contact_form .content > div label"] = "display:none;";
+
+
+$def[$css_m." .contact_form #firstname"]="text-transform:capitalize"; 
+$def[$css_m." .contact_form #lastname"]="text-transform:uppercase"; 
+$def[$css_m." .contact_form div.action-bar"]="text-align: left;"; 
+
+$def[".contact_form textarea"] = "min-height: 180px;";
+
+$def[$css_m." .cookie-warn"]="font-size:0.7em";
+$def[$css_m." .cookie-warn span.material-icons"]="margin-right : 4px;";
+$def[$css_m." input"]=
+$def[$css_m." textarea"] =
+"padding: 10px; font-weight:100; font-size: 0.92em; border-radius: 4px; border:solid 1px #ddd;";
+
+
+$def[$css_m." .footer select"]="z-index: 100; right:0px; position:absolute;";

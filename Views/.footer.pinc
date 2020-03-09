@@ -3,9 +3,11 @@
 
 
 $dv = $t->addDiv()->setClass("footer");
-$dv->addDiv()->addContainer()->addSingleRowCol("igk-col-3-3")->addDiv()->setClass("alignr")->addIGKGlobalLangSelector();
+// $dv->addDiv()->setClass("floatr")->addSingleRowCol("igk-col-3-3")->addDiv()->setClass("alignr")->addIGKGlobalLangSelector();
 $row = $dv->addContainer()->addRow();
-$co = $row->addCol();
+$co = $row->addCol("fitw");
+$co->addDiv()->setClass("floatr")->addIGKGlobalLangSelector();
 $co->addDiv()->addIGKCopyright();
 $co = $row->addCol("igk-col-sm-3-3 igk-col-xsm-3-3 igk-xsm-alignc");
 $co->addCommunityNode();
+

@@ -1,0 +1,47 @@
+/*canvas expression générated with drsstudio */
+/*C.A.D. BONDJE DOUE */
+var v_context =canva.getContext ? canva.getContext("2d") : null;
+if (v_context ==null)return;
+
+canva.width = 256;
+canva.height = 256;
+v_context.save();
+/*path items #Path_29240129*/
+v_context.beginPath();
+v_context.moveTo(243.3126,128);
+v_context.bezierCurveTo(243.3126,191.6854,191.6854,243.3126,128,243.3126);
+v_context.bezierCurveTo(64.31457,243.3126,12.68738,191.6854,12.68738,128);
+v_context.bezierCurveTo(12.68738,64.31457,64.31457,12.68738,128,12.68738);
+v_context.bezierCurveTo(191.6854,12.68738,243.3126,64.31457,243.3126,128);
+v_context.closePath();
+v_context.moveTo(69.33088,158.7868);
+v_context.bezierCurveTo(69.33088,163.1434,69.33088,163.1434,69.33088,167.5);
+v_context.bezierCurveTo(128,167.2096,128,167.2096,186.6691,166.9191);
+v_context.bezierCurveTo(186.6691,162.8529,186.6691,162.8529,186.6691,158.7868);
+v_context.bezierCurveTo(159.9485,158.7868,159.9485,158.7868,133.2279,158.7868);
+v_context.bezierCurveTo(131.4853,163.4338,124.5147,163.4338,122.7721,158.7868);
+v_context.bezierCurveTo(69.33088,158.7868,69.33088,158.7868,69.33088,158.7868);
+v_context.closePath();
+v_context.moveTo(72.23529,88.5);
+v_context.lineTo(183.7647,88.5);
+v_context.lineTo(183.7647,154.1397);
+v_context.lineTo(72.23529,154.1397);
+v_context.closePath();
+v_context.moveTo(77.46323,91.69485);
+v_context.lineTo(178.5368,91.69485);
+v_context.lineTo(178.5368,141.0699);
+v_context.lineTo(77.46323,141.0699);
+v_context.closePath();
+v_context.moveTo(125.0956,146.0074);
+v_context.lineTo(130.9044,146.0074);
+v_context.lineTo(130.9044,150.6544);
+v_context.lineTo(125.0956,150.6544);
+v_context.closePath();
+v_context.fillStyle = "#000";
+v_context.fill("evenodd");
+v_context.globalAlpha=0;
+v_context.lineCap = "butt";
+v_context.lineJoin = "miter";
+v_context.stroke();
+v_context.restore();
+

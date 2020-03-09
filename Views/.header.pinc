@@ -4,6 +4,7 @@
 igk_google_addfont($doc, "Open Sans Condensed", 300);
 igk_google_addfont($doc, "Anton", 400);
 igk_google_addfont($doc, "Roboto");
+igk_google_addfont($doc, "Material Icons");
 
 //define header
 $doc->setHeaderColor("#FF6500"); // Orange

@@ -1,0 +1,5 @@
+<?php
+//
+// dark theme
+$cl["defHeaderBgColor"] = "#444"; 
+$cl["defHeaderColor"] = "#eee"; 
