@@ -13,12 +13,12 @@ var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 		var _index = _notifylist.length-1;
 		var _self = this;
 		var p =  $igk(a.canvas.o.parentNode);
-		var _notHost = p.select(".igk-canvas-editor_notifyhost").first() || (function(){
-			return p.add("div").addClass("igk-canvas-editor_notifyhost");				
+		var _notHost = p.select(".igk-cancas-editor_notifyhost").first() || (function(){
+			return p.add("div").addClass("igk-cancas-editor_notifyhost");				
 		})();
 		
 		var q = igk.createNode("div");
-		q.addClass("igk-canvas-editor_notify");
+		q.addClass("igk-cancas-editor_notify");
 		// safari not allow to add properties twice
 		//demonstration
 		var s = {		

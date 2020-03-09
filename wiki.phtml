@@ -1,4 +1,6 @@
 <?php
+
+igk_wln("the view not changed....");
 include(dirname(__FILE__)."/.header.pinc");
 
 $bootstrap = igk_require_module("bootstrap", false);
@@ -6,10 +8,25 @@ $bootstrap = igk_require_module("bootstrap", false);
 $doc->Title = "WIKI - cancaseditor";
 
 $t->clearChilds();
+$t->setClass("google-Roboto");
 $t->addDiv();
 
 $t->addJumbotron();
+ 
 
-$dv = $t->addDiv(); 
-$dv->Content  = "Welcome - Wiki page";
+$d = $t->addDiv();
+$c = $d->addContainer();
+
+
+
+
+
+
+
+//+ Footer
+$d = $t->addDiv();
+$c = $d->addContainer();
+$c->addSingleRowCol()->addDiv()->addIGKCopyRight();
+
+
 

@@ -9,7 +9,13 @@
 (function(){
 var _NS = 0;
 var _libUri=0;
-_NS = igk.system.createNS("igk.winui.cancasEditor", {}); // global _NS definition
+_NS = igk.system.createNS("igk.winui.cancasEditor", {
+
+	log: function(msg){
+		console.debug("[JS-C-Editor] - "+msg);
+	}
+
+}); // global _NS definition
 
 
 
@@ -20,7 +26,7 @@ if (igk.navigator.isSafari() && (igk.navigator.SafariVersion().split('.')[0] <60
 	
 	igk.defineProperty(_NS, "NotAvailable", {get:function(){ return 1; }});
 	
-	igk.winui.initClassControl("igk-canvas-editor-app",function(){
+	igk.winui.initClassControl("igk-cancas-editor-app",function(){
 		this.setHtml("");
 		this.remove();
 	});
@@ -47,8 +53,7 @@ function _initLib(o){
 var _assetManager = {}; // assetmnager
 var _location = igk.system.module.getModule().dir; //store module location;
 
-// console.debug("location: " +_location);
-
+_NS.log("[JS-c-editor] - the location "+ _location);
 
 var _p_reg = {}; // pattern register
 var _pattern = {
@@ -1899,11 +1904,11 @@ var ProcessStart = new ProcessInitiator();
 // BASE
 //-----------------------------------------------------------------------
 
-igk.winui.initClassControl("igk-canvas-editor-app", function(){
+igk.winui.initClassControl("igk-cancas-editor-app", function(){
 	// console.debug("init canvas-editor-app");
 	var _s = JSON.parse(this.getAttribute("igk:settings"));
 	var _e = {	
-		'--igk-canvas-editor-app_background': '#444'
+		'--igk-cancas-editor-app_background': '#444'
 	};
 	this.setCss(_e);
 	

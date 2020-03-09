@@ -13,75 +13,75 @@ $var = function($n, $def='')use(& $root){
 };
 
 $root["--igk-background-color"] = "#444";
-$root["--igk-canvas-editor-app_menu-height"] = "32px";
+$root["--igk-cancas-editor-app_menu-height"] = "32px";
 $root["--ce-input_background-color"] = "#eee";
 
-//$def[".igk-canvas-editor-app"] = "{sys:fit, posr} background-color: [var: --igk-canvas-editor-app_background, #444]; background-color: var(--igk-canvas-editor-app_background, #444); padding-left: 32px; padding-top: 32px; padding-bottom :  var(--igk-canvas-editor-app_menu-height, 32px)";
-$def[".igk-canvas-editor-app"] = "{sys:fit, posr, no-overflow} overscroll-behavior: none; background-color: var(--igk-canvas-editor-app_background, #444); padding-left: 32px; padding-top: 32px; padding-bottom : var(--igk-canvas-editor-app_menu-height, 32px)";
-$def[".igk-canvas-editor-app canvas:not(.posab)"] = "background-color: #676767; position:relative;";
-$def[".igk-canvas-editor-app div.tool"] = "{sys:posab}";
+//$def[".igk-cancas-editor-app"] = "{sys:fit, posr} background-color: [var: --igk-cancas-editor-app_background, #444]; background-color: var(--igk-cancas-editor-app_background, #444); padding-left: 32px; padding-top: 32px; padding-bottom :  var(--igk-cancas-editor-app_menu-height, 32px)";
+$def[".igk-cancas-editor-app"] = "{sys:fit, posr, no-overflow} overscroll-behavior: none; background-color: var(--igk-cancas-editor-app_background, #444); padding-left: 32px; padding-top: 32px; padding-bottom : var(--igk-cancas-editor-app_menu-height, 32px)";
+$def[".igk-cancas-editor-app canvas:not(.posab)"] = "background-color: #676767; position:relative;";
+$def[".igk-cancas-editor-app div.tool"] = "{sys:posab}";
 
-$def[".igk-canvas-editor-app div.b"] = "{sys:posab, loc_b, loc_l, loc_r} font-size: 8pt; color:#ddd; line-height:32px; vertical-align:center;";
+$def[".igk-cancas-editor-app div.b"] = "{sys:posab, loc_b, loc_l, loc_r} font-size: 8pt; color:#ddd; line-height:32px; vertical-align:center;";
 
 
 //+ menu definition
-$def[".igk-canvas-editor-app div.tool.t"] = "{sys:loc_t, loc_l, loc_r, no-selection} background-color: #444; z-index:{$menuZIndex}; padding-left:32px;";
-$def[".igk-canvas-editor-app div.tool.t .menu"] = "{sys:dispib, no-wrap, ellipsis} vertical-align:middle; /*for ie explorer*/ line-height: 32px; line-height:var(--igk-canvas-editor-app_menu-height, 32px);";
-$def[".igk-canvas-editor-app div.tool.t .menu"] = "{sys:dispib, no-wrap, ellipsis} vertical-align:middle; /*for ie explorer*/ line-height: 32px; line-height:var(--igk-canvas-editor-app_menu-height, 32px);";
+$def[".igk-cancas-editor-app div.tool.t"] = "{sys:loc_t, loc_l, loc_r, no-selection} background-color: #444; z-index:{$menuZIndex}; padding-left:32px;";
+$def[".igk-cancas-editor-app div.tool.t .menu"] = "{sys:dispib, no-wrap, ellipsis} vertical-align:middle; /*for ie explorer*/ line-height: 32px; line-height:var(--igk-cancas-editor-app_menu-height, 32px);";
+$def[".igk-cancas-editor-app div.tool.t .menu"] = "{sys:dispib, no-wrap, ellipsis} vertical-align:middle; /*for ie explorer*/ line-height: 32px; line-height:var(--igk-cancas-editor-app_menu-height, 32px);";
 
-$def[".igk-canvas-editor-app div.tool.t .menu li"] = "{sys:dispib}";
-$def[".igk-canvas-editor-app div.tool.t .menu li.igk-hide"] = "display:none !important;";
-$def[".igk-canvas-editor-app div.tool.t .menu li.igk-disable a"] = "color:#555; background-color:#111;";
-$def[".igk-canvas-editor-app div.tool.t .menu li.igk-disable a:hover"] = "color:#555 !important; background-color:#111 !important;";
-$def[".igk-canvas-editor-app div.tool.t .menu > li:not(:first-child)"] = "margin-left: 4px";
-$def[".igk-canvas-editor-app div.tool.t .menu li > a"] = "{sys:dispb} color:#ddd; cursor:pointer; min-width:32px; padding: 0px 4px; font-size: 0.9em; ";
-$def[".igk-canvas-editor-app:not(.touchable-device) div.tool.t .menu li > a:hover"] = "color:#eee; background-color: #4c448f";//{sys:dispb} cursor:pointer; ";
+$def[".igk-cancas-editor-app div.tool.t .menu li"] = "{sys:dispib}";
+$def[".igk-cancas-editor-app div.tool.t .menu li.igk-hide"] = "display:none !important;";
+$def[".igk-cancas-editor-app div.tool.t .menu li.igk-disable a"] = "color:#555; background-color:#111;";
+$def[".igk-cancas-editor-app div.tool.t .menu li.igk-disable a:hover"] = "color:#555 !important; background-color:#111 !important;";
+$def[".igk-cancas-editor-app div.tool.t .menu > li:not(:first-child)"] = "margin-left: 4px";
+$def[".igk-cancas-editor-app div.tool.t .menu li > a"] = "{sys:dispb} color:#ddd; cursor:pointer; min-width:32px; padding: 0px 4px; font-size: 0.9em; ";
+$def[".igk-cancas-editor-app:not(.touchable-device) div.tool.t .menu li > a:hover"] = "color:#eee; background-color: #4c448f";//{sys:dispb} cursor:pointer; ";
 
 
-$def[".igk-canvas-editor-app div.tool.t .menu .submenu"]= "{sys:posab, dispn} background-color:#222; opacity:0; box-shadow: 0 0 6px black;"; 
-$def[".igk-canvas-editor-app div.tool.t .menu .submenu .sub_2"]= "left: 100%; top:0px;"; 
-$def[".igk-canvas-editor-app div.tool.t .menu .submenu > li"]= "{sys:dispb, posr} "; 
-$def[".igk-canvas-editor-app div.tool.t .menu .submenu > li a"]= "padding-left: 48px; padding-right:64px;"; 
-$def[".igk-canvas-editor-app:not(.touchable-device) div.tool.t .menu li:hover > .submenu"]= 
-$def[".igk-canvas-editor-app.touchable-device div.tool.t .menu li.igk-show > .submenu"]= 
+$def[".igk-cancas-editor-app div.tool.t .menu .submenu"]= "{sys:posab, dispn} background-color:#222; opacity:0; box-shadow: 0 0 6px black;"; 
+$def[".igk-cancas-editor-app div.tool.t .menu .submenu .sub_2"]= "left: 100%; top:0px;"; 
+$def[".igk-cancas-editor-app div.tool.t .menu .submenu > li"]= "{sys:dispb, posr} "; 
+$def[".igk-cancas-editor-app div.tool.t .menu .submenu > li a"]= "padding-left: 48px; padding-right:64px;"; 
+$def[".igk-cancas-editor-app:not(.touchable-device) div.tool.t .menu li:hover > .submenu"]= 
+$def[".igk-cancas-editor-app.touchable-device div.tool.t .menu li.igk-show > .submenu"]= 
 "{sys:dispb} opacity:1;"; 
-$def[".igk-canvas-editor-app:not(.touchable-device) div.tool.t .menu li:hover > .submenu.igk-hide"]= "opacity:0.2; display:none;"; //hide the submenu if igk-hide apply . with javascript
+$def[".igk-cancas-editor-app:not(.touchable-device) div.tool.t .menu li:hover > .submenu.igk-hide"]= "opacity:0.2; display:none;"; //hide the submenu if igk-hide apply . with javascript
 
 // for touchabe device
-$def[".igk-canvas-editor-app.touchable-device .igk-show"] = "background-color:red";
-$def[".igk-canvas-editor-app.touchable-device .igk-show > ul"] = "{sys:dispb} opacity:1;";
+$def[".igk-cancas-editor-app.touchable-device .igk-show"] = "background-color:red";
+$def[".igk-cancas-editor-app.touchable-device .igk-show > ul"] = "{sys:dispb} opacity:1;";
 
 
 
 //hide tool for mobile device
-$def[".xsm .igk-canvas-editor-app div.tool.t"] =
-$def[".sm .igk-canvas-editor-app div.tool.t"] = "{sys:dispn}";
-$def[".xsm .igk-canvas-editor-app"] = 
-$def[".sm .igk-canvas-editor-app"] = 
+$def[".xsm .igk-cancas-editor-app div.tool.t"] =
+$def[".sm .igk-cancas-editor-app div.tool.t"] = "{sys:dispn}";
+$def[".xsm .igk-cancas-editor-app"] = 
+$def[".sm .igk-cancas-editor-app"] = 
 "padding-top:0px;"; 
 
-$def[".igk-canvas-editor-app div.tool.b"] = "{sys:no-selection}";
+$def[".igk-cancas-editor-app div.tool.b"] = "{sys:no-selection}";
 
-$def[".igk-canvas-editor-app .layerview"] = "padding-left: 16px; line-height:1; border:1px solid black; text-indent: -10px; max-height:230px; overflow-y:auto;";
-$def[".igk-canvas-editor-app .layerview > li.igk-active"] = "list-style-type: disc";
-$def[".igk-canvas-editor-app .layerview > li"] = "position:relative; list-style-type: none; padding: 10px;";
-$def[".igk-canvas-editor-app .layerview > li:hover"] = 
-$def[".igk-canvas-editor-app .layerview > li:hover:before"] = 
+$def[".igk-cancas-editor-app .layerview"] = "padding-left: 16px; line-height:1; border:1px solid black; text-indent: -10px; max-height:230px; overflow-y:auto;";
+$def[".igk-cancas-editor-app .layerview > li.igk-active"] = "list-style-type: disc";
+$def[".igk-cancas-editor-app .layerview > li"] = "position:relative; list-style-type: none; padding: 10px;";
+$def[".igk-cancas-editor-app .layerview > li:hover"] = 
+$def[".igk-cancas-editor-app .layerview > li:hover:before"] = 
 "background-color:indigo;";
-$def[".igk-canvas-editor-app .layerview > li:before"] = "z-index:-1; left:-16px; top:0px; width:16px; height:100%; position:absolute; content:' ';";
+$def[".igk-cancas-editor-app .layerview > li:before"] = "z-index:-1; left:-16px; top:0px; width:16px; height:100%; position:absolute; content:' ';";
 
 
-$def[".igk-canvas-editor-app hr"]= "margin:0px 4px; border:0px; border-bottom: 1px #555 solid;";
+$def[".igk-cancas-editor-app hr"]= "margin:0px 4px; border:0px; border-bottom: 1px #555 solid;";
 
-$def[".igk-canvas-editor-app .colortool"] = "display:inline-block; vertical-align:middle; line-height:0; position:relative; ";
-$def[".igk-canvas-editor-app .colortool > .btn:first-child"] = "position:relative; margin-left:4px;";
-$def[".igk-canvas-editor-app .colortool .btn"] = "display:inline-block; width:16px; height:16px; border:1px solid black; background-color:white; ";
-$def[".igk-canvas-editor-app .colortool .btn.stroke"] = "{sys: posr} left: -4px; top: 4px; background-color:red;";
+$def[".igk-cancas-editor-app .colortool"] = "display:inline-block; vertical-align:middle; line-height:0; position:relative; ";
+$def[".igk-cancas-editor-app .colortool > .btn:first-child"] = "position:relative; margin-left:4px;";
+$def[".igk-cancas-editor-app .colortool .btn"] = "display:inline-block; width:16px; height:16px; border:1px solid black; background-color:white; ";
+$def[".igk-cancas-editor-app .colortool .btn.stroke"] = "{sys: posr} left: -4px; top: 4px; background-color:red;";
 
 //+ touchable device 
-$def[".igk-canvas-editor-app.touchable-device"] = "{sys:fith} padding:0px; padding-top:36px; ";
-$def[".igk-canvas-editor-app.touchable-device canvas"] = "overflow:scroll; padding-top:10px;";
-$def[".igk-canvas-editor-app.touchable-device div.tool.b"]= "{sys:dispn};"; //hide the submenu if igk-hide apply . with javascript
+$def[".igk-cancas-editor-app.touchable-device"] = "{sys:fith} padding:0px; padding-top:36px; ";
+$def[".igk-cancas-editor-app.touchable-device canvas"] = "overflow:scroll; padding-top:10px;";
+$def[".igk-cancas-editor-app.touchable-device div.tool.b"]= "{sys:dispn};"; //hide the submenu if igk-hide apply . with javascript
 
 
 $def[".pageLayer-contextMenu"] = "{sys:no-overflow} [trans: opacity 0.5s ease-out]; opacity: 1.0; z-index:110; top:0px; left: 100px; background-color: #444; [resolv: box-shadow: 0px 0px 4px]; border-radius: 10px;";
@@ -109,39 +109,39 @@ $def[".canvas-editor-gui_dialog .box .content"] = "min-width:300px; line-height:
 $def["body > .dialog .igk-winui-bmc-group > div"] = "margin:4px 0px;";
 
 
-$theme->reg_keyFrames($def, "igk-canvas-editor_notify-anim", " from { left: 50%; } to {left: 0px; }");
+$theme->reg_keyFrames($def, "igk-cancas-editor_notify-anim", " from { left: 50%; } to {left: 0px; }");
 
 
-$def[".igk-canvas-editor_notifyhost"]="{sys:posab} right:0px; top:0px;";
-$def[".igk-canvas-editor_notify"] = "(:.no-selection) [trans:opacity 0.2s ease-in, box-shadow 0.5s] [anim:igk-canvas-editor_notify-anim 0.2s linear]".
+$def[".igk-cancas-editor_notifyhost"]="{sys:posab} right:0px; top:0px;";
+$def[".igk-cancas-editor_notify"] = "(:.no-selection) [trans:opacity 0.2s ease-in, box-shadow 0.5s] [anim:igk-cancas-editor_notify-anim 0.2s linear]".
 "opacity: 0.7; right:0; top: 0px; background-color:#444; line-height: 4em; color:#eee; padding:10px; padding-left:48px; margin-right: 10px; margin-top:10px; border-radius: 4px; ";
-$def[".igk-canvas-editor_notify:hover"] = "opacity : 1.0; box-shadow: 0 0 6px black;";
-$def[".igk-canvas-editor_notify.igk-hide"] = "opacity : 0.0;";
+$def[".igk-cancas-editor_notify:hover"] = "opacity : 1.0; box-shadow: 0 0 6px black;";
+$def[".igk-cancas-editor_notify.igk-hide"] = "opacity : 0.0;";
 
-// $def[".igk-canvas-editor_notify + .igk-canvas-editor_notify"] = "top: 100%";
+// $def[".igk-cancas-editor_notify + .igk-cancas-editor_notify"] = "top: 100%";
 
-$PTR[".igk-canvas-editor-app"] = "display:none !important;";
-$PTR[".igk-canvas-editor-options"] = "display:none !important;";
+$PTR[".igk-cancas-editor-app"] = "display:none !important;";
+$PTR[".igk-cancas-editor-options"] = "display:none !important;";
 
 
 
 //- snippets
-$def[".igk-canvas-editor-app.touchable-device .snippet"] = "[transform:scale({$snippets['touch_size']},{$snippets['touch_size']})]";
-$def[".igk-canvas-editor-app .snippet"] = "{sys:posab}; cursor:pointer; z-index:{$snippetZIndex}; opacity: 0.5; [trans: opacity 0.2s ease-out];  width:1px; height:1px; transform-origin:center;".
+$def[".igk-cancas-editor-app.touchable-device .snippet"] = "[transform:scale({$snippets['touch_size']},{$snippets['touch_size']})]";
+$def[".igk-cancas-editor-app .snippet"] = "{sys:posab}; cursor:pointer; z-index:{$snippetZIndex}; opacity: 0.5; [trans: opacity 0.2s ease-out];  width:1px; height:1px; transform-origin:center;".
 " [transform: scale(10,10)]; background-color:skyblue; ";
 
 
-$def[".igk-canvas-editor-app .snippet:hover"]= "opacity:1.0; ";
-$def[".igk-canvas-editor-app .snippet.igk-hide"] = "opacity: 0.0;";
-$def[".igk-canvas-editor-app .snippet.round"] = "border-radius: 50%";
-$def[".igk-canvas-editor-app .snippet.losange"] = "[transform: rotate(45deg) scale(8)] width:1px; height:1px;";
+$def[".igk-cancas-editor-app .snippet:hover"]= "opacity:1.0; ";
+$def[".igk-cancas-editor-app .snippet.igk-hide"] = "opacity: 0.0;";
+$def[".igk-cancas-editor-app .snippet.round"] = "border-radius: 50%";
+$def[".igk-cancas-editor-app .snippet.losange"] = "[transform: rotate(45deg) scale(8)] width:1px; height:1px;";
 //for safari trange behaviour
 // safari not support scale on object
 $trans = $snippets['size']/ 2;
 
 $def["body.safari .snippet" ] = "width:{$snippets['size']}px; height:{$snippets['size']}px;  [transform:translate(-{$trans}px, -{$trans}px)]";
 $trans = $snippets['touch_size']/ 2;
-$def["body.safari .igk-canvas-editor-app.touchable-device .snippet" ] = "width:{$snippets['touch_size']}px; height:{$snippets['touch_size']}px; [transform:translate(-{$trans}px, -{$trans}px)] ";
+$def["body.safari .igk-cancas-editor-app.touchable-device .snippet" ] = "width:{$snippets['touch_size']}px; height:{$snippets['touch_size']}px; [transform:translate(-{$trans}px, -{$trans}px)] ";
 $def["body.safari .snippet.round" ] = "";//width:10px; height:10px;  [transform:translate(-5px, -5px)]";
 
 

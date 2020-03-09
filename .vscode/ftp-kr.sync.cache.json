@@ -824,15 +824,23 @@
               "igk_default": {
                 "Views": {
                   "cancaseditor": {
-                    ".header.pinc": {
+                    ".dist": {},
+                    ".gitignore": {
                       "type": "-",
-                      "size": 251,
+                      "size": 32,
                       "lmtime": 0,
                       "modified": false
+                    },
+                    ".header.pinc": {
+                      "type": "-",
+                      "size": 463,
+                      "lmtime": 0,
+                      "modified": true
                     },
                     "Contents": {},
                     "Data": {},
                     "Docs": {},
+                    "Lib": {},
                     "Scripts": {
                       ".cancas-app.sw.jsinc": {
                         "type": "-",
@@ -842,8 +850,8 @@
                       },
                       ".cancaseditor.js": {
                         "type": "-",
-                        "size": 133222,
-                        "lmtime": 1580488302419,
+                        "size": 133690,
+                        "lmtime": 1583493689133,
                         "modified": false
                       },
                       ".htaccess": {
@@ -914,7 +922,26 @@
                       "encoder": {},
                       "enums": {},
                       "gle": {},
-                      "gui": {},
+                      "gui": {
+                        "dialog.js": {
+                          "type": "-",
+                          "size": 4620,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "menu.js": {
+                          "type": "-",
+                          "size": 55,
+                          "lmtime": 0,
+                          "modified": false
+                        },
+                        "notify.js": {
+                          "type": "-",
+                          "size": 2110,
+                          "lmtime": 1583493689134,
+                          "modified": false
+                        }
+                      },
                       "history": {},
                       "math": {},
                       "services": {},
@@ -923,14 +950,21 @@
                       "views": {},
                       "visitors": {}
                     },
-                    "Styles": {},
+                    "Styles": {
+                      "default.pcss": {
+                        "type": "-",
+                        "size": 11788,
+                        "lmtime": 1583493689134,
+                        "modified": false
+                      }
+                    },
                     "assets": {},
                     "caches": {},
                     "default.phtml": {
                       "type": "-",
-                      "size": 16380,
+                      "size": 17014,
                       "lmtime": 1580488028795,
-                      "modified": false
+                      "modified": true
                     },
                     "ipad.phtml": {
                       "type": "-",
@@ -948,9 +982,9 @@
                     "temp": {},
                     "wiki.phtml": {
                       "type": "-",
-                      "size": 274,
+                      "size": 462,
                       "lmtime": 0,
-                      "modified": false
+                      "modified": true
                     }
                   }
                 }

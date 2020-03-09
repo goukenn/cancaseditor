@@ -88,7 +88,7 @@ $ruri  = $buri.dirname($fname)."/";
 ///<summary> requirement for canvas editor</summary>
 function igk_html_node_CancasEditorApp($setting=null){
 $n = igk_createNode("div");
-$n["class"] = "igk-canvas-editor-app";
+$n["class"] = "igk-cancas-editor-app";
 $n["igk:settings"] = $setting;
 return $n;
 } 
@@ -451,15 +451,18 @@ $styles = $_DIR."/Styles";
 $folder  = $_DIR."/Scripts";
 $resolver = IGKResourceUriResolver::getInstance();
 $cachedir = igk_io_cacheddist_jsdir();
+
+//igk_wln($_SERVER);
+ 
+
 if (igk_environment()->is("production")){
 	$sdir = $cachedir."/".CE_SCRIPT_NAME;
 	if (!is_dir($sdir)){
 		IGKIO::CreateDir($sdir);
-		$resolver->resolve($sdir);	
+		$resolver->resolve($sdir);
 		igk_cache_gen_cache($folder, $sdir ,null, "igk_cache_js_callback");
 		
-	}
-	
+	}	
 	$folder = $cachedir;
 }
 
@@ -576,8 +579,15 @@ function get_theme_file($ctrl){
 }
 
 
+$uri = IGKResourceUriResolver::getInstance()->resolve($folder, false);
 
-
+$t->addJSView()->Content = <<<EOF
+if (/FxiOS/.test(window.navigator.appVersion)){
+    igk.dom.body().addClass("FxiOS");
+	var s = "body.FxiOS {height: "+window.outerHeight+"px !important}";	 
+	igk.css.appendRule(s);   
+} 
+EOF;
 
 $n = $t->addCancasEditorApp(igk_json_encode((object)[
 "Name"=>"Canca Editor Demonstration",
@@ -586,10 +596,11 @@ $n = $t->addCancasEditorApp(igk_json_encode((object)[
 "Plugins"=> [],
 "appUri"=>$entryuri,
 "appCacheName"=>CE_CACHE_NAME,
-"appAssets"=>igk_io_fullpath2fulluri(dirname(__FILE__)."/Scripts"),
+"appAssets"=>$uri, // igk_io_fullpath2fulluri(dirname(__FILE__)."/Scripts"),
 "menu"=>["status", "menu", "tools"]
 ]));
 
 $n->addCenterBox()->Content = __("Initializing ...");
+
 
  
