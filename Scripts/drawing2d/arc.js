@@ -1,6 +1,5 @@
 "use strict";
 (function(){
-
 var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
 var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
 var SERI = igk.winui.cancasEditor.Serializer;
@@ -8,8 +7,6 @@ var Tools = igk.winui.cancasEditor.Tools;
 var UTILS = igk.winui.cancasEditor.Utils;
 var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
-
-
 igk.system.createClass(ELEM, {name:"arc", parent:ELEM.fullname+".circle" }, function(){
 		// ELEM.circle.apply(this);
 		//this.center = {x:0, y: 0};
@@ -27,8 +24,6 @@ igk.system.createClass(ELEM, {name:"arc", parent:ELEM.fullname+".circle" }, func
 		// serializer: SERI.vector2Serializer}, 
 		// {name:"count", 'default':5 }, 
 		// "angle", "radius"];
-		
-	
 		this.initialize = function(){
 			// var count = this.count;
 			var center = this.center;
@@ -37,7 +32,6 @@ igk.system.createClass(ELEM, {name:"arc", parent:ELEM.fullname+".circle" }, func
 			var _angle  = ( this.angle * po);
 			var _sweepangle = (this.sweepAngle * po);
 			var radius = UTILS.IsArray(this.radius) ? this.radius :  [this.radius];
-		 
 		 _path_ = new Path2D();
 		 var _cpath_ = 0;
 		 var _rad = 0;
@@ -48,7 +42,6 @@ igk.system.createClass(ELEM, {name:"arc", parent:ELEM.fullname+".circle" }, func
 			 // {
 				 _rad = UTILS.getPoint(radius[j]);
 				 d = _rad.x; // Math.sqrt((_rad.x * _rad.x) + (_rad.y * _rad.y));			 
-				
 				_cpath_ = new Path2D();
 				_cpath_.arc(center.x, center.y,  d, _sweepangle, _angle);
 				if (this.model==1)
@@ -57,11 +50,9 @@ igk.system.createClass(ELEM, {name:"arc", parent:ELEM.fullname+".circle" }, func
 				_path_.addPath(_cpath_);
 			 // }
 			// _path_.closePath();
-			
 		 }
 			 _path_.closePath();		 
 		};
-		
 		this.render = function(o){
 			o.save();				
 			o.fill = this.fill;
@@ -72,7 +63,6 @@ igk.system.createClass(ELEM, {name:"arc", parent:ELEM.fullname+".circle" }, func
 			o.drawPath(_path_, this.fillMode);
 			o.restore();
 		};
-		
 		this.contains = function(x, y, a){
 			if (_path_){
 				a.save();
@@ -83,11 +73,7 @@ igk.system.createClass(ELEM, {name:"arc", parent:ELEM.fullname+".circle" }, func
 			}
 			return !1;
 		};
-		
 	});
-	
-	
-
 igk.system.createClass(Tools, {name:'ArcMecanism', parent: Tools.fullname+".CircleMecanism"},
 	function(){
 		// Tools.CircleMecanism.apply(this);	
@@ -99,12 +85,10 @@ igk.system.createClass(Tools, {name:'ArcMecanism', parent: Tools.fullname+".Circ
 			var c = elem.center;
 			tab.push(c);
 			var radius = UTILS.IsArray(elem.radius) ? elem.radius :  [elem.radius];
-			
 			tab.push( {
 					 x:0,//(c.x + r.x * Math.cos(ra)),
 					 y:0 //(c.y + r.y * Math.sin(ra))
 			});	
-			
 			var sweepPoint = {
 				x:0,//(c.x + r.x * Math.cos(ra)),
 				y:0 //(c.y + r.y * Math.sin(ra))
@@ -117,7 +101,6 @@ igk.system.createClass(Tools, {name:'ArcMecanism', parent: Tools.fullname+".Circ
 					 x:(c.x + r.x * Math.cos(ra)),
 					 y:(c.y + r.y * Math.sin(ra))
 				 });
-				 
 				sweepPoint.x = Math.max(sweepPoint.x, r.x);
 				sweepPoint.y = Math.max(sweepPoint.y, r.y);
 			}
@@ -126,8 +109,6 @@ igk.system.createClass(Tools, {name:'ArcMecanism', parent: Tools.fullname+".Circ
 					 x:(c.x + sweepPoint.x * Math.cos(ra)),
 					 y:(c.y + sweepPoint.y * Math.sin(ra))
 				 };;
-			
-			 
 			return tab;
 		};
 		this.update	= function(elem, endPos){
@@ -157,14 +138,12 @@ igk.system.createClass(Tools, {name:'ArcMecanism', parent: Tools.fullname+".Circ
 				baseudpateIndex.apply(this, [elem, index, endPos]);
 			// Tools.CircleMecanism
 		};
-
 		var _base_ =[];
 		_base_["registerKeyAction"] = this.registerKeyAction;
 		this.registerKeyAction = function(actions){
 			_base_["registerKeyAction"].apply(this, [actions]);
-			actions[Key.T] = _toggleModel;
+			actions[Key.Shift | Key.T] = _toggleModel; // bare T selects the text tool
 		};
-		
 		function _toggleModel(a){
 			var e = a.elem;
 			if (e && (a.type == "keyup")){
@@ -175,16 +154,12 @@ igk.system.createClass(Tools, {name:'ArcMecanism', parent: Tools.fullname+".Circ
 				}
 				e.initialize();
 				a.host.refresh();
-					
 			}else{
 				a.handle = 0;
 			}
 		};
 });
-
-
 Tools.registerEditorAttribute("arc", Tools.ArcMecanism);
-	
 var EXPORTS = igk.winui.cancasEditor.Exports;
 EXPORTS.register("arc", function(){
 var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
@@ -197,16 +172,9 @@ var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 		]).concat(EXPORTS.matrixExport());			
 return c;
 });
-
-
 //register actions
-
-ACTIONS.regActions(Key.Shift | Key.A, "editor.selectool.arc", function (a){a.tool = new Tools.ArcMecanism(); });
-
-
+ACTIONS.regActions(null, "editor.selectool.arc", function (a){a.tool = new Tools.ArcMecanism(); });
 ACTIONS.regMenuAction("tools.arc", {index:7, callback:function(){
 	ACTIONS.invoke("editor.selectool.arc");
 }});
-
-
 })();

@@ -36,7 +36,7 @@ G.xml.decodeString = function(xml, a){
 			var _doc = a.createElement("document");
 			_doc.setSize(Number(W), Number(H));
 			// other document properties
-			["fill", "stroke", "title"].forEach((n) => {
+			["id", "fill", "stroke", "title"].forEach((n) => {
 				var v = this.getAttribute(n);
 				if (v !== null && v !== undefined) {
 					_doc[n] = v;
@@ -45,13 +45,21 @@ G.xml.decodeString = function(xml, a){
 			if (!s){
 				a["@loading"] = 1;
 				a.clear();
-				a.add(_doc);
-				a.document = _doc;
 				s = 1;
-			};
+			} else {
+				a.layer = null; // the next document is added to the scene, not to the last loaded layer
+			}
+			a.add(_doc);
+			a.document = _doc;
 			doc.push(_doc);
 			_loadItems(_doc, this, a);
 		});
+		if (doc.length > 1){
+			// the first document is the current one
+			a.document = doc[0];
+			var ly = doc[0].getLayers();
+			a.layer = ly.length > 0 ? ly[ly.length - 1] : null;
+		}
 		if (doc.length == 0)
 		{
 			a.clear();

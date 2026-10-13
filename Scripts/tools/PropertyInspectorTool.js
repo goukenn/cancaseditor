@@ -77,8 +77,29 @@
 		return root;
 	}
 	let m_toggle = null;
+	let m_showLayers = null;
+	let m_tab = 'properties'; // 'properties' | 'layers'
+	const TAB_CSS = '.ci-tabs{display:flex;gap:4px;margin:0 0 10px;border-bottom:1px solid var(--ci-line,#4a4a4a)}' +
+		'.ci-tabs button{flex:1;background:transparent;border:0;border-bottom:2px solid transparent;color:var(--ci-dim,#9a9a9a);padding:6px 4px;cursor:pointer;font:inherit;font-weight:bold}' +
+		'.ci-tabs button.on{color:var(--ci-fg,#ddd);border-bottom-color:var(--ci-accent,#a14fd0)}';
+	/** tab bar + the content of the current tab (properties of the selection | explorer of the scene) */
+	function panelContent(editor, rerender) {
+		if (!document.getElementById('cancas-tabs-css')) {
+			document.head.append(_el('style', { id: 'cancas-tabs-css', textContent: TAB_CSS }));
+		}
+		const tabs = _el('div', { className: 'ci-tabs' });
+		[['properties', 'ins.tab.properties'], ['layers', 'ins.tab.layers']].forEach(([n, k]) => {
+			const b = _el('button', { type: 'button', textContent: R()[k] || k, className: m_tab == n ? 'on' : '' });
+			b.onclick = () => { m_tab = n; rerender(); };
+			tabs.append(b);
+		});
+		const root = _el('div');
+		root.append(tabs, m_tab == 'layers' && _NS.layerExplorer ? _NS.layerExplorer.build(editor) : buildContent(editor));
+		return root;
+	}
 	// the menu is built when the editor initializes: register at load time
 	AC.regMenuAction("view.propertybox", { index: 0, callback: () => m_toggle && m_toggle() });
+	AC.regMenuAction("window.layers", { index: 5, callback: () => m_showLayers && m_showLayers() });
 	function init(editor) {
 		const host = editor.host.o;
 		const panel = _el('div', { className: 'tool r ci-panel' });
@@ -103,36 +124,44 @@
 			fab.textContent = R()['prop.show'];
 			if (panel.classList.contains('ci-visible')) {
 				body.textContent = '';
-				body.append(buildContent(editor));
+				body.append(panelContent(editor, render));
 			}
 		};
 		const schedule = () => { if (!scheduled) { scheduled = requestAnimationFrame(render); } };
-		function layout() {
+		function layout(initial) {
 			const small = mq.matches;
 			const open = !small && isOpen();
 			host.classList.toggle('ci-docked', open);
 			panel.classList.toggle('ci-visible', open);
 			fab.style.display = small ? '' : 'none';
 			render();
-			editor.resizeCanvas(true);
+			// at startup the restored view (zoom/pan of the document) must be kept
+			editor.resizeCanvas(!initial);
 		}
 		function showModal() {
 			if (modalOpen) { return; }
+			const box = _el('div');
+			const mount = () => { box.textContent = ''; box.append(panelContent(editor, mount)); };
+			mount();
 			modalOpen = _NS.ui.modal({
-				title: R()['prop.title'], content: buildContent(editor),
+				title: R()['prop.title'], content: box,
 				onclose: () => { modalOpen = null; }
 			});
 		}
 		closeBtn.onclick = () => setOpen(false);
 		fab.onclick = showModal;
-		(mq.addEventListener ? mq.addEventListener.bind(mq, 'change') : mq.addListener.bind(mq))(layout);
-		['itemStartEdition', 'itemEndEdition', 'selectChanged', 'currentDocumentChanged', 'onLangChanged'].forEach((n) => {
+		(mq.addEventListener ? mq.addEventListener.bind(mq, 'change') : mq.addListener.bind(mq))(() => layout());
+		['itemStartEdition', 'itemEndEdition', 'selectChanged', 'currentDocumentChanged', 'currentLayerChanged', 'elementAdded', 'elementRemoved', 'onLangChanged'].forEach((n) => {
 			editor.regEvent(n, schedule);
 		});
 		_NS.lang && _NS.lang.listeners.push(schedule);
-		prefs && prefs.onChange((what, name) => { if (what == 'server' || name == 'panelOpen') { layout(); } });
+		prefs && prefs.onChange((what, name) => { if (what == 'server' || name == 'panelOpen') { layout(what == 'server'); } });
 		m_toggle = () => { mq.matches ? showModal() : setOpen(!isOpen()); };
-		layout();
+		m_showLayers = () => {
+			m_tab = 'layers';
+			if (mq.matches) { showModal(); } else if (!isOpen()) { setOpen(true); } else { render(); }
+		};
+		layout(true);
 	}
 	// let every tool script register before the editor is initialized
 	_NS.whenEditor((editor) => setTimeout(() => init(editor), 0));

@@ -1,22 +1,22 @@
 //+ bezier element
 "use strict";
 (function(){
-
 //bezier / plume element 
+var _TOOL_ = 'bezier';
 var _NS = igk.system.require('igk.winui.cancasEditor');
 var CoreMathOperation = _NS.CoreMathOperation;
 var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
 var SERI = _NS.Serializer;
 var Matrix = _NS.Matrix;
-
-
+function _controlStroke(){
+	return _NS.settings.bezierControlStroke;
+}
 function BezierSegment(){
 	Array.prototype.constructor.apply(this);
 	// var segment = [];
 	var root = null;
 	var node = null;
 	var length = 0;
-	
 	this.navPrevious = function(){
 		if (node && node.prev){
 			node = node.prev;
@@ -72,7 +72,6 @@ function BezierSegment(){
 	igk.defineProperty(this, "root", {get: function(){
 		return root;
 	}});
-	
 	this.getItem= function(i){
 		if(i==0)
 			return root.item;
@@ -86,16 +85,12 @@ function BezierSegment(){
 		}
 		return null; //egment[i];
 	};
-	
 	this.clear = function(){
 		// segment = [];
 		node = null;
 		root = null;
 		length = 0;
 	};
-	
-	
-
 	this.each_all= function(callback){
 		if (!root)
 			return;
@@ -113,7 +108,6 @@ function BezierSegment(){
 				next: node
 			};
 		}else{
-			
 			var q = node.prev;
 			q.next = {
 				prev :q,
@@ -124,19 +118,24 @@ function BezierSegment(){
 		}
 		length++;
 	};
-	
-	//demos
 	this.push(new BezierCurveSegment());
-	// this.push(new ArcSegment());
-	//this.push(new BezierPenSegment());
-	
 };
+/**
+ * 
+ */
+function ElliseSegment(){
+	this.getDef = function(){
+		return "MEllipse";
+	};
+};
+/**
+ * @class 
+ */
 function LineSegment(){
 	this.startPoint = {x:0, y:0};
 	this.endPoint = {x:0, y:0};
 	this.getSvgType= function(){return "L"; };
 	this.getLastPointIndex= function(){ return 1; };
-	
 	this.initPoint = function(s, e){
 		this.startPoint = s; 
 		this.endPoint = e;
@@ -144,7 +143,6 @@ function LineSegment(){
 	this.getDef= function(d){
 	var pts = this.getPoints();
 		var s = "";
-				
 		if (d){
 			s+="M";
 			s+=Math.ceil(this.startPoint.x, 2)+","+Math.ceil(this.startPoint.y,2)+" ";
@@ -153,13 +151,16 @@ function LineSegment(){
 		s+=Math.ceil(this.endPoint.x, 2)+","+Math.ceil(this.endPoint.y,2);					
 		return s;	
 	};
-
-	
+	/**
+	 * bind line segment
+	 * @param {Path2D} path 
+	 * @param {*} start 
+	 */
 	this.bind = function(path, start){
+		// bind line segment
 		if (start)
-		path.moveTo(this.startPoint.x, this.startPoint.y);
-		path.lineTo( 
-		this.endPoint.x, this.endPoint.y);
+			path.moveTo(this.startPoint.x, this.startPoint.y);
+		path.lineTo(this.endPoint.x, this.endPoint.y);
 	};
 	this.setPoint = function(idx, p){
 		switch(idx){
@@ -175,37 +176,35 @@ function LineSegment(){
 		this.startPoint = s;
 		this.endPoint = e;
 	};
+	this.updatePoints = function(points){
+		this.startPoint = points[0];
+		this.endPoint = points[1];
+	};
 	this.getPoints=function(){
 		return [
 			this.startPoint,
 			this.endPoint
 		 ];
 	};
-	
 	this.renderSnippetJoint=function(a){
-		
 	};
-	
-	
 };
 function QuadricSegment(){
-	this.startPoint =  {x:0, y:0};
-	this.controlPoint =  {x:0, y:0};
+	this.startPoint ={x:0, y:0};
+	this.controlPoint ={x:0, y:0};
 	this.endPoint = {x:0, y:0};
 	this.close = 0;
 	this.getLastPointIndex= function(){ return 2; };
 	this.renderSnippetJoint=function(a){
 		a.save();
-		a.stroke = "pink";
+		a.stroke = _controlStroke();
 		a.drawLine(this.startPoint.x ,this.startPoint.y, this.controlPoint.x,this.controlPoint.y);
 		a.drawLine(this.controlPoint.x, this.controlPoint.y, this.endPoint.x, this.endPoint.y);
 		a.restore();
 	};
-	
 	this.getDef= function(d){
 		var pts = this.getPoints();
 		var s= "Q";
-				
 		for(var i = 0 ; i < pts.length ; i++){
 			if (i>0)
 				s+=" ";
@@ -213,15 +212,17 @@ function QuadricSegment(){
 		}
 		if (this.close)
 			s+="Z";
-			
 		return 	s;	
 	};
+	/**
+	 * bind to start 
+	 * @param {Path2D} path 
+	 * @param {boolean|number} start 
+	 */
 	this.bind = function(path, start){
 		if (start)
-		path.moveTo(this.startPoint.x, this.startPoint.y);
-		path.quadraticCurveTo(this.controlPoint.x, this.controlPoint.y, 
-		this.endPoint.x, this.endPoint.y);
-		
+			path.moveTo(this.startPoint.x, this.startPoint.y);
+		path.quadraticCurveTo(this.controlPoint.x, this.controlPoint.y, this.endPoint.x, this.endPoint.y);
 		if (this.close)
 			path.closePath();
 	};
@@ -253,14 +254,44 @@ function QuadricSegment(){
 			this.endPoint
 		 ];
 	};
+	this.updatePoints = function(points){
+		this.startPoint = points[0];
+		this.controlPoint = points[1];
+		this.endPoint = points[2];
+	};
 };
+/**
+ * @class
+ * @param {string} type 
+ */
+function CurveSegment(type){
+	Array.prototype.constructor.apply(this);
+	/**
+	 * @property {string} type
+	 */
+	Object.defineProperty(this, 'type', {value: type, readonly:true, configurable:true});
+}
+function EditedSegment(){
+	CurveSegment.apply(this);
+	let _type = 'e-curve';
+	Object.defineProperty(this, 'type', {get(){return _type; }, readonly:true, configurable:false});
+}
+/**
+ * @class
+ */
 function BezierCurveSegment(){
-	this.startPoint =  {x:0, y:0};
-	this.controlPoint1 =  {x:0, y:0};
-	this.controlPoint2 =  {x:0, y:0};
+	CurveSegment.apply(this, ['bezier']);
+	this.startPoint ={x:0, y:0};
+	this.controlPoint1 ={x:0, y:0};
+	this.controlPoint2 ={x:0, y:0};
 	this.endPoint = {x:0, y:0};
 	this.close = 0;
+	this.toString = ()=> 'BezierCurveSegment' ;
 	this.getLastPointIndex= function(){ return 3; };
+	this.set = function([x, y]){
+		this.startPoint = this.endPoint = this.controlPoint1 = this.controlPoint2 = {x,y};
+		return this;
+	};
 	this.getDef= function(d){
 		var ceil = _NS.CoreMathOperation.ceil;
 		var pts = this.getPoints();
@@ -278,7 +309,12 @@ function BezierCurveSegment(){
 		if (this.close)
 			s+="Z";	
 		return 	s;	
-	};	
+	};
+	/**
+	 * bind curve line segment
+	 * @param {Path2D} path 
+	 * @param {start} start 
+	 */	
 	this.bind = function(path, start){
 		if (start)
 			path.moveTo(this.startPoint.x, this.startPoint.y);
@@ -306,11 +342,10 @@ function BezierCurveSegment(){
 			break;
 		}
 	};
-	
 	this.initPoint = function(s, e){		
 		this.startPoint = s;
-		var gx =  (e.x - s.x )/3;
-		var gy =  (e.y - s.y )/3;
+		var gx =(e.x - s.x )/3;
+		var gy =(e.y - s.y )/3;
 		this.controlPoint1 = {
 			x: s.x + gx,
 			y: s.y + gy
@@ -319,7 +354,6 @@ function BezierCurveSegment(){
 			x: s.x + (gx*2),
 			y: s.y + (gy*2)
 		};
-		
 		this.endPoint = e;
 	};
 	this.getPoints=function(){
@@ -330,7 +364,12 @@ function BezierCurveSegment(){
 			this.endPoint
 		 ];
 	};
-	
+	this.updatePoints = function(points){
+		this.startPoint = points[0];
+		this.controlPoint1 = points[1];
+		this.controlPoint2 = points[2];
+		this.endPoint = points[3];
+	};
 	this.renderSnippetJoint=function(a){
 		a.save();
 		a.stroke = "pink";
@@ -339,6 +378,9 @@ function BezierCurveSegment(){
 		a.restore();
 	};
 };
+/**
+ * @class 
+ */
 function BezierPenSegment(){
 	BezierCurveSegment.apply(this);
 	this.getLastPointIndex= function(){ return 3; };
@@ -360,7 +402,7 @@ function BezierPenSegment(){
 			break;
 			case 2:
 			var diff = {x: this.endPoint.x - p.x, y: this.endPoint.y - p.y};
-			this.controlPoint1 =  {x: this.endPoint.x + diff.x, y: this.endPoint.y + diff.y};
+			this.controlPoint1 ={x: this.endPoint.x + diff.x, y: this.endPoint.y + diff.y};
 			this.controlPoint2 = p;
 			break;
 			case 3:
@@ -368,18 +410,13 @@ function BezierPenSegment(){
 			break;
 		}
 	};
-	
 	this.renderSnippetJoint=function(a){
 		a.save();
-		a.stroke = "pink";
-		a.drawLine( this.controlPoint1.x,this.controlPoint1.y, this.controlPoint2.x,this.controlPoint2.y);
-		// a.drawLine(this.controlPoint2.x, this.controlPoint2.y, this.endPoint.x, this.endPoint.y);
+		a.stroke = bezierControlStroke;
+		a.drawLine( this.controlPoint1.x,this.controlPoint1.y, this.controlPoint2.x,this.controlPoint2.y); 
 		a.restore();
 	};
-	
-	
 };
-
 function StartSegment(x,y){
 	this.startPoint = {x:x, y:y};
 	this.getDef = function(){
@@ -387,19 +424,17 @@ function StartSegment(x,y){
 		return "M"+ceil(this.startPoint.x)+" "+ceil(this.startPoint.y);
 	};
 };
-
 function ArcSegment(x,y, x2, y2, radius){
 	var ceil = _NS.CoreMathOperation.ceil;
 	this.startPoint = {x:x, y:y};
 	this.endPoint = {x:x2, y:y2};
 	this.radius = radius;
 	this.getDef = function(){
-		var rx =ceil(this.radius),  ry =  rx;
+		var rx =ceil(this.radius),  ry =rx;
 		return "A"+rx+' '+ry+' 0 0 1 ' +
 		ceil(this.endPoint.x)+" "+ceil(this.endPoint.y) ;//+ " "+rx;
 	};
 };
-
 //export settings
 igk.system.createNS(_NS.fullname+".drawing2d.segments", {
 	// arcSegment: ArcSegment,
@@ -408,7 +443,6 @@ igk.system.createNS(_NS.fullname+".drawing2d.segments", {
 	lineSegment: LineSegment,
 	bezierPenSegment: BezierPenSegment,
 	drawingContext: function(){
-	
 		var segments = [];
 		var _lp = 0;//last point
 		igk.appendProperties(this, {
@@ -418,14 +452,12 @@ igk.system.createNS(_NS.fullname+".drawing2d.segments", {
 			},
 			bezierCurveTo: function(c1x, c1y, c2x, c2y, x, y){
 				var g = new BezierCurveSegment();
-				
 				g.startPoint = _lp || {x:c1x, y:c1y};
 				g.controlPoint1 = {x:c1x, y:c1y};
 				g.controlPoint2 = {x:c2x, y:c2y};
 				g.endPoint = {x:x, y:y};
 				segments.push(g);
 				_lp = {x:x, y:y};
-				
 			},
 			close:function(){
 				if (segments.length>0){
@@ -443,6 +475,10 @@ igk.system.createNS(_NS.fullname+".drawing2d.segments", {
 				ln.endPoint = {x:x, y:y};
 				segments.push(ln);
 			},
+			ellipse(x,y,rx,ry, rotation,startAngle,endAngle,counterclockwize){
+				var ln = new ElliseSegment();
+				segments.push(ln);
+			},
 			getDef: function(){
 				var s = "";
 				for(var i = 0; i < segments.length;i++){
@@ -455,12 +491,10 @@ igk.system.createNS(_NS.fullname+".drawing2d.segments", {
 		});
 	}
 });
-
-
-
-igk.system.createClass(ELEM, {name:"bezier", parent: ELEM.rectangle }, function(){
- 
-	
+// + | ----------------------------------------------------------------------------------------
+// + | comment - initialization 
+// + | ----------------------------------------------------------------------------------------
+igk.system.createClass(ELEM, {name: _TOOL_, parent: ELEM.rectangle }, function(){
 	//igk.defineProperty(this, "font", {get:function(){return font; }, set: function(v){ font = v;}});	
 	// this.textAlign = "right";
 	var measures = []; // measure all 
@@ -468,58 +502,59 @@ igk.system.createClass(ELEM, {name:"bezier", parent: ELEM.rectangle }, function(
 	var bezierSegment = new BezierSegment();
 	var path = 0;
 	var close = !1;
-	
 	var mode = "join";
 	var blendingMode = 'source-over';
-	
-	
 	igk.defineProperty(this, "close", {get: function(){
 		return close;
 	},set: function(v){
 		close = v;
 	}});
-	
-	
 	igk.defineProperty(this, "mode", {get: function(){
 		return mode;
 	},set: function(v){
 		mode = v;
 	}});
-	
-	igk.defineProperty(this, "path", {get:function(){ return path; }} );
-	
-
-	// blending is apply with layer and text
-	
-	// igk.defineProperty(this, "blendingMode", {get: function(){
-		// return blendingMode;
-	// },set: function(v){
-		// blendingMode = v;
-	// }});
-	
-	
-	// console.debug(bezierSegment);
+	igk.defineProperty(this, "path", {get:function(){ return path; }} );  
 	igk.defineProperty(this, "bezierSegment", {get: function(){
 		return bezierSegment;
-	}});
+	}, set(v){throw new 'Invalid bezierSegment'}});
+	igk.prependChain(this, "updateTransformElement", function () {
+		if (!this.matrix.isIdentity()){ 
+			const { bound } = this;
+			let points = [];
+			path = new Path2D;
+			let matrix = this.matrix;
+			let index = 0;
+			bezierSegment.each_all(function(){
+				let q  = this;
+				let pts = this.getPoints().map((p)=>
+					CoreMathOperation.TransformPoint(p, matrix)); 
+				q.updatePoints(pts);
+				points = points.concat(pts); 
+				q.bind(path, index);
+				if (q.closed){
+					index = 0
+				} index = 1;
+			}); 
+			this.bound = CoreMathOperation.GetVectorBounds(points);  
+			this.matrix.reset();
+		}
+	});
 	this.render = function (a){
 		var b = this.bound;
 		// if (!b || path || !points || (points.length ==0) || (bezierSegment.length==0))
 			// return;
 		if (!path)
 			return;
-		
 		a.save();	
 		a.setGlobalCompositeOperation(blendingMode);
 		a.setTransform(this.matrix);
 		a.fill = this.fill;
 		a.stroke = this.stroke;
 		a.strokeWidth = this.strokeWidth;
-		
 		// console.debug("fill mode : "+ this.fillMode);
 		a.fillPath(path, this.fillMode);	
 		a.drawPath(path, this.fillMode);		
-		
 		a.restore();
 	};
 	this.initialize = function(){
@@ -535,32 +570,11 @@ igk.system.createClass(ELEM, {name:"bezier", parent: ELEM.rectangle }, function(
 			else 
 				index = 0;
 		});
-		
 		this.bound = CoreMathOperation.GetVectorBounds(points);
-		
-		// for(var i = 0; i < bezierSegment.length; i++){
-			// var e = bezierSegment.getItem(i);
-			// if (i==0){
-				// e.bind(path, 1);
-			// }else{
-				// e.bind(path, 0);
-			// }
-		// }
 		if (close)
 			path.closePath();
 	};
-	
-	
-	
-	
 });
-
-
-
-
-
-
-
 //mecanism
 var Tools = igk.winui.cancasEditor.Tools;
 // text mecanism
@@ -581,9 +595,6 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 		this.host.removeOverlay(this, overlay);
 		overlay = -1;
 	});
-	
-
-	
 	function _closePath(a){
 		if (a.type =="keyup"){
 			if (a.elem){
@@ -601,7 +612,6 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 			}
 		}
 	};
-	
 	function _gotoNextSegment(e){
 		if ((e.type != "keyup")){
 				if (e.elem.bezierSegment.navNext()){
@@ -610,15 +620,17 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 				}
 			}
 	};
-	
 	function _toggleEditMecanism(e){
+		if (!e.elem)
+			return; // nothing is edited
 		if ((e.type != "keyup")){
 			editMecanism = !editMecanism;
 			this.host.Reload(e.elem, this);
 		}
 	};
-	
 	function _toggleModeMecanism(e){
+		if (!e.elem)
+			return; // nothing is edited
 		if ((e.type != "keyup")){
 			switch(mode){
 				case 1:
@@ -634,12 +646,10 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 			this.host.Reload(e.elem, this);
 		}
 	};
-	
 	function createNewSegment(mode){
 		var o=null;
 		switch(mode){
 				 case 2:
-				 
 				  o  = new QuadricSegment();
 				 break;
 				 case 3:
@@ -652,17 +662,14 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 			 }
 		return o;
 	};
-	
 	function _resetAllSegment(e){
 		if (e.elem){
 			var g = e.elem.bezierSegment.getSegment();
 			g.initPoint(g.startPoint, g.endPoint);
 			e.elem.initialize();
 			this.host.Reload(e.elem, this);
-			
 		}
 	};
-	
 	function _closeCurrentSegment(e){
 		if ((e.type != "keyup") &&  e.elem ){
 			var g = e.elem.bezierSegment.getSegment();
@@ -671,17 +678,16 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 			this.host.Reload(e.elem, this);
 		}
 	}
-	
 	igk.appendChain(this, "registerKeyAction", function(actions){
-		var self=  this;
-		actions[Key.C] =  _closePath;
-		actions[Key.P] =  _gotoPreviouSegment;
-		actions[Key.N] =  _gotoNextSegment;
-		actions[Key.A] =  _toggleEditMecanism;
-		actions[Key.T] =  _toggleModeMecanism;
-		actions[Key.R] =  _resetAllSegment;
-		actions[Key.V] =  _closeCurrentSegment;
-		actions[Key.Shift | Key.R] =  function(){
+		var self=this;
+		actions[Key.Shift | Key.C] =_closePath; // bare C selects the circle tool
+		actions[Key.Shift | Key.P] =_gotoPreviouSegment; // bare P selects the pen tool
+		actions[Key.N] =_gotoNextSegment;
+		actions[Key.Shift | Key.A] =_toggleEditMecanism; // bare A selects the arc tool
+		actions[Key.Shift | Key.T] =_toggleModeMecanism; // bare T selects the text tool
+		actions[Key.Alt | Key.R] =_resetAllSegment; // bare R selects the rectangle tool, Shift+R is taken
+		actions[Key.V] =_closeCurrentSegment;
+		actions[Key.Shift | Key.R] =function(){
 				if (self.elem){
 					self.elem.bezierSegment.clear();
 					self.elem.initialize();
@@ -690,27 +696,23 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 				}
 		};
 	});
-				
 	 this.createElement = function(){
 		 var e = this.elem;
 		 if (e != null){
 			 // console.debug("already create element");
 			// this.host.Edit(null, this);
 			 var o = createNewSegment(mode);
-			
 			 if (o){
 				  var bez = e.bezierSegment;
 				  // console.debug("mode : "  + mode);
-				
-				 var p =  bez.getSegment(); //getItem(index);
-				 if (p){ // joint mode
-				 // console.debug("init prev");
+				 var p =bez.getSegment(); //getItem(index);
+				 if (p){ 
+					// join mode 
 					 o.initPoint(p.endPoint, this.startPos);
 					 this.startPos = p.endPoint;
 				 }else{
 					  o.initPoint(this.startPos, this.startPos);
 				 }
-				 
 				 if (this.isShift()){
 					  e.bezierSegment.insert(o);
 				 }
@@ -723,19 +725,15 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 			 this.host.refresh();
 			 return e;
 		 }
-		 
 		index = 0;
-		e =  this.host.add("bezier"); 
+		e =this.host.add("bezier"); 
 		e.bezierSegment.getItem(0).initPoint(this.startPos, this.startPos);
 		return e;
 	 };
 	 this.getInfo = function(){
 		return "Shortcut list";
 	 };
-	 
-	
 	 this.update = function(e, endP){	
-		
 		//e.points = [this.starPos, endP];
 		var g = e.bezierSegment.getSegment();
 		if (!g){
@@ -743,9 +741,7 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 			g = createNewSegment(mode);
 			e.bezierSegment.push(g);
 		}
-		
 		var s = this.startPos;
-		
 		if (this.isShift()){
 		  endP = CoreMathOperation.GetAnglePoint(s, endP, _toolAngle); 
 		}
@@ -770,7 +766,7 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 							length: d.length,
 							segment: this
 						});
-						t = t.concat(d); //.renderSnippetJoint(a);
+						t = t.concat(d);  
 				});
 		return t;
 	 };
@@ -789,7 +785,6 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 					 if (p && !p.close) 
 						 p.endPoint = endPos;
 				 }
-		 
 		  }else{
 			  //get segment
 			  // console.debug(idx);
@@ -804,11 +799,9 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 			  }
 			  var pos = idx - segments[editindex].min;
 			  g = segments[editindex].segment;
-			  
 			  if (this.isShift() && (idx == g.getLastPointIndex())){
 				  endPos = CoreMathOperation.GetAnglePoint( g.startPoint, endPos, _toolAngle); 
 			  }		  
-			  
 			  g.setPoint(pos, endPos);
 			   if (pos==0 && (editindex > 0)){ // joint mode
 					 var p = segments[editindex - 1].segment;
@@ -817,9 +810,7 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 				}
 		  }
 		 elem.initialize();
-		
 	 };
-	 
 	 var renderOverLay = function(elem, a){
 		if (elem){
 				if (!editMecanism){
@@ -828,7 +819,6 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 						g.renderSnippetJoint(a);
 					return;
 				}
-				
 				elem.bezierSegment.each_all(function(){
 					this.renderSnippetJoint(a);
 				});
@@ -843,17 +833,12 @@ igk.system.createClass(Tools, {name:'BezierMecanism', parent: Tools.RectangleMec
 			a.restore();
 		} 
 	 };
-	
 });
-
-
 //actions
 //register actions
 var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
-ACTIONS.regActions(Key.Alt | Key.Shift | Key.B, "editor.selectool.bezier", function (a){a.tool = new Tools.BezierMecanism(); });
-
-
+ACTIONS.regActions(null, "editor.selectool.bezier", function (a){a.tool = new Tools.BezierMecanism(); });
 var EXPORTS = igk.winui.cancasEditor.Exports;
 EXPORTS.register("bezier", function(){
 var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
@@ -873,13 +858,9 @@ var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 			}
 			return s;
 		}, resolv: function(item , v){
-			
 			// console.debug("call resolve");
-			item.bezierSegment.clear();
-			// var o = new LineSegment();
-			// o.initPoint({x:0, y: 0}, {x:100, y: 100});
-			// item.bezierSegment.push(o);
-			var lpts =  {x:0, y:0};
+			item.bezierSegment.clear();  
+			var lpts ={x:0, y:0};
 			SERI.loadPathDef(v, 
 			function(pts, m){
 				var o = 0;
@@ -929,20 +910,14 @@ var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 					item.bezierSegment.push(o);
 				}
 			});
-			
-			
 		}},
 		{name:"fillMode", 'default': ELEM.fillMode.evenodd }, 	
 		]).concat(EXPORTS.matrixExport());
 return c;
 });
-
 var ACTIONS = igk.winui.cancasEditor.Actions;
 ACTIONS.regMenuAction("tools.bezier", {index:6, callback:function(){
 	ACTIONS.invoke("editor.selectool.bezier");
 }});
-
-
 Tools.registerEditorAttribute("bezier", Tools.BezierMecanism);
-
 })();

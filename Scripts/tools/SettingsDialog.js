@@ -69,6 +69,7 @@
 			undoLimit: Number(prefs.get('undoLimit', 100)) || 100,
 			avatar: prefs.get('avatar', '')
 		};
+		const shortcutDraft = _NS.shortcutSettings.createDraft(); // custom keys edited by the shortcuts page
 		const select = (values, current, label, onchange) => {
 			const s = _el('select');
 			values.forEach((v) => s.append(_el('option', { value: v, textContent: label(v), selected: v == current })));
@@ -99,6 +100,9 @@
 				b.onclick = () => _NS.storage.showPlugins(editor);
 				p.append(row('', b));
 				return p;
+			},
+			shortcuts() {
+				return _NS.shortcutSettings.buildPage(editor, shortcutDraft);
 			},
 			account() {
 				const p = _el('div');
@@ -135,6 +139,7 @@
 				prefs.set('autosave', draft.autosave);
 				prefs.set('undoLimit', draft.undoLimit);
 				prefs.set('avatar', draft.avatar);
+				_NS.shortcutSettings.save(shortcutDraft);
 				if (_NS.lang && draft.lang != _NS.lang.current) { _NS.lang.set(draft.lang, editor); }
 				close();
 				_NS.gui.notify.Show(editor, R()['settings.saved']);

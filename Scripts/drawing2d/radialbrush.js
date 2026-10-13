@@ -75,7 +75,7 @@ this.getPoints=function(e){
 };
 igk.appendChain(this, "registerKeyAction", function(actions){
 		var self=  this;
-		actions[Key.R] =  function(){
+		actions[Key.Shift | Key.R] =  function(){ // bare R selects the rectangle tool
 			if (self.elem){
 				var e = self.elem;
 				e.startPoint = {x: Math.ceil( e.bound.x + (e.bound.width/2), 2), y: (e.bound.y + e.bound.height/2)};
@@ -167,7 +167,7 @@ var EXPORTS = igk.winui.cancasEditor.Exports;
 //register actions
 var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
-ACTIONS.regActions(Key.None, "editor.selectool.radialbrush", function (a){a.tool = new Tools.radialBrushMecanism(); });
+ACTIONS.regActions(null, "editor.selectool.radialbrush", function (a){a.tool = new Tools.radialBrushMecanism(); });
 ACTIONS.regMenuAction("tools.radialbrush", {index:20, callback:function(){
 	ACTIONS.invoke("editor.selectool.radialbrush");
 }});

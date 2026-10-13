@@ -41,6 +41,7 @@
 		}
 		const transparent = doc.fill == 'transparent';
 		const draft = {
+			id: doc.id,
 			title: doc.title || '',
 			width: doc.width,
 			height: doc.height,
@@ -54,7 +55,8 @@
 		const pages = {
 			general() {
 				const p = _el('div');
-				const id = _el('input', { type: 'text', value: doc.id || '', disabled: true });
+				const id = _el('input', { type: 'text', value: doc.id || '' });
+				id.onchange = () => { draft.id = id.value.trim(); };
 				const title = _el('input', { type: 'text', value: draft.title });
 				title.onchange = () => { draft.title = title.value; };
 				const w = _el('input', { type: 'number', min: 1, value: draft.width });
@@ -132,6 +134,13 @@
 				{ name: 'layers', label: T['doc.layers'], build: pages.layers }],
 			saveText: T['settings.save'],
 			onSave(close) {
+				if (draft.id != doc.id) {
+					if (!_NS.inspector.validDocumentId(editor, doc, draft.id)) {
+						_NS.gui.notify.Show(editor, T('doc.id.invalid'));
+						return; // the dialog stays open
+					}
+					doc.id = draft.id;
+				}
 				doc.title = draft.title;
 				doc.fill = draft.background ? draft.color : 'transparent';
 				if (draft.width != doc.width || draft.height != doc.height) { doc.setSize(draft.width, draft.height); }

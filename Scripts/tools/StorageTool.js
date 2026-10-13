@@ -132,6 +132,35 @@
 	// change (events, property inspector edits, tool drags...: every redraw schedules a check). A snapshot
 	// that differs from the current one is stored as the document and pushed on the undo stack.
 	const KEY_HIST = 'cancas.history';
+	// the view (zoom and pan = location) of each document and the current document: not part of the document
+	// text, so that moving the view does not create history entries
+	const KEY_VIEWS = 'cancas.views';
+	function saveViews(editor) {
+		const o = { current: editor.document ? editor.document.id : null, views: {} };
+		editor.documents.forEach((d) => {
+			const v = d === editor.document ? editor.getView() : d.view;
+			if (v) { o.views[d.id] = v; }
+		});
+		store.set(KEY_VIEWS, JSON.stringify(o));
+	}
+	/** @returns {boolean} true when the view of the current document was restored */
+	function applyViews(editor) {
+		let o = null;
+		try { o = JSON.parse(store.get(KEY_VIEWS) || 'null'); } catch (e) { }
+		if (!o || !o.views) { return false; }
+		const assign = () => editor.documents.forEach((d) => { if (o.views[d.id]) { d.view = o.views[d.id]; } });
+		assign();
+		const cur = editor.documents.find((d) => d.id == o.current);
+		if (cur && cur !== editor.document) {
+			editor.document = cur;
+			const ly = cur.getLayers();
+			editor.layer = ly.length > 0 ? ly[ly.length - 1] : null;
+			assign(); // switching the document stored the view of the previous one
+		}
+		const v = editor.document && editor.document.view;
+		if (v) { editor.setView(v); return true; }
+		return false;
+	}
 	const CHECK_DELAY = 300;
 	const DEFAULT_UNDO_LIMIT = 100;
 	let m_dirty = false;
@@ -308,7 +337,7 @@
 				store.set(KEY_DOC + '.failed', xml);
 				return false;
 			}
-			editor.resetFitAreaZoom();
+			if (!applyViews(editor)) { editor.resetFitAreaZoom(); }
 			editor.refresh();
 			try {
 				const h = JSON.parse(store.get(KEY_HIST) || 'null');
@@ -326,6 +355,7 @@
 		clear(editor) {
 			store.remove(KEY_DOC);
 			store.remove(KEY_HIST);
+			store.remove(KEY_VIEWS);
 			store.remove(KEY_SET);
 			store.remove('cancas.lang');
 			data = { options: {}, plugins: [] };
@@ -358,6 +388,11 @@
 			scheduleCheck(editor);
 			return r;
 		};
+		// the view of the documents is stored apart from the document (debounced)
+		let viewTimer = null;
+		const scheduleViews = () => { clearTimeout(viewTimer); viewTimer = setTimeout(() => saveViews(editor), 400); };
+		['zoomChanged', 'currentDocumentChanged'].forEach((n) => editor.regEvent(n, scheduleViews));
+		window.addEventListener('pagehide', () => saveViews(editor));
 		// the user options: lang is applied once the server answered
 		const loaded = prefs.loadServer();
 		loaded.finally(() => _NS.boot && _NS.boot.done('settings'));

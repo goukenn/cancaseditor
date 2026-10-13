@@ -1,21 +1,14 @@
 "use strict";
-
 (function(){
 var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
 var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
 var SERI = igk.winui.cancasEditor.Serializer;
 var Matrix = igk.winui.cancasEditor.Matrix;
-
-
 function DefSegment(){
 	this.point = {x:0, y:0};
 	this.handleIn = {x:0, y:0};
 	this.handleOut = {x:0, y:0};
-	
 };
-
-
-
 function Segments(){
 	var root = null;
 	var node = null;
@@ -30,7 +23,6 @@ function Segments(){
 		p.point = pos;
 		p.handleIn = pos;
 		p.handleOut = pos;
-		
 		this.push(p);
 		return p;
 	};
@@ -56,7 +48,6 @@ function Segments(){
 	this.getSegment = function(){
 		return node ? node.item : null;
 	};
-	
 	igk.defineProperty(this, "length", {get: function(){
 		return length;
 	}});
@@ -66,7 +57,6 @@ function Segments(){
 	igk.defineProperty(this, "root", {get: function(){
 		return root;
 	}});
-	
 	this.insert=function(e){
 		node = {
 			prev: node,
@@ -91,9 +81,7 @@ function Segments(){
 	this.each_all = function(callback){
 		var q = root;
 		while(q){
-			
 			callback.apply(q);
-			
 			q = q.next;
 		}
 	};
@@ -105,7 +93,6 @@ function Segments(){
 				next: node
 			};
 		}else{
-			
 			var q = node.prev;
 			q.next = {
 				prev :q,
@@ -116,12 +103,8 @@ function Segments(){
 		}
 		length++;
 	};
-	
-	
 };
-
 igk.system.createClass(ELEM, {name:"plume", parent: ELEM.rectangle }, function(){
-
 var path = new Path2D();
 var fillMode = ELEM.fillMode.evenodd;
 var segments = new Segments();
@@ -132,20 +115,16 @@ igk.defineProperty(this, "segments", {get: function(){
 igk.defineProperty(this, "path", {get: function(){
 	return path;
 }});
-	
 igk.defineProperty(this, "close", {get: function(){
 		return close;
 	}, set: function(v){
 		close = v;
 	}});
-
 igk.defineProperty(this, "fillMode", {get: function(){
 		return fillMode;
 	}, set: function(v){
 		fillMode = v;
 }});
-
-	
 this.render = function(a){
 	a.save();
 	a.setTransform(this.matrix);
@@ -156,10 +135,8 @@ this.render = function(a){
 	a.drawPath(path, fillMode);
 	a.restore();
 };
-
 this.updateTransformElement = function(){
 	var m = this.matrix;
-	
 	if (!m.isIdentity()){
 		segments.each_all(function(){
 			if (!this.point){
@@ -171,11 +148,8 @@ this.updateTransformElement = function(){
 	m.reset();
 	this.initialize();
 };
-			
-			
 this.initialize = function(){
 	path = new Path2D();
-	
 	var start = !0;
 	var lcontrol = 0;
 	var cur = 0;
@@ -197,13 +171,10 @@ this.initialize = function(){
 			miny = i.point.y;
 			maxy = i.point.y;
 		}else{
-			
 			minx = Math.min(minx, i.point.x);
 			maxx = Math.max(maxx, i.point.x);
 			miny = Math.min(miny, i.point.y);
 			maxy = Math.max(maxy, i.point.y);
-			
-			
 			inC = {
 					x: i.point.x + (i.point.x - i.handleIn.x),
 					y: i.point.y + (i.point.y - i.handleIn.y)
@@ -223,17 +194,14 @@ this.initialize = function(){
 		}
 		prevX = i.point.x;
 		prevY = i.point.y;
-		
 		outC = {
 			x: i.point.x + (i.point.x - i.handleOut.x),
 			y: i.point.y + (i.point.y - i.handleOut.y)
 		};
 	});
-	
 	if (close){
 		path.closePath();
 	}
-	
 	this.bound = {
 		x: minx,
 		y: miny,
@@ -241,7 +209,6 @@ this.initialize = function(){
 		height: maxy - miny
 	};
 };
-
 this.contains = function(x, y, a){
 	if (path){
 		a.save();
@@ -252,10 +219,7 @@ this.contains = function(x, y, a){
 	}
 	return !1;
 };
-
 });
-
-
 function _closePath(a){
 	if (a.type =="keyup"){
 		if (a.elem){
@@ -265,16 +229,12 @@ function _closePath(a){
 		}
 	}
 };
-	
-	
-
 //mecanism
 var Tools = igk.winui.cancasEditor.Tools;
 // text mecanism
 igk.system.createClass(Tools, {name:'PlumeMecanism', parent: Tools.RectangleMecanism }, function(){
 		var overlay = -1;
 		var startShift = !1;
-		
 		igk.appendChain(this, "registerEvents",  function(){		
 		this.host.overlayLayer.push(this);
 		overlay = this.host.overlayLayer.length-1;
@@ -282,37 +242,28 @@ igk.system.createClass(Tools, {name:'PlumeMecanism', parent: Tools.RectangleMeca
 	igk.prependChain(this, "unregisterEvents",  function(){		
 		var tab = this.host.overlayLayer;
 		var t =  [];
-		
 		for (var g = 0 ; g < tab.length; g++){
 			if (tab[g]==this)
 				continue;
-			
 			t.push(tab[g]);
 		} 
 		this.host.overlayLayer.length = 0;
 		this.host.overlayLayer = t;		
 		overlay = -1;
 	});
-	
 igk.appendChain(this, "registerKeyAction", function(actions){
 		var self=  this;
-		actions[Key.C] =  _closePath;
-	
+		actions[Key.Shift | Key.C] =  _closePath; // bare C selects the circle tool
 	});
-
-
 		this.createElement = function(){
 		 var e = this.elem;
 		 startShift = !1;
-		 
 		 if (e != null){
-			 
 			 e.segments.addDef(this.startPos);
 			 e.initialize();
 			  this.host.refresh();
 			 return e;
 		 }
-		 
 		 	e =  this.host.add("plume"); 
 			var b = e.segments.getSegment();
 			if (b)
@@ -330,12 +281,10 @@ igk.appendChain(this, "registerKeyAction", function(actions){
 			editindex = -1;
 			segments = [];
 			startShift = !1;
-		
 			 e.segments.each_all(function(){
 				 var i = this.item;
 				 var r = [];
 				 r.push(i.point);
-				 
 				 if ((i.handleIn.x != i.handleOut.x) || (i.handleIn.y != i.handleOut.y))
 				 {
 					 r.push(i.handleIn);
@@ -346,23 +295,18 @@ igk.appendChain(this, "registerKeyAction", function(actions){
 							length: r.length,
 							segment: this
 						});
-						
-				 
 				 tab = tab.concat(r);
 			 });
 			 return tab;
 		 };
 		 this.update = function(e, endP){
-			 
 			 var g = e.segments.getSegment();
 			 g.point = endP;
 			 g.handleIn = endP;
 			 g.handleOut = endP;
 			 e.initialize();
-			 
 		 };
 		 this.updateIndex = function(e, idx, endP){
-			 
 			  if (editindex == -1){
 				  // get segment
 				  for(var j = 0; j < segments.length; j++){
@@ -379,9 +323,6 @@ igk.appendChain(this, "registerKeyAction", function(actions){
 					 // var p = segments[editindex - 1].segment;
 					 // if (p) p.endPoint = endPos;
 				// }
-				
-				
-				
 			 // var g = e.segments.getSegment();
 			 if ( startShift ||  ((this.isShift() && (pos == 0)) || (pos!=0)) ){
 				 var diff = {x : endP.x - g.point.x, y: endP.y - g.point.y};
@@ -394,7 +335,6 @@ igk.appendChain(this, "registerKeyAction", function(actions){
 				}
 				startShift = !0;
 				// g.handleOut = {x: diff.x * 2, y : diff.y * 2};
-				
 			 }else{
 				 var diff = {x : g.handleIn.x - g.point.x, y: g.handleIn.y - g.point.y};
 				 g.point = endP;
@@ -403,7 +343,6 @@ igk.appendChain(this, "registerKeyAction", function(actions){
 			 }
 			 e.initialize();
 		 };
-		 
 		 this.render = function(a){
 				if (this.elem){
 							a.save();
@@ -420,16 +359,11 @@ igk.appendChain(this, "registerKeyAction", function(actions){
 				} 
 		 };
 });
-
-
 //actions
 //register actions
 var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
-ACTIONS.regActions(Key.Alt | Key.Shift | Key.P, "editor.selectool.plume", function (a){a.tool = new Tools.PlumeMecanism(); });
-
-
-
+ACTIONS.regActions(null, "editor.selectool.plume", function (a){a.tool = new Tools.PlumeMecanism(); });
 var EXPORTS = igk.winui.cancasEditor.Exports;
 EXPORTS.register("plume", function(){
 var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
@@ -438,12 +372,8 @@ var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 			// var s = "";
 			// var ms = 0;
 			// item.bezierSegment.each_all(function(){
-				
 				// s+= this.getDef(ms==0);
 				// ms=1;
-				
-				
-				
 			// });
 			// if (item.close){
 				// s+="Z";
@@ -471,25 +401,16 @@ var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 						var g = item.segments.addDef(pts[0]);
 						g.handleIn = pts[1];
 						g.handleOut = pts[2];
-							
 						break;
-					
 				}	
 			});
 		}},	
 		]).concat(EXPORTS.matrixExport());		
 return c;
 });
-
-
-
 var ACTIONS = igk.winui.cancasEditor.Actions;
 ACTIONS.regMenuAction("tools.plume", {index:6, callback:function(){
 	ACTIONS.invoke("editor.selectool.plume");
 }});
-
-
 Tools.registerEditorAttribute("plume", Tools.PlumeMecanism);
-
-
 })();

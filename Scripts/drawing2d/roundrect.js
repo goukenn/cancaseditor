@@ -3,12 +3,8 @@
 // 26/11/2018
 // part of igk.winui.cancasEditor apps
 // desc: definition of round rectangle mecanism
-
-
 "use strict";
-
 (function(){
-
 var _NS = igk.winui.cancasEditor;
 var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
 var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
@@ -29,7 +25,6 @@ igk.system.createClass(ELEM, {name: "roundrect",  parent:ELEM.rectangle  }, func
 		var _path_ = 0;
 		var _type = 'round';
 		this.fillmode = ELEM.fillMode.evenodd;
-		
 		igk.defineProperty(this, "radius", {
 			get:function(){
 				return _radius;
@@ -84,14 +79,10 @@ igk.system.createClass(ELEM, {name: "roundrect",  parent:ELEM.rectangle  }, func
 						}
 					}
 				}else if (typeof(v)!='number'){
-					
 				}
 				_radius = v;
 			}
 		});
-		
-		
-		
 		igk.defineProperty(this, "type", {
 			get:function(){
 				return _type;
@@ -100,17 +91,14 @@ igk.system.createClass(ELEM, {name: "roundrect",  parent:ELEM.rectangle  }, func
 				_type = v;
 			}
 		});
-		
 		// this.radius = '50 40 0 0 0 0 50 40';
 		//this.radius = 10;
 		// this.type = 'inner'; 
 		// this.radius = '50';
-		
 		igk.appendChain(this, "Edit", function(engine){
 			engine.addGroup()
 			.addControlLabel("radius", roundRadiusSerialiser( this.radius));	
 		});
-		
 		var tr_bound = null;
 		this.initialize = function(){
 			_path_ = new Path2D();
@@ -136,7 +124,6 @@ igk.system.createClass(ELEM, {name: "roundrect",  parent:ELEM.rectangle  }, func
 					{x:0, y:0},
 					{x:0, y:0}
 				];
-				
 				if (tr.length == 4){
 					if ((tr[0].x + tr[1].x)< r.width){						
 						br[0].x = tr[0].x;
@@ -146,7 +133,6 @@ igk.system.createClass(ELEM, {name: "roundrect",  parent:ELEM.rectangle  }, func
 						br[2].x = tr[2].x;
 						br[3].x = tr[3].x;
 					}
-					
 					if ((tr[0].y + tr[1].y)< r.height){						
 						br[0].y = tr[0].y;
 						br[1].y = tr[1].y;
@@ -155,7 +141,6 @@ igk.system.createClass(ELEM, {name: "roundrect",  parent:ELEM.rectangle  }, func
 						br[2].y = tr[2].y;
 						br[3].y = tr[3].y;
 					}
-					
 				}
 				else{
 					for(var j = 0; j < tr.length; j++){
@@ -170,8 +155,6 @@ igk.system.createClass(ELEM, {name: "roundrect",  parent:ELEM.rectangle  }, func
 				}
 				tr_bound = br;
 			}
-			
-			 
 			this.buildPath(_path_);
 		};
 		this.buildPath=function(path){
@@ -181,7 +164,6 @@ igk.system.createClass(ELEM, {name: "roundrect",  parent:ELEM.rectangle  }, func
 				return;
 			}
 			var g = _NS.Utils.Path;
-			
 			switch(this.type){
 				case "inner":
 						g.roundInnerRect(path, r, tr_bound);
@@ -194,15 +176,10 @@ igk.system.createClass(ELEM, {name: "roundrect",  parent:ELEM.rectangle  }, func
 						g.roundRect(path, r, tr_bound);			
 				break;
 			} 
-			
-			
-			
-			
 			// a.setPath(_path_);
 			// a.fillPath(_path_, this.fillmode);
 			// a.drawPath(_path_); //Graphics();
 		};
-		
 		this.render = function(a){
 			var r = this.bound;	
 			var tr = tr_bound; 
@@ -216,26 +193,21 @@ igk.system.createClass(ELEM, {name: "roundrect",  parent:ELEM.rectangle  }, func
 			a.strokeWidth = this.strokeWidth;		
 			a.fillPath(_path_, this.fillmode);
 			a.drawPath(_path_);  
-			
 			a.restore();
 		};
 	});
-	
 function _resetRoundRectangle(a){
 	if (!a.elem || a.type != "keyup"){
 			return;
 		}
-		
 	a.elem.radius = 10;
 	a.elem.initialize();
 	a.host.refresh();
 };
-
 function _toggleRoundMode(a){//a : event args {type:, host:, elem,}
 		if (!a.elem || a.type != "keyup"){
 			return;
 		}
-	
 	switch(a.elem.type){
 		case "flat":
 			a.elem.type = "inner";
@@ -250,23 +222,19 @@ function _toggleRoundMode(a){//a : event args {type:, host:, elem,}
 	}
 	a.elem.initialize();
 	a.host.refresh();
-	
 };
-	
 igk.system.createClass(Tools, {name:'RoundRectMecanism', parent: Tools.RectangleMecanism},
 	function(){ 	
 		this.createElement = function(){
 			return this.host.add('roundrect');
 		};
-		
-		 
 		var _base_ = [];
 		_base_["registerKeyAction"] =this.registerKeyAction;
 		this.registerKeyAction = function(actions){
 			_base_["registerKeyAction"].apply(this, [actions]);
 			var M_ACT = igk.winui.cancasEditor.actions.mecanismActions.drawin2D;
-			actions[Key.R] = _resetRoundRectangle; 
-			actions[Key.T] = _toggleRoundMode; 
+			actions[Key.Shift | Key.R] = _resetRoundRectangle; // bare R selects the rectangle tool 
+			actions[Key.Shift | Key.T] = _toggleRoundMode; // bare T selects the text tool 
 		};
 		this.getPoints = function(elem){
 				var b = elem.bound;
@@ -278,17 +246,10 @@ igk.system.createClass(Tools, {name:'RoundRectMecanism', parent: Tools.Rectangle
 						{x: b.x, y: b.y+b.height}
 					];
 		};
-		
-		 
 });
-	
-	
-	
-	
 	function roundRadiusSerialiser(v){
 		var s = "";
 		var ceil = _NS.CoreMathOperation.ceil;
-		
 		if (_NS.Utils.IsArray(v)){
 			for(var i = 0; i < v.length; i++){
 				if (i>0)
@@ -299,15 +260,12 @@ igk.system.createClass(Tools, {name:'RoundRectMecanism', parent: Tools.Rectangle
 			if (typeof(v) == 'number'){
 				s = v;
 			}else{
-				
 			}
 		}
 		return s;
 	};
 	function roundRadiusUnserializer(v){
-		
 		var tab = v.trim().split(" "); 
-		
 		if (tab.length>1){
 				var g  = [];
 				for(var i = 0; i < tab.length; i++){
@@ -322,35 +280,22 @@ igk.system.createClass(Tools, {name:'RoundRectMecanism', parent: Tools.Rectangle
 			return parseFloat(tab[0]);
 		}		
 	}
-	
-	
 	var EXPORTS = _NS.Exports;
 	var SERI = _NS.Serializer;
-	
-	
 	EXPORTS.register("roundrect", function(){
 	var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 		{name:"radius", 'default': 10, serializer: roundRadiusSerialiser, unserialize: roundRadiusUnserializer },
 		{name:"fillmode", 'default': ELEM.fillMode.evenodd },	
-		
 		{name:"type", 'default':'round'},
 		{name:"bound", serializer: SERI.boundSerializer, unserialize : SERI.boundUnserializer}
 		]).concat(EXPORTS.matrixExport());		
 	return c;
-	
 	});
-	
-	ACTIONS.regActions(Key.None, "editor.selectool.roundrect",  function(a){			
+	ACTIONS.regActions(null, "editor.selectool.roundrect",  function(a){			
 		a.tool = new  Tools.RoundRectMecanism();
 	});
-	
 	Tools.registerEditorAttribute("roundrect", Tools.RoundRectMecanism);
-	
 	ACTIONS.regMenuAction("tools.roundrect", {index:4, callback:function(){
 	ACTIONS.invoke("editor.selectool.roundrect");
 }});
-
-
-})();
-
-
+})();

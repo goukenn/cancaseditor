@@ -1,15 +1,11 @@
-
 "use strict";
 (function(){
-
 var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
 var ELEM  = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
 var SERI  = igk.winui.cancasEditor.Serializer;
 var Tools = igk.winui.cancasEditor.Tools;
 var UTILS = igk.winui.cancasEditor.Utils;
 var PATH  = igk.winui.cancasEditor.Utils.Path;
-
-
 igk.system.createClass(ELEM, {name:"star", parent:ELEM.fullname+".circle" }, function(){
 		//ELEM.circle.apply(this);
 		//this.center = {x:0, y: 0};
@@ -20,20 +16,15 @@ igk.system.createClass(ELEM, {name:"star", parent:ELEM.fullname+".circle" }, fun
 		this.offsetAngle = 0;
 		this.tension = 0;
 		this.outerRadius = 0;
-		
 		//this.radius = 0;
 		var _path_ = new Path2D();
 		var m_bound = {x:0, y:0, width : 0, height: 0};
-		
-		
 		igk.defineProperty(this, "bound", {get:function(){
 			return m_bound;
 		}});
-		
 		igk.defineProperty(this, "path", {get:function(){
 			return _path_;
 		}});
-		
 		igk.defineProperty(this, "count", {get:function(){
 			return count;
 		}, set: function(v){
@@ -41,7 +32,6 @@ igk.system.createClass(ELEM, {name:"star", parent:ELEM.fullname+".circle" }, fun
 				count = v;
 			}
 		}});
-		
 		// this.exports = [
 		// "id",
 		// "fill",
@@ -53,21 +43,15 @@ igk.system.createClass(ELEM, {name:"star", parent:ELEM.fullname+".circle" }, fun
 		igk.appendChain(this, "Edit", function(engine){
 			engine.addGroup()
 			.addControlLabel("count", this.count);
-			
 			engine.addGroup()
 			.addControlLabel("tension", this.tension);			
-			
 			engine.addGroup()
 			.addControlLabel("angle", this.angle);
-			
 			engine.addGroup()
 			.addControlLabel("sweepAngle", this.sweepAngle);
-			
 			engine.addGroup()
 			.addControlLabel("offsetAngle", this.offsetAngle);
-			
 		});
-	
 		this.contains = function(x, y, a){
 			if (_path_){
 				a.save();
@@ -92,16 +76,11 @@ igk.system.createClass(ELEM, {name:"star", parent:ELEM.fullname+".circle" }, fun
 			var miny = 0; 
 			var maxx = 0; 
 			var maxy = 0;
-			
-			
 			if ((count<3) && (count>360))
 				return;
 			// var _cpath_ = 0;
 			// var _rad = 0;
 			// var d = 0;
-
-
-
 			var p = count * 2;
 			var step =  ((360 /  p) * po);
 			var vangle =  (this.angle * po);
@@ -129,9 +108,7 @@ igk.system.createClass(ELEM, {name:"star", parent:ELEM.fullname+".circle" }, fun
 				// }else{
 					// _path_.lineTo(pts.x, pts.y);
 				// }
-				
 				tpts.push(pts);
-				
 				if (i==0){
 					minx = pts.x;
 					maxx = pts.x;
@@ -146,7 +123,6 @@ igk.system.createClass(ELEM, {name:"star", parent:ELEM.fullname+".circle" }, fun
 			}
 			PATH.BuildPath(path, tpts, tpts.length, true, this.tension);	
 			path.closePath();
-		
 			if (_initializing){
 				m_bound = {
 					x : minx,
@@ -162,7 +138,6 @@ igk.system.createClass(ELEM, {name:"star", parent:ELEM.fullname+".circle" }, fun
 			this.buildPath(_path_);
 			_initializing =  0;
 		};
-		
 		this.render = function(o){
 			o.save();
 			o.setTransform(this.matrix);
@@ -173,27 +148,17 @@ igk.system.createClass(ELEM, {name:"star", parent:ELEM.fullname+".circle" }, fun
 			o.drawPath(_path_, this.fillMode);
 			o.restore();
 		};
-		
-		
 		this.updateTransformElement = function(){
 			var m = this.matrix;
-			
 			if (!m.isIdentity()){ 
 				// var pts = [this.center];
-			
 				this.center = CoreMathOperation.TransformPoint(this.center, m);
 				// this.center = pts[0];
-				 
 			}
 			m.reset();
 			this.initialize();
 		};
-		
 	});
-	
-	
-
-
 igk.system.createClass(Tools, {name:'StarMecanism', parent: Tools.fullname+".CircleMecanism"},
 	function(){
 		// Tools.CircleMecanism.apply(this);	
@@ -221,25 +186,20 @@ igk.system.createClass(Tools, {name:'StarMecanism', parent: Tools.fullname+".Cir
 			actions[Key.Shift | Key.Plus] = M_ACT.tensionPropertyUp;
 			actions[Key.Shift | Key.Minus] = M_ACT.tensionPropertyDown;
 		};
-		
 		this.getPoints = function(elem){
 			var tab = [];
 			var c = elem.center;
-			
 			var radius = UTILS.IsArray(elem.radius) ? elem.radius :  [elem.radius];
-			
 			tab.push(c);
 			tab.push( {
 					 x:0, 
 					 y:0 
 			});	
-			
 			var sweepPoint = {
 				x:0,//(c.x + r.x * Math.cos(ra)),
 				y:0 //(c.y + r.y * Math.sin(ra))
 			};
 			var ra = elem.angle * CoreMathOperation.ConvDgToRadian;
-	
 			for(var i = 0 ; i < radius.length; i++){
 				var r = UTILS.getPoint(radius[i]);
 				if (r)
@@ -247,7 +207,6 @@ igk.system.createClass(Tools, {name:'StarMecanism', parent: Tools.fullname+".Cir
 					 x:(c.x + r.x * Math.cos(ra)),
 					 y:(c.y + r.y * Math.sin(ra))
 				 });
-				 
 				sweepPoint.x = Math.max(sweepPoint.x, r.x);
 				sweepPoint.y = Math.max(sweepPoint.y, r.y);
 			}
@@ -258,8 +217,6 @@ igk.system.createClass(Tools, {name:'StarMecanism', parent: Tools.fullname+".Cir
 					 x:(c.x + elem.outerRadius * Math.cos(ra)),
 					 y:(c.y + elem.outerRadius * Math.sin(ra))
 				 };
-			
-			 
 			return tab;
 		};
 		this.update	= function(elem, endPos){
@@ -296,12 +253,7 @@ igk.system.createClass(Tools, {name:'StarMecanism', parent: Tools.fullname+".Cir
 			// Tools.CircleMecanism
 		}
 });
-	
-	
 Tools.registerEditorAttribute("star", Tools.StarMecanism);
-
-
-
 var EXPORTS = igk.winui.cancasEditor.Exports;
 EXPORTS.register("star", function(){
 var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
@@ -315,17 +267,11 @@ var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 		]).concat(EXPORTS.matrixExport());			
 return c;
 });
-
-
 //register actions
 var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
-ACTIONS.regActions(Key.Alt | Key.Shift | Key.K, "editor.selectool.star", function (a){a.tool = new Tools.StarMecanism(); });
-
-
+ACTIONS.regActions(null, "editor.selectool.star", function (a){a.tool = new Tools.StarMecanism(); });
 ACTIONS.regMenuAction("tools.star", {index:8, callback:function(){
 	ACTIONS.invoke("editor.selectool.star");
 }});
-
-
 })();

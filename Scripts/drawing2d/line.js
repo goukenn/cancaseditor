@@ -1,17 +1,15 @@
 "use strict";
 (function(){
-
 var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
 var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
 var SERI = igk.winui.cancasEditor.Serializer;
-
-igk.system.createClass(ELEM, {name:"line", parent:ELEM.drawing2D }, function(){
-		ELEM.drawing2D.apply(this);
+const Tools = igk.winui.cancasEditor.Tools;
+const _TN_ = 'line';
+igk.system.createClass(ELEM, {name:_TN_, parent:ELEM.drawing2D }, function(){
 		this.stroke = "#000";
 		this.strokeWidth = 1;
 		this.start = {x:0, y:0};
-		this.end = {x:0, y:0};
-		
+		this.end = {x:0, y:0}; 
 		// this.exports = ["id", "stroke", "strokeWidth",  {name:"start", 
 		// serializer: SERI.vector2Serializer},
 		// {name:"end", 
@@ -21,13 +19,17 @@ igk.system.createClass(ELEM, {name:"line", parent:ELEM.drawing2D }, function(){
 			a.save();	
 			a.setTransform(this.matrix);			
 			a.stroke = this.stroke;
-			a.strokeWidth = this.strokeWidth;
+			a.strokeWidth = this.strokeWidth; 
 			a.drawLine(this.start.x, this.start.y, this.end.x, this.end.y);
 			a.restore();
 		};
-		
-		this.contains = function(x, y, a){
-			
+		this.buildPath = function(_def){
+			_def.moveTo(this.start.x, this.start.y)
+			_def.lineTo(this.end.x, this.end.y );
+			return _def;
+		};
+		// 
+		this.contains = function(x, y, a){ 
 			a.save();
 			a.setTransform(this.matrix);
 			var _p = new Path2D();
@@ -36,33 +38,23 @@ igk.system.createClass(ELEM, {name:"line", parent:ELEM.drawing2D }, function(){
 			a.strokeWidth = this.strokeWidth;
 			var o = a.isPointInStroke(_p, x, y);
 			a.restore();
-			return o;
-			
+			return o; 
 		}
 });
-
-
-
-var Tools = igk.winui.cancasEditor.Tools;
-
 // console.debug(Tools.RectangleMecanism);
 //selection mecanism : used for selections
 igk.system.createClass(Tools, {name:'LineMecanism', parent: Tools.RectangleMecanism }, function(){
 	Tools.RectangleMecanism.apply(this);
 	var _lineAngle = 30;
-	
 	 this.createElement = function(){
 		return this.host.add("line"); 
 	 };
-	 
 	 this.update = function(e, endP){
 		 if (this.isShift()){
 			endP = CoreMathOperation.GetAnglePoint( this.startPos, endP, _lineAngle); 
 		 }
 		 e.start = this.startPos;
 		 e.end = endP;
-		 
-		 
 	 };
 	 this.getPoints = function(e){
 		 return [
@@ -71,7 +63,6 @@ igk.system.createClass(Tools, {name:'LineMecanism', parent: Tools.RectangleMecan
 		 ];
 	 };
 	 this.updateIndex = function(elem, index, endPos){
-		
 		switch(index){
 			case 0:
 			if (this.isShift()){
@@ -85,20 +76,14 @@ igk.system.createClass(Tools, {name:'LineMecanism', parent: Tools.RectangleMecan
 			}
 			elem.end = endPos;
 			break;
-			
 		}
 	};
-	
 	this.startUpdateIndex = function(elem, index, inf){
-		
 	};
 });
-
-
-
-//line exports
+// + | line exports
 var EXPORTS = igk.winui.cancasEditor.Exports;
- EXPORTS.register("line", function(){
+EXPORTS.register("line", function(){
 	var c = EXPORTS.initExport().concat([
 			{name:"stroke", "default": "#000"}, 
 			{name:"strokeWidth", "default":1},
@@ -109,17 +94,11 @@ var EXPORTS = igk.winui.cancasEditor.Exports;
 			]);			
 	return c;
 });
-
-
 //register actions
 var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
-ACTIONS.regActions(Key.Shift | Key.L, "editor.selectool.line", function (a){a.tool = new Tools.LineMecanism(); });
-
-
+ACTIONS.regActions(null, "editor.selectool.line", function (a){a.tool = new Tools.LineMecanism(); });
 ACTIONS.regMenuAction("tools.line", {index:2, callback:function(){
 	ACTIONS.invoke("editor.selectool.line");
 }});
-
-
 })();

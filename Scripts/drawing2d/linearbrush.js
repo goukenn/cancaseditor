@@ -103,7 +103,7 @@ this.getPoints=function(e){
 	 };
 	 igk.appendChain(this, "registerKeyAction", function(actions){
 		var self=  this;
-		actions[Key.R] =  function(){
+		actions[Key.Shift | Key.R] =  function(){ // bare R selects the rectangle tool
 			if (self.elem){
 				var e = self.elem;
 				e.startPoint = {x: e.bound.x, y: e.bound.y};
@@ -139,7 +139,7 @@ var EXPORTS = igk.winui.cancasEditor.Exports;
 //register actions
 var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
-ACTIONS.regActions(Key.Shift | Key.Alt | Key.L, "editor.selectool.linearbrush", function (a){a.tool = new Tools.linearBrushMecanism(); });
+ACTIONS.regActions(null, "editor.selectool.linearbrush", function (a){a.tool = new Tools.linearBrushMecanism(); });
 ACTIONS.regMenuAction("tools.linearbrush", {index:20, callback:function(){
 	ACTIONS.invoke("editor.selectool.linearbrush");
 }});

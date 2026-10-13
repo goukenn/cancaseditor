@@ -148,12 +148,8 @@ var EXPORTS = igk.winui.cancasEditor.Exports;
  EXPORTS.register("layer", function(){
 	var c = EXPORTS.initExport().concat([
 	{name:"opacity", "default": 1}, 
-	// a hidden layer is exported as visible="false"
-	{name:"visible", "default": true, serializer: function(v){
-		return v ? null : 'false';
-	}, unserialize: function(v){
-		return v !== 'false';
-	}}, 
+	// the visibility is exported by every element (Exports.initExport)
+
 	{name:"filter", "default": 0}, 
 	{name:"clip", "default": null, serializer: function(v){
 		if (typeof(v)=='object'){

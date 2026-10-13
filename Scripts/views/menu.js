@@ -57,6 +57,9 @@ ACTIONS.regMenuAction('edit.selectall', defDebugAction(function(){
 /**
  * call delete all 
  */
+ACTIONS.regMenuAction("edit.delete", {index:70, callback:function(){
+	ACTIONS.invoke("editor.delete");
+}});
 ACTIONS.regMenuAction("edit.deleteall", {index:71, callback:function(){
 	ACTIONS.invoke("editor.deleteall");
 }});

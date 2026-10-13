@@ -16,7 +16,7 @@
 			const seg = {};
 			// name, label key, optional (hidden on small screens)
 			[['doc', 'status.document', 0], ['size', 'status.size', 0], ['tool', 'status.tool', 0],
-			['zoom', 'status.zoom', 0], ['sel', 'status.selection', 1], ['cursor', 'status.cursor', 1],
+			['zoom', 'status.zoom', 0], ['sel', 'status.selection', 1],
 			['save', null, 1], ['lang', 'status.lang', 1]].forEach(([n, key, opt]) => {
 				const e = document.createElement('span');
 				e.className = 'sb-seg no-wrap sb-' + n + (opt ? ' sb-opt' : '');
@@ -58,21 +58,28 @@
 			const schedule = () => { if (!scheduled) { scheduled = requestAnimationFrame(() => { scheduled = 0; update(); }); } };
 			['toolChanged', 'zoomChanged', 'zoomTypeChanged', 'currentDocumentChanged', 'itemStartEdition',
 				'itemEndEdition', 'selectChanged', 'elementAdded', 'elementRemoved', 'titleChanged', 'onLangChanged'].forEach((n) => editor.on(n, schedule));
-			// cursor position in document coordinates (zoom matrix: [a b c d tx ty])
+			// cursor position in document coordinates (zoom matrix: [a b c d tx ty]):
+			// "x x y" at the bottom right of the surface (large screens, see the style .ce-cursor)
 			const canvas = editor.canvas.o;
+			const cursor = document.createElement('div');
+			cursor.className = 'ce-cursor';
+			canvas.parentNode.append(cursor);
 			canvas.addEventListener('mousemove', (e) => {
 				const m = editor.matrix && editor.matrix.element;
 				if (!m || !m[0] || !m[3]) { return; }
 				const r = canvas.getBoundingClientRect();
 				const x = Math.round((e.clientX - r.left - m[4]) / m[0]);
 				const y = Math.round((e.clientY - r.top - m[5]) / m[3]);
-				label(seg.cursor, x + ', ' + y);
+				cursor.textContent = x + ' x ' + y;
 			});
-			canvas.addEventListener('mouseleave', () => { seg.cursor.textContent = ''; });
+			canvas.addEventListener('mouseleave', () => { cursor.textContent = ''; });
 			// storage and language are created by other tools: bind once everything is loaded
 			// resources are loaded asynchronously
 			_NS.lang && _NS.lang.listeners.push(schedule);
 			setTimeout(() => {
+				// "scene > layer" is placed right after the document segment
+				const lt = host.o.querySelector('.layertool');
+				if (lt) { seg.doc.after(lt); }
 				_NS.storage && _NS.storage.onChange.push(schedule);
 				update();
 			}, 0);

@@ -1152,10 +1152,36 @@
 							old: m_document,
 							current: v
 						};
+						// each document keeps its own view (zoom and pan = its location on the surface)
+						if (m_document) {
+							m_document.view = { zoom: m_zoomx, panx: m_panx, pany: m_pany };
+						}
 						m_document = v;
+						if (v) {
+							if (v.view) {
+								m_zoomx = m_zoomy = v.view.zoom;
+								m_panx = v.view.panx;
+								m_pany = v.view.pany;
+							} else {
+								m_panx = 0;
+								m_pany = 0;
+							}
+						}
 						raiseEvent("currentDocumentChanged", e);
 						this.getTransform(!0);
 					}
+				}
+			});
+ 			// all the documents of the scene (the editor shows one of them, the current one)
+			igk.defineProperty(this, "documents", {
+				get: function () {
+					var r = [];
+					for (var i = 0; i < this.list.length; i++) {
+						if (this.list[i].getType && this.list[i].getType() == "document") {
+							r.push(this.list[i]);
+						}
+					}
+					return r;
 				}
 			});
 			//get or set the current layer
@@ -1504,6 +1530,8 @@
 			};
 			this.removeAll = function (items) { //items is array of container elements
 				var c = 0;
+				// the array may be the live element list of a container: removing while iterating would skip elements
+				items = Array.prototype.slice.call(items);
 				for (var j = 0; j < items.length; j++) {
 					c = items[j]["@container"];
 					if (c && c.remove(items[j])) {
@@ -1664,6 +1692,51 @@
 					}
 					m_asset_node.add(asset);
 					return this;
+				},
+				/** view (zoom, pan) of the current document: its location on the surface */
+				getView: function () {
+					return { zoom: m_zoomx, panx: m_panx, pany: m_pany };
+				},
+				setView: function (v) {
+					if (!v || !(v.zoom > 0)) {
+						return;
+					}
+					m_zoomx = m_zoomy = v.zoom;
+					m_panx = +v.panx || 0;
+					m_pany = +v.pany || 0;
+					this.getTransform(true);
+					this.refresh();
+				},
+				/** add a document (with a layer) to the scene and make it the current one */
+				addDocument: function () {
+					var cur = this.document;
+					this.layer = null; // the document is added to the scene, not to the current layer
+					var doc = this.add("document");
+					if (cur) {
+						doc.setSize(cur.width, cur.height);
+					}
+					var layer = this.createElement("layer");
+					layer.setDocument(doc);
+					this.document = doc;
+					this.layer = layer;
+					this.resetFitAreaZoom();
+					this.refresh();
+					return doc;
+				},
+				/** remove a document of the scene */
+				removeDocument: function (doc) {
+					var docs = this.documents;
+					if (!doc || docs.indexOf(doc) == -1) {
+						return false;
+					}
+					this.Edit(null, null);
+					this.remove(doc);
+					var next = this.documents[0] || null;
+					this.document = next;
+					var ly = next ? next.getLayers() : [];
+					this.layer = ly.length > 0 ? ly[ly.length - 1] : null;
+					this.refresh();
+					return true;
 				},
 				addImageDocument: function (img) {
 					if (!img)
@@ -3961,7 +4034,7 @@
 						return _visible;
 					}, set: function (v) {
 						if (typeof (v) == 'boolean') {
-							visible = v;
+							_visible = v;
 						}
 					}
 				});
@@ -4358,7 +4431,12 @@
 		});
 		//export properties model
 		function elementExport() {
-			var t = ["id"];
+			// a hidden element is exported as visible="false"
+			var t = ["id", {
+				name: "visible", "default": true,
+				serializer: function (v) { return v ? null : 'false'; },
+				unserialize: function (v) { return v !== 'false'; }
+			}];
 			return t;
 		}
 		/**
@@ -4630,6 +4708,13 @@
 					v_menu_text = v_menu_text.replace(/^&([a-zA-Z])/, "<u>" + v_menu_text[1].toUpperCase() + "</u>");
 					v_menu_text = v_menu_text.replace(/&([a-zA-Z])/, "<u>$1</u>");
 				}
+				// the shortcut of the entry (hidden on small screens by the style)
+				if (n.indexOf('.') != -1) {
+					var sc = _NS.Actions.shortcutLabel(n);
+					if (sc) {
+						v_menu_text += '<span class="shortcut">' + sc + '</span>';
+					}
+				}
 				return v_menu_text;
 			};
 			// v_menu_text = "<span>"+v_menu_text+"</span><span class=\"shortcut\">⌘ + N</span>";
@@ -4686,7 +4771,9 @@
 			},
 			regActions: function (key, name, func) {//register shortcut action
 				actions[name] = func;
-				shortcut[key] = name;
+				// no key: the action has no shortcut of its own (see Actions.regShortcut)
+				if (key)
+					shortcut[key] = name;
 			},
 			/**
 			 * register menu action 
@@ -4928,6 +5015,7 @@
 				}
 			};
 		};
+		var IS_MAC = /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent || '');
 		function __getkey(e) {
 			// for key press and key up
 			var v = 0;
@@ -4936,7 +5024,8 @@
 				v |= Key.Shift;
 				// c =c & ~16;
 			}
-			if (e.ctrlKey || (e.key == 'Control')) {
+			// the command key plays the role of ctrl on macOS
+			if (e.ctrlKey || (e.key == 'Control') || (IS_MAC && (e.metaKey || (e.key == 'Meta')))) {
 				v |= Key.Ctrl;
 				// c = c & ~17;
 			}
@@ -5034,6 +5123,10 @@
 				handle_action = 0;
 				return;
 			}
+			if ((e.keyCode == 8) || (e.keyCode == 46)) {
+				// backspace must not navigate back / scroll while the editor owns the keys
+				e.preventDefault();
+			}
 			//stop key handle if is registrated on shortcut
 			var v = __getkey(e);
 			if (v in shortcut) {
@@ -5090,6 +5183,98 @@
 		igk.defineProperty(igk.winui.cancasEditor.Actions, "Key", { get: function () { return Key; } });
 		igk.winui.cancasEditor.Actions.getKeyFromEvent = __getkey;
 		igk.winui.cancasEditor.Actions.hasFocus = hasFocus;
+		// ---------------------------------------------------------------------
+		// shortcut hints shown in the menu
+		// ---------------------------------------------------------------------
+		var KEY_LABELS = { 8: ['\u232b', 'Backspace'], 46: ['\u2326', 'Del'], 27: ['Esc', 'Esc'], 13: ['\u21a9', 'Enter'], 37: ['\u2190', 'Left'], 38: ['\u2191', 'Up'], 39: ['\u2192', 'Right'], 40: ['\u2193', 'Down'], 107: ['+', 'Num +'], 109: ['-', 'Num -'], 111: ['/', 'Num /'] };
+		function shortcutCodes(name) {
+			var l = [];
+			for (var k in shortcut) {
+				if ((shortcut[k] == name) && (+k > 0)) {
+					l.push(+k);
+				}
+			}
+			return l;
+		};
+		function formatShortcut(v) {
+			var code = v & 0xFFFF;
+			var s = ((v & Key.Shift) == Key.Shift), c = ((v & Key.Ctrl) == Key.Ctrl), al = ((v & Key.Alt) == Key.Alt);
+			var kl = KEY_LABELS[code] ? KEY_LABELS[code][IS_MAC ? 0 : 1] :
+				(code >= 96 && code <= 105) ? 'Num ' + (code - 96) : String.fromCharCode(code);
+			if (IS_MAC) {
+				return (al ? '\u2325' : '') + (s ? '\u21e7' : '') + (c ? '\u2318' : '') + kl;
+			}
+			return (c ? 'Ctrl+' : '') + (al ? 'Alt+' : '') + (s ? 'Shift+' : '') + kl;
+		};
+		// action bound to a menu entry: explicit, then editor.<name>, then editor.selectool.<name>
+		var MENU_ACTIONS = { 'edit.undo': 'editor.undo', 'edit.redo': 'editor.redo', 'edit.delete': 'editor.delete' };
+		function shortcutLabel(menuKey) {
+			var cands = [];
+			if (MENU_ACTIONS[menuKey]) {
+				cands.push(MENU_ACTIONS[menuKey]);
+			}
+			var last = menuKey.split('.').pop().toLowerCase();
+			cands.push('editor.' + last, 'editor.selectool.' + last);
+			for (var i = 0; i < cands.length; i++) {
+				var codes = shortcutCodes(cands[i]);
+				if (codes.length > 0) {
+					// macOS prefers backspace for delete
+					var v = (IS_MAC && (codes.indexOf(Key.Backspace) != -1)) ? Key.Backspace : codes[0];
+					return formatShortcut(v);
+				}
+			}
+			return '';
+		};
+		igk.winui.cancasEditor.Actions.shortcutLabel = shortcutLabel;
+		// ---------------------------------------------------------------------
+		// custom shortcuts (settings > shortcuts): defaults are the bindings registered at startup
+		// ---------------------------------------------------------------------
+		var m_shortcut_defaults = null;
+		function shortcutDefaults() {
+			if (!m_shortcut_defaults) {
+				m_shortcut_defaults = {};
+				for (var k in shortcut) {
+					(m_shortcut_defaults[shortcut[k]] = m_shortcut_defaults[shortcut[k]] || []).push(+k);
+				}
+			}
+			return m_shortcut_defaults;
+		};
+		/** bind an action to one key code (null: no key). The key is taken from the action that had it. */
+		function setShortcut(name, code) {
+			shortcutDefaults();
+			for (var k in shortcut) {
+				if (shortcut[k] == name) {
+					delete shortcut[k];
+				}
+			}
+			if (code) {
+				shortcut[code] = name;
+			}
+		};
+		function resetShortcuts() {
+			var d = shortcutDefaults();
+			for (var k in shortcut) {
+				delete shortcut[k];
+			}
+			for (var n in d) {
+				d[n].forEach(function (c) { shortcut[c] = n; });
+			}
+		};
+		/** defaults, then the custom bindings {actionName: code|null}; the menu hints are refreshed */
+		function applyShortcuts(map) {
+			resetShortcuts();
+			for (var n in (map || {})) {
+				setShortcut(n, map[n]);
+			}
+			((_NS.lang && _NS.lang.listeners) || []).forEach(function (f) { f(); });
+		};
+		var A_ = igk.winui.cancasEditor.Actions;
+		A_.shortcutCodes = shortcutCodes;
+		A_.formatShortcut = formatShortcut;
+		A_.shortcutDefaults = shortcutDefaults;
+		A_.setShortcut = setShortcut;
+		A_.resetShortcuts = resetShortcuts;
+		A_.applyShortcuts = applyShortcuts;
 		igk.winui.cancasEditor.Actions.focusEditor = focusEditor;
 		igk.winui.cancasEditor.Actions.bindSurface = bindSurface;
 		AC.regActions(Key.Ctrl | Key.C, "editor.copy", function (a, e) {
@@ -5119,15 +5304,46 @@
 			}
 			throw new _NS.exceptions.Error('Not implement');
 		});
+		// delete the selection: backspace (macOS) or del (windows); both keys work everywhere
+		function deleteSelection(a) {
+			var t = a.tool;
+			if (t && (typeof (t.deleteSelected) == 'function')) {
+				t.deleteSelected();
+				return;
+			}
+			var el = a.element;
+			if (el && el['@container']) {
+				el['@container'].remove(el);
+				a.Edit(null, t);
+				a.refresh();
+			}
+		};
+		// single key tool selection: only while the editor surface has the focus (see hasFocus).
+		// Another key can be bound to the same action later (configurable): shortcut[key] = action name.
+		AC.regShortcut = function (key, name) {
+			shortcut[key] = name;
+		};
+		AC.regShortcut(Key.R, "editor.selectool.rectangle");
+		AC.regShortcut(Key.C, "editor.selectool.circle");
+		AC.regShortcut(Key.S, "editor.selectool.selection");
+		AC.regShortcut(Key.L, "editor.selectool.line");
+		AC.regShortcut(Key.B, "editor.selectool.bezier");
+		AC.regShortcut(Key.P, "editor.selectool.plume");
+		AC.regShortcut(Key.A, "editor.selectool.arc");
+		AC.regShortcut(Key.M, "editor.selectool.spline");
+		AC.regShortcut(Key.K, "editor.selectool.star");
+		AC.regShortcut(Key.T, "editor.selectool.text");
+		AC.regActions(Key.Delete, "editor.delete", deleteSelection);
+		AC.regActions(Key.Backspace, "editor.delete", deleteSelection);
 		AC.regActions(Key.None, "editor.deleteall", function (a, e) {
 			a.clear();
 			a.refresh();
 		});
 		//element tool shortcut
-		AC.regActions(Key.Alt | Key.Shift | Key.R, "editor.selectool.rectangle", function (a) {
+		AC.regActions(null, "editor.selectool.rectangle", function (a) {
 			a.tool = new _NS.Tools.RectangleMecanism();
 		});
-		AC.regActions(Key.Alt | Key.Shift | Key.P, "editor.selectool.polygon", function (a) {
+		AC.regActions(null, "editor.selectool.polygon", function (a) {
 			a.tool = new _NS.Tools.PolygonMecanism();
 		});
 		// console.debug("out : "+(Key.Alt | Key.Shift  | Key.C));

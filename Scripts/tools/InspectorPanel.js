@@ -212,7 +212,9 @@
 		if ('min' in o) { i.min = o.min; }
 		if ('max' in o) { i.max = o.max; }
 		i.value = value;
-		i.oninput = () => { if (i.value !== '' && !isNaN(+i.value)) { onchange(+i.value); } };
+		// an empty field is the integer 0
+		i.oninput = () => { const v = i.value === '' ? 0 : +i.value; if (!isNaN(v) && onchange) { onchange(v); } };
+		i.addEventListener('change', () => { if (i.value === '') { i.value = 0; } });
 		return i;
 	}
 	const round2 = (n) => Math.round(n * 100) / 100;
@@ -255,10 +257,10 @@
 			paint();
 		};
 		op.oninput = () => {
-			if (op.value === '') { return; }
-			const v = clamp(+op.value, 0, 100) / 100;
+			const v = clamp(op.value === '' ? 0 : +op.value, 0, 100) / 100; // empty = 0
 			if (a.setOpacity) { a.apply(() => a.setOpacity(v)); }
 		};
+		op.addEventListener('change', () => paint());
 		paint();
 		return _el('div', { className: 'ci-fill' }, [on, sw, hex, a.setOpacity ? _el('div', { className: 'ci-field' }, [op, _el('span', { textContent: '%' })]) : _el('span')]);
 	}
@@ -266,7 +268,8 @@
 		const r = _el('input', { type: 'range', min, max, value });
 		const t = _el('input', { type: 'number', min, max, value });
 		r.oninput = () => { t.value = r.value; onchange(+r.value); };
-		t.oninput = () => { if (t.value !== '') { r.value = t.value; onchange(+t.value); } };
+		t.oninput = () => { const v = t.value === '' ? 0 : +t.value; r.value = v; onchange(v); };
+		t.addEventListener('change', () => { if (t.value === '') { t.value = 0; } });
 		return _el('div', {}, [_el('div', { className: 'ci-sub', textContent: label }), _el('div', { className: 'ci-row slider' }, [r, t])]);
 	}
 	// ---------------------------------------------------------------- geometry helpers
@@ -334,13 +337,15 @@
 				const d = (v - cur) * Math.PI / 180, c = Math.cos(d), s = Math.sin(d);
 				aboutCenter(el, (cx, cy) => [c, s, -s, c, cx - cx * c + cy * s, cy - cx * s - cy * c]);
 			}), { step: 1 });
-			const wi = numInput(round2(el.bound.width), null, { min: 1 });
-			const hi = numInput(round2(el.bound.height), null, { min: 1 });
-			wi.oninput = () => { if (+wi.value > 0) { apply(() => { const b = el.bound; const w = +wi.value; const h = lock ? w / ratio : b.height; el.bound = { x: b.x, y: b.y, width: w, height: h }; hi.value = round2(h); }); } };
-			hi.oninput = () => { if (+hi.value > 0) { apply(() => { const b = el.bound; const h = +hi.value; const w = lock ? h * ratio : b.width; el.bound = { x: b.x, y: b.y, width: w, height: h }; wi.value = round2(w); }); } };
+			const wi = numInput(round2(el.bound.width), null, { min: 0 });
+			const hi = numInput(round2(el.bound.height), null, { min: 0 });
+			// an empty field is 0 (the size is never negative)
+			const num = (i) => Math.max(0, i.value === '' ? 0 : (+i.value || 0));
+			wi.oninput = () => apply(() => { const b = el.bound; const w = num(wi); const h = lock ? w / ratio : b.height; el.bound = { x: b.x, y: b.y, width: w, height: h }; hi.value = round2(h); });
+			hi.oninput = () => apply(() => { const b = el.bound; const h = num(hi); const w = lock ? h * ratio : b.width; el.bound = { x: b.x, y: b.y, width: w, height: h }; wi.value = round2(w); });
 			const lockBtn = _el('button', { className: 'ci-ico', type: 'button', title: T('ins.lock') });
 			lockBtn.innerHTML = ICONS.lockOff;
-			lockBtn.onclick = () => { lock = !lock; ratio = el.bound.height ? el.bound.width / el.bound.height : 1; lockBtn.classList.toggle('on', lock); lockBtn.innerHTML = lock ? ICONS.lockOn : ICONS.lockOff; };
+			lockBtn.onclick = () => { lock = !lock; ratio = (el.bound.height && el.bound.width) ? el.bound.width / el.bound.height : 1; lockBtn.classList.toggle('on', lock); lockBtn.innerHTML = lock ? ICONS.lockOn : ICONS.lockOff; };
 			const flip = (h) => {
 				const b = _el('button', { className: 'ci-ico', type: 'button', title: T(h ? 'ins.flip.h' : 'ins.flip.v') });
 				b.innerHTML = h ? ICONS.flipH : ICONS.flipV;
@@ -407,16 +412,37 @@
 		}
 		return root;
 	}
+	/** a document identifier: a name not used by another document of the scene */
+	function validDocumentId(editor, doc, id) {
+		return /^[A-Za-z_][\w.\-]*$/.test(id) && !editor.documents.some((d) => d !== doc && d.id == id);
+	}
 	function documentPanel(editor, doc) {
 		const root = _el('div', { className: 'ci-root' });
 		const resize = () => editor.resizeCanvas(true);
-		root.append(_el('div', { className: 'ci-title', textContent: T('ins.document') + ' #' + doc.id }));
+		root.append(_el('div', { className: 'ci-title', textContent: T('ins.document') }));
+		const idInput = _el('input', { type: 'text', value: doc.id || '', title: T('doc.id') });
+		idInput.onchange = () => {
+			const v = idInput.value.trim();
+			if (v == doc.id) { return; }
+			if (!validDocumentId(editor, doc, v)) {
+				_NS.gui.notify.Show(editor, T('doc.id.invalid'));
+				idInput.value = doc.id;
+				return;
+			}
+			doc.id = v;
+			editor.refresh();
+			editor.raiseEvent('currentDocumentChanged', { old: doc, current: doc }); // the status bar and the explorer show the new id
+		};
+		root.append(idInput, _el('div', { style: 'height:6px' }));
 		const title = _el('input', { type: 'text', value: doc.title || '', placeholder: T('doc.name') });
 		title.onchange = () => { doc.title = title.value; editor.refresh(); };
 		root.append(title);
 		root.append(_el('div', { style: 'height:10px' }));
+		// the size of a document is at least 1: 0 keeps the current size
 		const wi = numInput(doc.width, (v) => { doc.setSize(v, doc.height); resize(); }, { min: 1 });
 		const hi = numInput(doc.height, (v) => { doc.setSize(doc.width, v); resize(); }, { min: 1 });
+		wi.addEventListener('change', () => { wi.value = doc.width; });
+		hi.addEventListener('change', () => { hi.value = doc.height; });
 		root.append(_el('div', { className: 'ci-grid' }, [field('W', wi), field('H', hi)]));
 		root.append(section('docstyle', T('ins.style'), (body) => {
 			body.append(_el('div', { className: 'ci-sub', textContent: T('doc.background.color') }), colorRow({
@@ -433,5 +459,5 @@
 		if (editor.document) { return documentPanel(editor, editor.document); }
 		return _el('div', { className: 'ci-root' }, [_el('div', { className: 'ci-title', textContent: T('prop.nodoc') })]);
 	}
-	_NS.inspector = { build, openPicker, closePicker, parseColor, toHex };
+	_NS.inspector = { build, openPicker, closePicker, parseColor, toHex, validDocumentId };
 })();
