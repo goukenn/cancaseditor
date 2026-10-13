@@ -120,6 +120,10 @@ $def["{$editor} .snippet"] = "{sys:posab}; cursor:pointer; z-index:{$snippetZInd
 $def["{$editor} .snippet:hover"]= "opacity:1.0; ";
 $def["{$editor} .snippet.igk-hide"] = "opacity: 0.0;";
 $def["{$editor} .snippet.round"] = "border-radius: 50%";
+// transform snippets (selection): square = scale, diamond = skew, round + orange = rotation; they grow on hover
+$def["{$editor} .snippet.rotate"] = "background-color: orange; cursor: grab;";
+$def["{$editor} .snippet.square, {$editor} .snippet.round"] = "[trans: opacity 0.2s ease-out, transform 0.15s ease-out]";
+$def["{$editor}:not(.touchable-device) .snippet.square:hover, {$editor}:not(.touchable-device) .snippet.round:hover"] = "[transform: scale(13,13)]";
 $def["{$editor} .snippet.losange"] = "[transform: rotate(45deg) scale(8)] width:1px; height:1px;";
 $trans = $snippets['size']/ 2;
 $def["body.safari .snippet" ] = "width:{$snippets['size']}px; height:{$snippets['size']}px;  [transform:translate(-{$trans}px, -{$trans}px)]";
@@ -188,3 +192,7 @@ $def["[data-ce-theme=\"light\"] {$editor} div.b"] = "color: #222;";
 $def["[data-ce-theme=\"light\"] {$editor} div.tool.r"] = "color: #222;";
 $def["[data-ce-theme=\"light\"] {$editor} .ci-head"] = "background-color: #c4cac7;";
 $def["[data-ce-theme=\"light\"] {$editor} .ci-close"] = "color: #222;";
+
+
+$def[$editor.' .ce-drawer .ce-panel'] = '{sys:no-selection}';
+$def['.ce-drawer .ce-panel'] = '{sys:no-selection}';

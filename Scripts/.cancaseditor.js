@@ -4745,7 +4745,7 @@
 						for (var i = 0; i < g.length; i++) {
 							if (i > 0)
 								d += " ";
-							d += Math.ceil(g[i], 2);
+							d += +g[i].toFixed(6); // keeps the scale / skew / rotation values (they were rounded up to integers)
 						}
 						return d;
 					}, resolv: function (item, v, n) {

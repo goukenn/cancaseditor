@@ -362,19 +362,78 @@
 					break;
 			}
 		};
+		// ------------------------------------------------------------------------------------------
+		// transform snippets (see overlayLayers/snippets.js). Resize mode (default): a square in the middle of each
+		// edge (index 0 top, 1 right, 2 bottom, 3 left) scales the element along that axis, and a round handle outside
+		// the top-left corner (index 4) rotates it. Skew mode: the edge handles (diamonds) skew the element along their
+		// edge. A click (without moving) on the rotation handle switches between the two modes.
+		// All the maths is done in the document space: the new matrix is W * M, W being a scale, a shear or a rotation
+		// about the opposite edge / the center.
+		// ------------------------------------------------------------------------------------------
+		var m_skew = false; // false: resize mode, true: skew mode
+		var m_snip = null; // the snippet being dragged: {index, moved, M, H, Q, C, n, u}
+		var mulM = function (m2, m1) {
+			return [
+				m2[0] * m1[0] + m2[2] * m1[1], m2[1] * m1[0] + m2[3] * m1[1],
+				m2[0] * m1[2] + m2[2] * m1[3], m2[1] * m1[2] + m2[3] * m1[3],
+				m2[0] * m1[4] + m2[2] * m1[5] + m2[4], m2[1] * m1[4] + m2[3] * m1[5] + m2[5]];
+		};
+		var apply = function (m, x, y) { return { x: m[0] * x + m[2] * y + m[4], y: m[1] * x + m[3] * y + m[5] }; };
+		/** matrix [a b c d e f] of a linear map A (2x2) applied about the point Q */
+		var about = function (A, Q) {
+			return [A[0], A[1], A[2], A[3], Q.x - (A[0] * Q.x + A[2] * Q.y), Q.y - (A[1] * Q.x + A[3] * Q.y)];
+		};
+		/**
+		 * the selection box: the axis aligned box that surrounds the element as drawn (not the larger box of the
+		 * transformed bound: a rotated circle keeps the same box). Circles and ellipses use their real extent.
+		 * @returns {{b:{x,y,width,height}, M:number[]}} the box in document space (M is the identity)
+		 */
+		var handleBox = function (elem) {
+			var I = [1, 0, 0, 1, 0, 0];
+			var M = elem.matrix ? elem.matrix.element.slice(0, 6) : I;
+			var t = elem.getType ? elem.getType() : '';
+			var rx = null, ry = null;
+			if (t == 'circle' && typeof elem.radius == 'number' && elem.center) { rx = ry = elem.radius; }
+			else if (t == 'ellipse' && elem.radius && typeof elem.radius.x == 'number' && elem.center) { rx = elem.radius.x; ry = elem.radius.y; }
+			if (rx !== null) {
+				// extent of the image of an ellipse by the linear part of the matrix
+				var c = apply(M, elem.center.x, elem.center.y);
+				var hx = Math.sqrt(Math.pow(M[0] * rx, 2) + Math.pow(M[2] * ry, 2));
+				var hy = Math.sqrt(Math.pow(M[1] * rx, 2) + Math.pow(M[3] * ry, 2));
+				return { b: { x: c.x - hx, y: c.y - hy, width: 2 * hx, height: 2 * hy }, M: I };
+			}
+			return { b: _NS.CoreMathOperation.GetElemBound(elem), M: I };
+		};
+		var handleLocal = function (b, index) {
+			switch (index) {
+				case 0: return { x: b.x + b.width / 2, y: b.y };
+				case 1: return { x: b.x + b.width, y: b.y + b.height / 2 };
+				case 2: return { x: b.x + b.width / 2, y: b.y + b.height };
+				case 3: return { x: b.x, y: b.y + b.height / 2 };
+				default: return { x: b.x, y: b.y }; // 4: rotation, top-left corner
+			}
+		};
 		this.getPoints = function (elem) {
+			// a click on the rotation handle (no move) switches the mode
+			if (m_snip && m_snip.index == 4 && !m_snip.moved) {
+				m_skew = !m_skew;
+			}
+			m_snip = null;
 			// reset  definition on getting points
 			mode = null;
 			_tempMatrix = null;
 			this.freeCapture();
 			if (elem && ('bound' in elem)) {
-				var b = _NS.CoreMathOperation.GetElemBound(elem); //.bound;
-				return [
-					{ x: b.x, y: b.y },
-					{ x: b.x + b.width, y: b.y },
-					{ x: b.x + b.width, y: b.y + b.height },
-					{ x: b.x, y: b.y + b.height }
-				];
+				var hb = handleBox(elem);
+				var pts = [];
+				for (var i = 0; i < 4; i++) {
+					var p = apply(hb.M, handleLocal(hb.b, i).x, handleLocal(hb.b, i).y);
+					pts.push({ x: p.x, y: p.y, type: m_skew ? 'losange' : 'square' });
+				}
+				var r = apply(hb.M, hb.b.x, hb.b.y);
+				// the rotation handle is placed 18 screen pixels outside the corner (the offset ignores the zoom)
+				pts.push({ x: r.x, y: r.y, sx: -18, sy: -18, type: 'round rotate' });
+				return pts;
 			}
 			return [];
 		};
@@ -397,108 +456,111 @@
 		};
 		this.onStart = function () {
 		};
+		/** resize the bound of the element from an edge handle (the opposite edge stays where it is); false when the bound cannot be set */
+		this.resizeBound = function (elem, st, index, P) {
+			var M = st.M, det = M[0] * M[3] - M[1] * M[2];
+			if (Math.abs(det) < 1e-9) { return false; }
+			var inv = function (p) { // document => local space of the element
+				var x = p.x - M[4], y = p.y - M[5];
+				return { x: (M[3] * x - M[2] * y) / det, y: (M[0] * y - M[1] * x) / det };
+			};
+			var b = st.b0;
+			var S = st.P0 || st.H;
+			var Pl = inv(P), Sl = inv(S);
+			var dx = Pl.x - Sl.x, dy = Pl.y - Sl.y; // moved distance in the local space: no jump when the press is next to the handle
+			var nb = { x: b.x, y: b.y, width: b.width, height: b.height }, MIN = 1;
+			switch (index) {
+				case 0: nb.height = Math.max(MIN, b.height - dy); nb.y = b.y + b.height - nb.height; break;
+				case 1: nb.width = Math.max(MIN, b.width + dx); break;
+				case 2: nb.height = Math.max(MIN, b.height + dy); break;
+				case 3: nb.width = Math.max(MIN, b.width - dx); nb.x = b.x + b.width - nb.width; break;
+			}
+			try { elem.bound = nb; } catch (e) { }
+			var got = elem.bound;
+			if (!got || Math.abs(got.width - nb.width) > 1e-6 || Math.abs(got.x - nb.x) > 1e-6 || Math.abs(got.height - nb.height) > 1e-6 || Math.abs(got.y - nb.y) > 1e-6) {
+				try { elem.bound = { x: b.x, y: b.y, width: b.width, height: b.height }; } catch (e) { }
+				st.boundMode = false; // not editable: the matrix scales it
+				return false;
+			}
+			elem.matrix.copytransform(M); // the matrix stays the one of the start
+			elem.initialize();
+			var after = elem.bound;
+			if (!after || Math.abs(after.width - nb.width) > 1e-6 || Math.abs(after.height - nb.height) > 1e-6) {
+				// the element rebuilds its bound from its own definition: the matrix scales it
+				try { elem.bound = { x: b.x, y: b.y, width: b.width, height: b.height }; } catch (e) { }
+				elem.initialize();
+				st.boundMode = false;
+				return false;
+			}
+			this.host.refresh();
+			return true;
+		};
+		this.startUpdateIndex = function (elem, index, inf) {
+			if (!elem || !elem.matrix) { return; }
+			var hb = handleBox(elem);
+			var M0 = elem.matrix.element.slice(0, 6);
+			var H = apply(hb.M, handleLocal(hb.b, index).x, handleLocal(hb.b, index).y);
+			var st = { index: index, moved: false, M: M0, H: H };
+			var cb = apply(hb.M, hb.b.x + hb.b.width / 2, hb.b.y + hb.b.height / 2);
+			st.C = cb;
+			if (index < 4) {
+				var Q = apply(hb.M, handleLocal(hb.b, (index + 2) % 4).x, handleLocal(hb.b, (index + 2) % 4).y); // opposite edge
+				var dx = H.x - Q.x, dy = H.y - Q.y, len = Math.sqrt(dx * dx + dy * dy);
+				st.Q = Q;
+				st.len = len;
+				st.n = len > 1e-9 ? { x: dx / len, y: dy / len } : null; // from the anchor to the handle
+				// the other local axis (along the edge) is the skew direction
+				var ax = (index % 2 == 0) ? { x: hb.M[0], y: hb.M[1] } : { x: hb.M[2], y: hb.M[3] };
+				var al = Math.sqrt(ax.x * ax.x + ax.y * ax.y);
+				st.u = al > 1e-9 ? { x: ax.x / al, y: ax.y / al } : null;
+			}
+			// resizing edits the bounding box of the element (like the W / H fields of the inspector): the matrix is kept,
+			// so the stroke width and the corner radius are not scaled. Shapes without an editable bound use the matrix.
+			var eb = elem.bound;
+			var axisAligned = Math.abs(M0[1]) < 1e-9 && Math.abs(M0[2]) < 1e-9 && M0[0] > 0 && M0[3] > 0;
+			st.boundMode = axisAligned && !!eb && !Array.isArray(eb) && typeof eb.x == 'number' && typeof eb.width == 'number';
+			st.b0 = st.boundMode ? { x: eb.x, y: eb.y, width: eb.width, height: eb.height } : null;
+			// where the press happened (document space): a snippet released at the same place was only clicked
+			st.P0 = (inf && typeof inf.clientX == 'number') ? this.host.getDeviceLocation(inf.clientX, inf.clientY) : null;
+			m_snip = st;
+			mode = 's';
+		};
 		this.updateIndex = function (elem, index, endPos) {
-			var m = 0;
-			if (elem) {
-				m = elem.matrix;
-			}
-			if (!m)
+			var st = m_snip;
+			if (!elem || !elem.matrix || !st || st.index != index) { return; }
+			var P = endPos;
+			var W = null;
+			if (index == 4) { // rotation about the center
+				var R0 = st.P0 || st.H; // the handle sits outside the corner: the angle starts where the pointer was pressed
+				var a0 = Math.atan2(R0.y - st.C.y, R0.x - st.C.x);
+				var a1 = Math.atan2(P.y - st.C.y, P.x - st.C.x);
+				var t = a1 - a0;
+				if (this.isShift()) { var step = Math.PI / 12; t = Math.round(t / step) * step; } // 15 degrees
+				var c = Math.cos(t), sn = Math.sin(t);
+				W = about([c, sn, -sn, c], st.C);
+			} else if (!st.n) {
 				return;
-			if (mode == null) {
-				// console.debug("start scale mode");
-				mode = 's'; //scale mode
-				obound = CoreMathOperation.GetElemBound(this.elem);
-				// console.debug(obound);
-				if (!_tempMatrix)
-					_tempMatrix = new Matrix();
-				_tempMatrix.copytransform(this.elem.matrix.element);
-				if (this.isShift()) {
-					mode = 'r'; //rotate mode
-					this.startPoint = endPos;
-				}
+			} else if (!m_skew && st.boundMode && this.resizeBound(elem, st, index, P)) {
+				st.moved = true;
 				return;
+			} else if (!m_skew) { // scale along the axis anchor -> handle
+				var S0 = st.P0 || st.H; // measured from where the pointer was pressed: no jump when the press is next to the handle
+				var den = (S0.x - st.Q.x) * st.n.x + (S0.y - st.Q.y) * st.n.y;
+				if (Math.abs(den) < 1e-6) { return; }
+				var s = ((P.x - st.Q.x) * st.n.x + (P.y - st.Q.y) * st.n.y) / den;
+				if (Math.abs(s) < 0.01) { s = s < 0 ? -0.01 : 0.01; }
+				var k = s - 1;
+				W = about([1 + k * st.n.x * st.n.x, k * st.n.x * st.n.y, k * st.n.x * st.n.y, 1 + k * st.n.y * st.n.y], st.Q);
+			} else if (st.u) { // shear along the edge, about the opposite edge
+				var S1 = st.P0 || st.H;
+				var move = (P.x - S1.x) * st.u.x + (P.y - S1.y) * st.u.y;
+				var k2 = move / st.len;
+				W = about([1 + k2 * st.u.x * st.n.x, k2 * st.u.y * st.n.x, k2 * st.u.x * st.n.y, 1 + k2 * st.u.y * st.n.y], st.Q);
 			}
-			var ex = 1.0;
-			var ey = 1.0;
-			var sqewx = 0.0;
-			var sqewy = 0.0;
-			var dx = 0;
-			var dy = 0;
-			var mat = __applyMatrix || (function () {
-				__applyMatrix = new Matrix();
-				return __applyMatrix;
-			})();
-			mat.copytransform(_tempMatrix.element);
-			if (obound == null) {
-				console.debug("bound is null");
-				return;
-			}
-			if (mode == 'r') {
-				var cx = obound.x + (obound.width / 2);
-				var cy = obound.y + (obound.height / 2);
-				var c = { x: cx, y: cy };
-				var _sAngle = _NS.CoreMathOperation.GetAngle(c, this.startPos);
-				var g = ((_NS.CoreMathOperation.GetAngle(c, endPos) - _sAngle) * 180 / Math.PI);
-				// console.debug("angle "+ g);
-				mat.translate(-obound.x - (obound.width / 2), -obound.y - (obound.height / 2));
-				mat.rotate(g);
-				mat.translate(obound.x + (obound.width / 2), obound.y + (obound.height / 2));
-			}
-			else {
-				switch (index) {
-					case 0:
-						mat.translate(-obound.x, -obound.y);
-						ex = (-(obound.x + obound.width) + endPos.x) / obound.width;
-						ey = (-(obound.y + obound.height) + endPos.y) / obound.height;
-						mat.scale(-ex, -ey);
-						mat.translate(endPos.x, endPos.y);
-						break;
-					case 1:
-						mat.translate(-obound.x, -obound.y);
-						ex = (-obound.x + endPos.x) / obound.width;
-						ey = (-(obound.y + obound.height) + endPos.y) / obound.height;
-						mat.scale(ex, -ey);
-						mat.translate(obound.x, endPos.y);
-						break;
-					case 2:
-						// var _tempMatrix.element; 
-						// var oex = mat.element[0]; // old factor by default is 1.0
-						// var oey = mat.element[3];
-						mat.translate(-obound.x, -obound.y);
-						ex = (-obound.x + endPos.x) / obound.width;
-						ey = (-obound.y + endPos.y) / obound.height;
-						mat.scale(ex, ey);
-						mat.translate(obound.x, obound.y);
-						break;
-					case 3:
-						// console.debug("d");
-						mat.translate(-obound.x, -obound.y);
-						ex = (-(obound.x + obound.width) + endPos.x) / obound.width;
-						ey = (-(obound.y) + endPos.y) / obound.height;
-						mat.scale(-ex, ey);
-						mat.translate(endPos.x, obound.y);
-						break;
-				}
-			}
-			this.host.setDebug(
-				[
-					"dx :" + dx,
-					"ex :" + ex,
-					"ey :" + ey
-				]);
-			// set scale
-			// mat.element[0] = ex; 
-			// mat.element[1] = 0;
-			// mat.element[2] = 0;
-			// mat.element[3] = ey;
-			// mat.element[4] = 0; 
-			// mat.element[5] = 0; 
-			//console.debug(mat.element);
-			//elem.matrix.reset();
-			// console.debug("reset transform")
-			// elem.matrix.reset();
-			// elem.matrix.rotate(4);
-			elem.matrix.copytransform(mat.element);
+			if (!W) { return; }
+			var _z = this.host.zoomX || 1;
+			if (!st.P0 || (Math.abs(P.x - st.P0.x) + Math.abs(P.y - st.P0.y)) * _z > 3) { st.moved = true; }
+			elem.matrix.copytransform(mulM(W, st.M));
 			elem.initialize();
 			this.host.refresh();
 		};
@@ -865,12 +927,21 @@
 			b = this.elem.bound;
 			if (!b)
 				return;
-			b = _NS.CoreMathOperation.GetElemBound(this.elem); //TransformBound(
+			// the dashed box is the bounding box of the element with its matrix: it turns with the element (like the
+			// transform snippets) instead of being the larger axis aligned box of the rotated one
+			var hb = handleBox(this.elem);
+			var path = new Path2D();
+			[[0, 0], [1, 0], [1, 1], [0, 1]].forEach(function (c, i) {
+				var p = apply(hb.M, hb.b.x + c[0] * hb.b.width, hb.b.y + c[1] * hb.b.height);
+				var X = p.x * ex + dx, Y = p.y * ey + dy;
+				if (i == 0) { path.moveTo(X, Y); } else { path.lineTo(X, Y); }
+			});
+			path.closePath();
 			a.save();
 			a.stroke = "indigo";
 			a.setDashPattern(SELECTION_DASH);
 			a.strokeWidth = 1;
-			a.drawRect((b.x * ex) + dx, (b.y * ex) + dy, b.width * ex, b.height * ey);
+			a.drawPath(path);
 			a.restore();
 			if (_renderBound && _renderBound.show) {
 				a.save();
