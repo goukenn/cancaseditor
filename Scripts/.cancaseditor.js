@@ -1305,6 +1305,11 @@
 			 * @param {boolean|number|null} update 
 			 * @returns 
 			 */
+			// free space above the document: the canvas runs under the menu bar, plus the band of the document id
+			var _topInset = function () {
+				var mn = document.querySelector("ul.menu");
+				return (mn ? mn.getBoundingClientRect().bottom : 0) + 22;
+			};
 			this.getTransform = function (update) {
 				if (!m_matrix) {
 					update = 1;
@@ -1334,7 +1339,8 @@
 				switch (this.zoomMode) {
 					case e.center:
 						posx = ((W - (w * zx)) / 2.0);
-						posy = ((H - (h * zy)) / 2.0);
+						var ti = _topInset();
+						posy = ti + ((H - ti - (h * zy)) / 2.0);
 						break;
 					case e["default"]:
 						break;
@@ -1455,11 +1461,76 @@
 					var W = (this.document ? this.document.width : null) || m_matrix.d.docWidth;
 					var H = (this.document ? this.document.height : null) || m_matrix.d.docHeight;
 					var ex = (s.w - 20) / W;
-					var ey = (s.h - 20) / H;
+					var ey = (s.h - 20 - _topInset()) / H;
 					m_zoomx = Math.min(ex, ey);
 					m_zoomy = m_zoomx;
 					m_panx = 0;
 					m_pany = 0;
+					this.getTransform(true);
+					this.refresh();
+				},
+				/**
+				 * make another document current without moving what is on screen: the view is relative to the
+				 * current document, so the pan is adjusted by the difference of the two documents
+				 */
+				activateDocument: function (d) {
+					var c = this.document;
+					if (!d || d === c || this.documents.indexOf(d) == -1) {
+						return;
+					}
+					var zx = m_zoomx, zy = m_zoomy, px = m_panx, py = m_pany;
+					var W = igk.getNumber(this.canvas.getComputedStyle("width"));
+					var H = igk.getNumber(this.canvas.getComputedStyle("height"));
+					var ti = _topInset();
+					var cx = c ? c.x : 0, cy = c ? c.y : 0;
+					var cw = c ? c.width : W, ch = c ? c.height : H;
+					this.document = d;
+					var ly = d.getLayers();
+					this.layer = ly.length > 0 ? ly[ly.length - 1] : null;
+					m_zoomx = zx;
+					m_zoomy = zy;
+					m_panx = px + zx * (d.x - cx) + ((W - cw * zx) - (W - d.width * zx)) / 2;
+					m_pany = py + zy * (d.y - cy) + ((H - ti - ch * zy) - (H - ti - d.height * zy)) / 2;
+					this.getTransform(true);
+					this.refresh();
+				},
+				/** 100% zoom, centered on the current document */
+				actualSize: function () {
+					m_zoomx = m_zoomy = 1;
+					m_panx = 0;
+					m_pany = 0;
+					this.getTransform(true);
+					this.refresh();
+				},
+				/** center the view on the current document (keeps the zoom) */
+				centerOnDocument: function () {
+					m_panx = 0;
+					m_pany = 0;
+					this.getTransform(true);
+					this.refresh();
+				},
+				/** zoom and pan so that every document of the scene is visible */
+				viewAllDocuments: function () {
+					var cur = this.document;
+					var docs = this.documents;
+					if (!cur || docs.length == 0) {
+						return;
+					}
+					var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+					docs.forEach(function (d) { // coordinates relative to the current document
+						x0 = Math.min(x0, d.x - cur.x);
+						y0 = Math.min(y0, d.y - cur.y);
+						x1 = Math.max(x1, d.x - cur.x + d.width);
+						y1 = Math.max(y1, d.y - cur.y + d.height);
+					});
+					var s = this.canvas.getSize();
+					var ti = _topInset();
+					var z = Math.min((s.w - 40) / (x1 - x0), (s.h - ti - 40) / (y1 - y0));
+					z = Math.max(0.01, Math.min(8, z));
+					m_zoomx = m_zoomy = z;
+					// the current document is centered when the pan is 0: shift to center the whole box
+					m_panx = -z * ((x0 + x1) / 2 - cur.width / 2);
+					m_pany = -z * ((y0 + y1) / 2 - cur.height / 2);
 					this.getTransform(true);
 					this.refresh();
 				},
@@ -1679,6 +1750,29 @@
 						q = q.next;
 					}
 					a.restore();
+					// + | document ids (several documents): screen space, so size and font ignore the zoom
+					var _docs = a.documents;
+					a.documentLabels = [];
+					a.documentAreas = _docs.map(function (d) { // page rectangles (canvas pixels)
+						var cd = a.document;
+						return { doc: d, x: dx + (d.x - (cd ? cd.x : 0)) * ex, y: dy + (d.y - (cd ? cd.y : 0)) * ey, w: d.width * ex, h: d.height * ey };
+					});
+					if (_docs.length > 1) {
+						m_ctx.save();
+						m_ctx.font = "12px sans-serif";
+						m_ctx.textAlign = "left";
+						m_ctx.textBaseline = "bottom";
+						a.documentLabels = []; // hit areas (canvas pixels), used to drag a document by its label
+						_docs.forEach(function (d) {
+							var cd = a.document;
+							var lx = dx + (d.x - (cd ? cd.x : 0)) * ex + 2;
+							var ly = dy + (d.y - (cd ? cd.y : 0)) * ey - 6;
+							m_ctx.fillStyle = d === cd ? "#c58bf0" : "#9a9a9a";
+							m_ctx.fillText(d.id, lx, ly);
+							a.documentLabels.push({ doc: d, x: lx - 4, y: ly - 16, w: m_ctx.measureText(d.id).width + 8, h: 20 });
+						});
+						m_ctx.restore();
+					}
 					if (_isbg) {
 						a.save();
 						a.stroke = 'black';
@@ -1732,9 +1826,14 @@
 				addDocument: function () {
 					var cur = this.document;
 					this.layer = null; // the document is added to the scene, not to the current layer
+					var last = this.documents.pop(); // the last inserted document
 					var doc = this.add("document");
 					if (cur) {
 						doc.setSize(cur.width, cur.height);
+					}
+					if (last) { // next to the last document: 10px gap, same y
+						doc.x = last.x + last.width + 10;
+						doc.y = last.y;
 					}
 					var layer = this.createElement("layer");
 					layer.setDocument(doc);
@@ -4257,6 +4356,43 @@
 				}
 				return ELEM.drawing2DContainer.MoveBottomBelow(this.Elements, e);
 			},
+			/** @returns {number} z-order index of a child (0 = bottom), -1 when it is not a child */
+			getChildIndex: function (i) {
+				return i && i['@container'] == this ? Array.prototype.indexOf.call(this.Elements, i) : -1;
+			},
+			/**
+			 * move a child to a z-order index (0 = bottom, last = top). The array and the render chain
+			 * (root/next) are rebuilt together so that they stay consistent.
+			 * @returns {boolean} true when the order changed
+			 */
+			setChildIndex: function (i, index) {
+				var e = this.Elements;
+				var cur = this.getChildIndex(i);
+				if (cur == -1) {
+					return false;
+				}
+				index = Math.max(0, Math.min(e.length - 1, index));
+				if (index == cur) {
+					return false;
+				}
+				var arr = Array.prototype.slice.call(e);
+				arr.splice(cur, 1);
+				arr.splice(index, 0, i);
+				e.length = 0;
+				arr.forEach(function (q, k) {
+					q.next = arr[k + 1] || null;
+					q.previous = null;
+					q['@index'] = k;
+					e.push(q);
+				});
+				e.root = arr[0];
+				e.item = arr[arr.length - 1];
+				return true;
+			},
+			bringToFront: function (i) { return this.setChildIndex(i, this.Elements.length - 1); },
+			sendToBack: function (i) { return this.setChildIndex(i, 0); },
+			bringForward: function (i) { return this.setChildIndex(i, this.getChildIndex(i) + 1); },
+			sendBackward: function (i) { return this.setChildIndex(i, this.getChildIndex(i) - 1); },
 			remove: function (i, a) {
 				var e = this.Elements;
 				var rm = 0;

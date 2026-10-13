@@ -47,7 +47,7 @@ G.xml.decodeString = function(xml, a){
 			var _doc = a.createElement("document");
 			_doc.setSize(Number(W), Number(H));
 			// other document properties
-			["id", "fill", "stroke", "title"].forEach((n) => {
+			["id", "fill", "stroke", "title", "x", "y"].forEach((n) => {
 				var v = this.getAttribute(n);
 				if (v !== null && v !== undefined) {
 					_doc[n] = v;

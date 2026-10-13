@@ -23,6 +23,8 @@ igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer },
 	var m_currentLayer = null;	
 	var m_filter = 0;
 	var m_title = "";
+	var m_x = 0; // location of the document on the surface (scene coordinates)
+	var m_y = 0;
 	this.setSize = function(x,y){
 		m_width = x>0 ? x : m_width;
 		m_height = y>0 ? y: m_height;
@@ -45,6 +47,14 @@ igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer },
 		if (typeof(v)=='string' && v)
 			m_fill = v;
 	}});
+	igk.defineProperty(this, "x", {get:function(){return m_x; }, set: function(v){
+		v = Number(v);
+		if (!isNaN(v)) m_x = v;
+	}});
+	igk.defineProperty(this, "y", {get:function(){return m_y; }, set: function(v){
+		v = Number(v);
+		if (!isNaN(v)) m_y = v;
+	}});
 	igk.defineProperty(this, "title", {get:function(){return m_title; } , set: function(v){
 		if((v==null) || (typeof(v)=='string'))
 		m_title = v;
@@ -53,6 +63,11 @@ igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer },
 		var _elements = this.Elements;
 		a.save();
 		a.setTransform(m_matrix);
+		// the editor view is relative to the current document: the others are offset from it
+		var cur = a.document;
+		if (cur && cur !== this){
+			a.setTransform([1, 0, 0, 1, m_x - cur.x, m_y - cur.y]);
+		}
 		if (m_fill!='transparent' && !(a.transparentBg)){
 			a.fill = m_fill;
 			a.stroke = m_stroke;
@@ -107,6 +122,8 @@ var EXPORTS = igk.winui.cancasEditor.Exports;
 	"height",
 	{name:"fill", "default": "white"},
 	{name:"title", "default": ""},
+	{name:"x", "default": 0},
+	{name:"y", "default": 0},
 	{name:"filter", "default": 0}, 
 	]);			
 	return c;

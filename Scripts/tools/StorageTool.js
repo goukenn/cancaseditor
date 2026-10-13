@@ -187,6 +187,33 @@
 			store.remove(KEY_HIST);
 		}
 	}
+	/** @returns {string[]} the ids used by several entities (documents, layers, elements) of the scene */
+	function duplicateIds(editor) {
+		const seen = {}, dup = [];
+		const walk = (l) => {
+			Array.prototype.forEach.call(l || [], (e) => {
+				if (e.id) {
+					if (seen[e.id] && dup.indexOf(e.id) == -1) { dup.push(e.id); }
+					seen[e.id] = true;
+				}
+				if (e.Elements) { walk(e.Elements); }
+			});
+		};
+		walk(editor.list);
+		return dup;
+	}
+	let m_dupWarned = '';
+	/** refuse to save while ids collide: warn (once per set of ids) so that they are changed first */
+	function blockedByDuplicates(editor) {
+		const d = duplicateIds(editor);
+		const key = d.join('|');
+		if (d.length == 0) { m_dupWarned = ''; return false; }
+		if (key !== m_dupWarned) {
+			m_dupWarned = key;
+			_NS.gui.notify.Show(editor, (R()['msg.save.dupid'] || 'Duplicate ids: %s. Change them before saving.').replace('%s', d.join(', ')));
+		}
+		return true;
+	}
 	const storage = _NS.storage = {
 		get dirty() { return m_dirty; },
 		get lastSaved() { return m_saved; },
@@ -199,6 +226,7 @@
 		checkpoint(editor, silent) {
 			clearTimeout(m_timer);
 			if (m_restoring || editor['@loading']) { return false; }
+			if (blockedByDuplicates(editor)) { return false; }
 			const xml = snapshot(editor);
 			if (xml === null) { return false; }
 			if (xml === m_hist.list[m_hist.index]) {
@@ -225,6 +253,7 @@
 		/** explicit save (File > Save): store the current document whatever the autosave option is */
 		saveNow(editor, silent) {
 			clearTimeout(m_timer);
+			if (blockedByDuplicates(editor)) { return false; }
 			const xml = snapshot(editor);
 			if (xml === null) { return false; }
 			if (xml !== m_hist.list[m_hist.index]) {
