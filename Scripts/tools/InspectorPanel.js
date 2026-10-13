@@ -304,7 +304,48 @@
 		const w = worldBound(el), cx = w.x + w.width / 2, cy = w.y + w.height / 2;
 		setMatrix(el, mul(t(cx, cy), mat(el)));
 	}
+	// ---------------------------------------------------------------- shape specific properties
+	/**
+	 * The properties an element adds to the old property form (Edit(engine, host) chains: the star adds count,
+	 * tension, angle...) are shown in an extra block. The generic properties handled by the panel are skipped.
+	 */
+	function extraSection(editor, el, apply, skip) {
+		let engine, fields;
+		try {
+			const form = igk.createNode('div').add('form');
+			engine = igk.winui.engine.getEngine('bmc', form, _NS.R);
+			el.Edit(engine, editor);
+			fields = form.engine.getFields();
+		} catch (e) {
+			console.warn('[cancasEditor] extra properties of ' + el.getType() + ' not available', e);
+			return null;
+		}
+		const names = Object.keys(fields).filter((n) => skip.indexOf(n) == -1);
+		if (names.length == 0) { return null; }
+		return section('extra', T('ins.extra'), (body) => {
+			names.forEach((n) => {
+				const dom = fields[n].o, cur = el[n];
+				let ctl;
+				if (dom.tagName == 'SELECT') {
+					ctl = _el('select', {}, Array.from(dom.options).map((o) => _el('option', { value: o.value, textContent: o.textContent, selected: o.value == String(cur) })));
+					ctl.onchange = () => apply(() => { el[n] = ctl.value; });
+				} else if (dom.type == 'checkbox') {
+					ctl = _el('input', { type: 'checkbox', checked: !!cur });
+					ctl.onchange = () => apply(() => { el[n] = ctl.checked; });
+				} else if (typeof cur == 'number') {
+					ctl = numInput(round2(cur), (v) => apply(() => { el[n] = v; }), { step: 'any' }); // empty = 0
+				} else {
+					ctl = _el('input', { type: 'text', value: cur == null ? '' : cur });
+					ctl.onchange = () => apply(() => { el[n] = ctl.value; });
+				}
+				const lab = _el('label', { textContent: T('ins.prop.' + n, n), title: n });
+				lab.style.width = '100px';
+				body.append(_el('div', { className: 'ci-row' }, [lab, ctl]));
+			});
+		});
+	}
 	// ---------------------------------------------------------------- panels
+	const cornerRadius0 = (el) => el.getType() == 'roundrect' && typeof el.radius == 'number';
 	function elementPanel(editor, el) {
 		const root = _el('div', { className: 'ci-root' });
 		const apply = (fn) => { fn(); el.initialize && el.initialize(); editor.refresh(); };
@@ -365,10 +406,15 @@
 			const fits = (_NS.fit && _NS.fit.canFit(el)) ? [fitBtn('width'), fitBtn('height')] : [];
 			root.append(_el('div', { className: 'ci-pair', style: 'justify-content:flex-end;margin:-4px 0 6px' }, [...fits, lockBtn, flip(true), flip(false)]));
 		}
-		if (typeof el.radius == 'number') {
+		if (cornerRadius0(el)) {
 			const b = hasBound(el) ? el.bound : { width: 200, height: 200 };
-			root.append(sliderRow(T('ins.radius'), el.radius, 0, Math.max(10, Math.round(Math.min(b.width, b.height) / 2)), (v) => apply(() => { el.radius = v; })));
+			root.append(sliderRow(T('ins.radius'), el.radius, 0, Math.max(10, Math.round(Math.min(b.width, b.height) / 2), Math.round(el.radius)), (v) => apply(() => { el.radius = v; })));
 		}
+		const skip = ['id', 'fill', 'stroke', 'strokeWidth', 'opacity', 'blendingMode'];
+		const cornerRadius = el.getType() == 'roundrect' && typeof el.radius == 'number'; // other shapes edit their radius in the extra block
+		if (cornerRadius) { skip.push('radius'); }
+		const extra = extraSection(editor, el, apply, skip);
+		if (extra) { root.append(extra); }
 		if (('opacity' in el) || ('blendingMode' in el)) {
 			root.append(section('appearance', T('ins.appearance'), (body) => {
 				if ('opacity' in el) {
