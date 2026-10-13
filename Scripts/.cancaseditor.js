@@ -629,6 +629,9 @@
 				restore: function () {
 					m_ctx.restore();
 				},
+				getContext: function () {
+					return m_ctx;
+				},
 				setAlpha: function (v) {
 					m_ctx.globalAlpha = v;
 				},
@@ -697,6 +700,7 @@
 				}
 			});
 		};
+		_NS.CancasPrimitive = CancasPrimitive; // offscreen rendering (masks)
 		function copy_bound(b) {
 			var g = {};
 			for (var i in b) {
@@ -4084,6 +4088,7 @@
 				this.strokeDashArray = [];
 				this.globalAlpha = 1.0;
 				// ---- global opacity and css filter of the element (applied by ELEM.renderItem, over the whole element)
+				ELEM.defineClipMask(this); // clip, mask, maskMode
 				var m_opacity = 1;
 				var m_filter = 0;
 				Object.defineProperty(this, "opacity", {
@@ -4631,7 +4636,7 @@
 					return;
 				}
 				o.save();
-				o.setAlpha(globalAlpha);
+				o.setAlpha(globalAlpha * o.getAlpha()); // multiplies the alpha set by the opacity of the element / its layer
 				o.fill = this.fill;
 				o.stroke = this.stroke;
 				o.strokeWidth = this.strokeWidth;
@@ -4686,6 +4691,10 @@
 				serializer: function (v) { return v ? null : 'false'; },
 				unserialize: function (v) { return v !== 'false'; }
 			},
+			// clip / mask: another element of the same container, saved as its id
+			{ name: "clip", "default": null, serializer: function (v) { return v ? (typeof v == 'string' ? v : '#' + v.id) : null; } },
+			{ name: "mask", "default": null, serializer: function (v) { return v ? (typeof v == 'string' ? v : '#' + v.id) : null; } },
+			{ name: "maskMode", "default": "luminance" },
 			// global opacity and css filter (drawing2D, layers, groups)
 			{ name: "opacity", "default": 1 },
 			{ name: "filter", "default": 0 },

@@ -501,7 +501,7 @@
 			const b = hasBound(el) ? el.bound : { width: 200, height: 200 };
 			root.append(sliderRow(T('ins.radius'), el.radius, 0, Math.max(10, Math.round(Math.min(b.width, b.height) / 2), Math.round(el.radius)), (v) => apply(() => { el.radius = v; })));
 		}
-		const skip = ['id', 'fill', 'stroke', 'strokeWidth', 'opacity', 'blendingMode', 'filter', 'clip'];
+		const skip = ['id', 'fill', 'stroke', 'strokeWidth', 'opacity', 'blendingMode', 'filter', 'clip', 'mask', 'maskMode'];
 		const cornerRadius = el.getType() == 'roundrect' && typeof el.radius == 'number'; // other shapes edit their radius in the extra block
 		if (cornerRadius) { skip.push('radius'); }
 		const extra = extraSection(editor, el, apply, skip);
@@ -523,15 +523,25 @@
 		if (('filter' in el) && filterSupported()) {
 			root.append(section('filter', T('ins.filter'), (body) => buildFilter(body, el, apply)));
 		}
-		// clip of a layer / group: one of the sibling shapes
-		if (('clip' in el) && el['@container'] && typeof el.clip != 'undefined') {
-			const shapes = Array.prototype.filter.call(el['@container'].Elements, (e) => e !== el && ('path' in e));
-			if (shapes.length > 0 || el.clip) {
+		// clip (hard path) and mask (luminance / alpha) of the element: another element of the same container
+		if (('clip' in el) && el['@container']) {
+			const sibs = Array.prototype.filter.call(el['@container'].Elements, (e) => e !== el);
+			const shapes = sibs.filter((e) => ('path' in e));
+			if (sibs.length > 0 || el.clip || el.mask) {
 				root.append(section('clip', T('ins.clip'), (body) => {
-					const opts = [_el('option', { value: '', textContent: '-' })].concat(shapes.map((e) => _el('option', { value: e.id, textContent: e.getType() + ' #' + e.id, selected: el.clip === e })));
-					const sel = _el('select', {}, opts);
-					sel.onchange = () => apply(() => { el.clip = shapes.find((e) => e.id == sel.value) || null; });
-					body.append(sel);
+					const pick = (label, list, get, set) => {
+						const opts = [_el('option', { value: '', textContent: '-' })].concat(list.map((e) => _el('option', { value: e.id, textContent: e.getType() + ' #' + e.id, selected: get() === e })));
+						const sel = _el('select', {}, opts);
+						sel.onchange = () => apply(() => { set(list.find((e) => e.id == sel.value) || null); });
+						body.append(_el('div', { className: 'ci-sub', textContent: label }), sel);
+					};
+					pick(T('ins.clip.shape'), shapes, () => el.clip, (v) => { el.clip = v; });
+					pick(T('ins.mask.element'), sibs, () => el.mask, (v) => { el.mask = v; });
+					if (el.mask) {
+						const mode = _el('select', {}, ['luminance', 'alpha'].map((n) => _el('option', { value: n, textContent: T('ins.mask.' + n), selected: el.maskMode == n })));
+						mode.onchange = () => apply(() => { el.maskMode = mode.value; });
+						body.append(_el('div', { className: 'ci-sub', textContent: T('ins.mask.mode') }), mode);
+					}
 				}));
 			}
 		}

@@ -8,7 +8,8 @@
 	const T = (k, d) => (_NS.R && _NS.R[k]) || d || k;
 	const B = () => _NS.brushes;
 	const I = () => _NS.inspector;
-	const TEXTURE_SIDE = 96; // textures are downscaled: the options of the user are small
+	const TEXTURE_SIDE = 96; // the thumbnail: the options of the user are small
+	const SOURCE_SIDE = 2048; // the real size picture is only reduced beyond this side
 	const CSS = '.be-bar{position:relative;height:18px;border-radius:9px;margin:12px 6px 14px;cursor:copy;border:1px solid var(--ci-line,#4a4a4a)}' +
 		'.be-stop{position:absolute;top:-4px;width:14px;height:24px;margin-left:-7px;border:2px solid #fff;border-radius:4px;padding:0;cursor:ew-resize;box-shadow:0 0 0 1px rgba(0,0,0,.6)}' +
 		'.be-stop.on{border-color:var(--ci-accent,#a14fd0);box-shadow:0 0 0 2px var(--ci-accent,#a14fd0)}' +
@@ -48,6 +49,22 @@
 			img.src = URL.createObjectURL(file);
 		});
 	}
+	/** the picture at its real size (reduced when larger than SOURCE_SIDE) as a data url */
+	function toSource(file) {
+		return new Promise((res, rej) => {
+			const img = new Image();
+			img.onload = () => {
+				const k = Math.min(1, SOURCE_SIDE / Math.max(img.width, img.height));
+				const c = document.createElement('canvas');
+				c.width = Math.max(1, Math.round(img.width * k));
+				c.height = Math.max(1, Math.round(img.height * k));
+				c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+				res(file.type == 'image/png' ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', 0.85));
+			};
+			img.onerror = rej;
+			img.src = URL.createObjectURL(file);
+		});
+	}
 	const cssStops = (def) => def.stops.map((s) => s.c + ' ' + Math.round(s.o * 100) + '%').join(', ');
 	/** the editor of one brush */
 	function brushPanel(editor, el, prop, id, apply, rebuild) {
@@ -70,14 +87,19 @@
 			choose.onclick = () => file.click();
 			file.onchange = async () => {
 				if (!file.files[0]) { return; }
-				try { upd({ image: await toTexture(file.files[0]) }); rebuild(); } catch (e) { console.error(e); }
+				try { upd({ image: await toTexture(file.files[0]), source: await toSource(file.files[0]) }); rebuild(); } catch (e) { console.error(e); }
 			};
 			root.append(_el('div', { className: 'be-row' }, [prev, choose, file]));
 			if (def.image && !B().fitsServer(B().get(id))) { root.append(_el('div', { className: 'be-note', textContent: T('brush.texture.toolarge') })); }
+			// size of the picture: the thumbnail, its real size or stretched to the bound of the element
+			const mode = _el('select', {}, ['thumb', 'real', 'bound'].map((m) => _el('option', { value: m, textContent: T('brush.mode.' + m), selected: m == def.mode })));
+			mode.onchange = () => { upd({ mode: mode.value }); rebuild(); };
+			root.append(_el('div', { className: 'be-row' }, [_el('label', { textContent: T('brush.mode') }), mode]));
+			if (def.mode == 'real' && !def.source && def.image) { root.append(_el('div', { className: 'be-note', textContent: T('brush.mode.nosource') })); }
 			const sc = I().numInput(def.scale, (v) => upd({ scale: v }), { step: 0.1, min: 0.05 });
 			const rep = _el('select', {}, ['repeat', 'repeat-x', 'repeat-y', 'no-repeat'].map((r) => _el('option', { value: r, textContent: T('brush.repeat.' + r), selected: r == def.repeat })));
 			rep.onchange = () => upd({ repeat: rep.value });
-			root.append(_el('div', { className: 'be-row' }, [_el('label', { textContent: T('brush.scale') }), sc]), _el('div', { className: 'be-row' }, [_el('label', { textContent: T('brush.repeat') }), rep]));
+			root.append(...(def.mode == 'bound' ? [] : [_el('div', { className: 'be-row' }, [_el('label', { textContent: T('brush.scale') }), sc])]), _el('div', { className: 'be-row' }, [_el('label', { textContent: T('brush.repeat') }), rep]));
 			return root;
 		}
 		// ---- color stops

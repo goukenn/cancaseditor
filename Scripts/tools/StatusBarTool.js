@@ -1,7 +1,7 @@
 // author: C.A.D. BONDJE DOUE
 // file: StatusBarTool.js
 // @desc: status bar (bottom bar of the editor): document, size, current tool, zoom, selection,
-// cursor position, save state and language.
+// cursor position and language.
 "use strict";
 (function () {
 	const _NS = igk.winui.cancasEditor;
@@ -17,7 +17,7 @@
 			// name, label key, optional (hidden on small screens)
 			[['doc', 'status.document', 0], ['size', 'status.size', 0], ['tool', 'status.tool', 0],
 			['zoom', 'status.zoom', 0], ['sel', 'status.selection', 1],
-			['save', null, 1], ['lang', 'status.lang', 1]].forEach(([n, key, opt]) => {
+			['lang', 'status.lang', 1]].forEach(([n, key, opt]) => {
 				const e = document.createElement('span');
 				e.className = 'sb-seg no-wrap sb-' + n + (opt ? ' sb-opt' : '');
 				e.dataset.key = key || '';
@@ -48,10 +48,6 @@
 				label(seg.zoom, Math.round(((m && m.d && m.d.zoom) || 1) * 100) + '%');
 				const el = editor.element;
 				label(seg.sel, el && el['@container'] ? el.getType() + ' #' + el.id : T['status.none']);
-				const st = _NS.storage;
-				seg.save.textContent = !st ? '' : (st.dirty ? T['status.unsaved'] :
-					(st.lastSaved ? T['status.saved'] + ' ' + st.lastSaved.toLocaleTimeString() : ''));
-				seg.save.classList.toggle('sb-warn', !!(st && st.dirty));
 				label(seg.lang, ((_NS.lang && _NS.lang.current) || '').toUpperCase());
 			};
 			let scheduled = 0;
@@ -80,7 +76,6 @@
 				// "scene > layer" is placed right after the document segment
 				const lt = host.o.querySelector('.layertool');
 				if (lt) { seg.doc.after(lt); }
-				_NS.storage && _NS.storage.onChange.push(schedule);
 				update();
 			}, 0);
 			update();

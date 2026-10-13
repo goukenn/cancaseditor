@@ -34,7 +34,9 @@
 			id: def.id, name: def.name || '', type, stops,
 			p1: pt(def.p1, { x: 0, y: 0.5 }), p2: pt(def.p2, { x: 1, y: 0.5 }), // linear: fractions of the element bound
 			center: pt(def.center, { x: 0.5, y: 0.5 }), r0: clamp(num(def.r0, 0), 0, 4), r1: clamp(num(def.r1, 0.5), 0, 4), // radial: fraction of the larger side
-			image: type == 'texture' ? String(def.image || '') : '',
+			image: type == 'texture' ? String(def.image || '') : '', // small version of the picture (thumbnail)
+			source: type == 'texture' ? String(def.source || '') : '', // the picture at its real size (local / document only)
+			mode: ['thumb', 'real', 'bound'].indexOf(def.mode) == -1 ? 'thumb' : def.mode, // thumb: the thumbnail, real: real size, bound: stretched to the element bound
 			repeat: ['repeat', 'repeat-x', 'repeat-y', 'no-repeat'].indexOf(def.repeat) == -1 ? 'repeat' : def.repeat,
 			scale: clamp(num(def.scale, 1), 0.05, 20)
 		};
@@ -47,15 +49,18 @@
 		p.set(OPT_PREFIX + id, JSON.stringify(e.def));
 		p.set(OPT_INDEX, JSON.stringify(Array.from(reg.entries()).filter(([, v]) => v.scope == 'user').map(([k]) => k)));
 	}
+	/** the picture used by a texture: the thumbnail, or the real size picture when the mode asks for it (and it is there) */
+	const textureSource = (def) => (def.mode != 'thumb' && def.source) ? def.source : def.image;
 	function textureImage(def) {
-		if (!def.image) { return null; }
-		let e = images.get(def.image);
+		const src = textureSource(def);
+		if (!src) { return null; }
+		let e = images.get(src);
 		if (!e) {
 			const img = new Image();
 			e = { img, ready: false };
 			img.onload = () => { e.ready = true; _NS.app && _NS.app.refresh(); };
-			img.src = def.image;
-			images.set(def.image, e);
+			img.src = src;
+			images.set(src, e);
 		}
 		return e.ready ? e.img : null;
 	}
@@ -126,8 +131,19 @@
 		},
 		/** the size of the image of a texture (for the svg export) */
 		textureSize(def) {
-			const e = images.get(def.image);
+			const e = images.get(textureSource(def));
 			return e && e.ready ? { w: e.img.naturalWidth, h: e.img.naturalHeight } : { w: 64, h: 64 };
+		},
+		textureSource,
+		/**
+		 * size of one tile of a texture, in the space of the element: thumbnail and real size use the pixels of the
+		 * picture times the scale, "bound" stretches the picture to the bound of the element
+		 * @returns {{w:number,h:number}}
+		 */
+		textureTile(def, b) {
+			const s = brushes.textureSize(def);
+			if (def.mode == 'bound') { return { w: Math.max(1, b.width), h: Math.max(1, b.height) }; }
+			return { w: s.w * def.scale, h: s.h * def.scale };
 		},
 		/**
 		 * canvas style (gradient or pattern) of a brush for an element. The coordinates are fractions of the bound of
@@ -144,7 +160,10 @@
 				const img = textureImage(def);
 				if (!img) { return 'rgba(128, 128, 128, 0.25)'; } // until the image is loaded
 				const p = ctx.createPattern(img, def.repeat);
-				if (p && typeof DOMMatrix == 'function') { p.setTransform(new DOMMatrix([def.scale, 0, 0, def.scale, b.x, b.y])); }
+				if (p && typeof DOMMatrix == 'function') {
+					const t = brushes.textureTile(def, b);
+					p.setTransform(new DOMMatrix([t.w / img.naturalWidth, 0, 0, t.h / img.naturalHeight, b.x, b.y]));
+				}
 				return p || 'rgba(0, 0, 0, 0)';
 			}
 			let g;

@@ -137,11 +137,12 @@
 			});
 		};
 		if (def.type == 'texture') {
-			var sz = B.textureSize(def);
-			var pt = mk('pattern', { id: id, patternUnits: 'userSpaceOnUse', x: b.x, y: b.y, width: sz.w * def.scale, height: sz.h * def.scale });
-			var im = mk('image', { x: 0, y: 0, width: sz.w * def.scale, height: sz.h * def.scale }, pt);
-			im.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', def.image);
-			im.setAttribute('href', def.image);
+			var tile = B.textureTile(def, b);
+			var src = B.textureSource(def);
+			var pt = mk('pattern', { id: id, patternUnits: 'userSpaceOnUse', x: b.x, y: b.y, width: tile.w, height: tile.h });
+			var im = mk('image', { x: 0, y: 0, width: tile.w, height: tile.h, preserveAspectRatio: 'none' }, pt);
+			im.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', src);
+			im.setAttribute('href', src);
 		} else if (def.type == 'radial') {
 			var R = Math.max(b.width, b.height);
 			var g = mk('radialGradient', {

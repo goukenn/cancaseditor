@@ -26,8 +26,12 @@
 	function group(editor) {
 		const items = selection(editor).filter(groupable);
 		if (items.length < 2) { _NS.gui.notify.Show(editor, T('msg.group.min')); return false; }
+		return !!groupItems(editor, items);
+	}
+	/** group the elements (same container) and select the group; returns the group */
+	function groupItems(editor, items) {
 		const c = items[0]['@container'];
-		if (!items.every((i) => i['@container'] === c)) { _NS.gui.notify.Show(editor, T('msg.group.same')); return false; }
+		if (!items.every((i) => i['@container'] === c)) { _NS.gui.notify.Show(editor, T('msg.group.same')); return null; }
 		items.sort((a, b) => c.getChildIndex(a) - c.getChildIndex(b));
 		const top = c.getChildIndex(items[items.length - 1]);
 		const g = editor.createElement('group');
@@ -38,6 +42,32 @@
 		c.setChildIndex(g, Math.max(0, top - items.length + 1));
 		editor.Edit(null, editor.tool);
 		if (editor.tool && editor.tool.selectElement) { editor.tool.selectElement(g); } else { editor.refresh(); }
+		return g;
+	}
+	/**
+	 * clipping / opacity mask: the top most selected element is the shape (clip) or the mask, the others (grouped when
+	 * there are several) are clipped / masked by it. The shape is not drawn on its own anymore.
+	 * @param {'clip'|'mask'} kind
+	 */
+	function makeClipMask(editor, kind) {
+		const items = selection(editor).filter(groupable);
+		const c = items.length ? items[0]['@container'] : null;
+		if (items.length < 2 || !items.every((i) => i['@container'] === c)) { _NS.gui.notify.Show(editor, T('msg.clip.min')); return false; }
+		items.sort((a, b) => c.getChildIndex(a) - c.getChildIndex(b));
+		const shape = items.pop();
+		if (kind == 'clip' && !('path' in shape)) { _NS.gui.notify.Show(editor, T('msg.clip.shape')); return false; }
+		const target = items.length == 1 ? items[0] : groupItems(editor, items);
+		if (!target) { return false; }
+		target[kind] = shape;
+		editor.Edit(null, editor.tool);
+		if (editor.tool && editor.tool.selectElement) { editor.tool.selectElement(target); } else { editor.refresh(); }
+		return true;
+	}
+	function releaseClipMask(editor) {
+		const items = selection(editor).filter((e) => e.clip || e.mask);
+		if (items.length == 0) { _NS.gui.notify.Show(editor, T('msg.clip.none')); return false; }
+		items.forEach((e) => { e.clip = null; e.mask = null; });
+		editor.refresh();
 		return true;
 	}
 	function ungroup(editor) {
@@ -67,5 +97,8 @@
 	AC.regActions(Key.Ctrl | Key.Shift | Key.G, 'editor.ungroup', (a) => { ungroup(a); });
 	AC.regMenuAction('edit.group', { index: 620, callback: (a) => group(a) });
 	AC.regMenuAction('edit.ungroup', { index: 621, callback: (a) => ungroup(a) });
-	_NS.groups = { group, ungroup };
+	AC.regMenuAction('edit.makeClip', { index: 630, callback: (a) => makeClipMask(a, 'clip') });
+	AC.regMenuAction('edit.makeMask', { index: 631, callback: (a) => makeClipMask(a, 'mask') });
+	AC.regMenuAction('edit.releaseClip', { index: 632, callback: (a) => releaseClipMask(a) });
+	_NS.groups = { group, ungroup, groupItems, makeClipMask, releaseClipMask };
 })();

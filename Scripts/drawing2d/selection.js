@@ -624,6 +624,12 @@
 		};
 		function updateWheel(e) {
 			var s = self.host; 
+			// the zoom is only for the editor surface: the property panel, menus and dialogs scroll on their own
+			var c = s.canvas && s.canvas.o;
+			var surface = c && (c.parentElement || c);
+			if (!surface || !e.target || !surface.contains(e.target)) {
+				return;
+			}
 			var i = e.deltaY >= 0;
 			if (i) {
 				s.zoomOut();
