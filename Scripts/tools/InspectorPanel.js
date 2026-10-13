@@ -67,6 +67,8 @@
 		flipV: svg('<path d="M3 12h18" stroke-dasharray="2 2"/><path d="M7 9 17 9 12 3zM7 15h10l-5 6z"/>'),
 		lockOn: svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
 		lockOff: svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/>'),
+		fitW: svg('<path d="M4 4v16M20 4v16"/><path d="m8 12h8M10 9l-3 3 3 3M14 9l3 3-3 3"/>'),
+		fitH: svg('<path d="M4 4h16M4 20h16"/><path d="m12 8v8M9 10l3-3 3 3M9 14l3 3 3-3"/>'),
 		chevron: svg('<path d="m6 9 6 6 6-6"/>', 2)
 	};
 	// ---------------------------------------------------------------- colors
@@ -348,7 +350,15 @@
 			root.append(_el('div', { className: 'ci-grid' }, [
 				field('X', xi), field('Y', yi), field('°', ri), _el('span'),
 				field('W', wi), field('H', hi)]));
-			root.append(_el('div', { className: 'ci-pair', style: 'justify-content:flex-end;margin:-4px 0 6px' }, [lockBtn, flip(true), flip(false)]));
+			const fitBtn = (dir) => {
+				const b = _el('button', { className: 'ci-ico', type: 'button', title: T(dir == 'width' ? 'ins.fit.width' : 'ins.fit.height') });
+				b.innerHTML = dir == 'width' ? ICONS.fitW : ICONS.fitH;
+				b.onclick = () => _NS.fit.fit(editor, el, dir);
+				return b;
+			};
+			// fit actions only make sense for an element placed on a layer attached to a document
+			const fits = (_NS.fit && _NS.fit.canFit(el)) ? [fitBtn('width'), fitBtn('height')] : [];
+			root.append(_el('div', { className: 'ci-pair', style: 'justify-content:flex-end;margin:-4px 0 6px' }, [...fits, lockBtn, flip(true), flip(false)]));
 		}
 		if (typeof el.radius == 'number') {
 			const b = hasBound(el) ? el.bound : { width: 200, height: 200 };
