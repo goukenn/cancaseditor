@@ -62,7 +62,7 @@ igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer },
 			var q = _elements.root;
 			while(q){
 				if (q.visible)
-					q.render(a);
+					ELEM.renderItem(a, q);
 				q = q.next;
 			}
 		}

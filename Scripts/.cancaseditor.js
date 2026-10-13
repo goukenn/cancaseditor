@@ -80,9 +80,8 @@
 							// + | ColorToInt can therefore transform rgba? hsla? colors 
 							let s = context.stroke;
 							if (typeof (s) == 'string') {
-								s = _NS.utils.ColorToInt(s);
-								const { r, g, b } = _NS.utils.IntToRGB(s);
-								context.stroke = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + a + ')';
+								// the alpha of the color itself is kept: the opacity multiplies it
+								context.stroke = _multiplyColorAlpha(s, a);
 							}
 						}
 						context.strokeLineJoin = e.strokeLineJoin;
@@ -142,6 +141,25 @@
 	 * @param {*} e 
 	 * @param {*} def 
 	 */
+	/**
+	 * multiply the alpha of a color read back from the canvas ('#rrggbb' or 'rgba(r, g, b, a)')
+	 * @param {string} c normalized color
+	 * @param {number} f factor [0..1]
+	 */
+	function _multiplyColorAlpha(c, f) {
+		var m = /^rgba?\(\s*(\d+)\D+(\d+)\D+(\d+)(?:\D+([\d.]+))?/.exec(c);
+		if (!m) {
+			var h = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(c);
+			if (!h) {
+				// literal or exotic format: let the helper convert it
+				var rgb = _NS.utils.IntToRGB(_NS.utils.ColorToInt(c));
+				return 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', ' + f + ')';
+			}
+			m = [0, parseInt(h[1], 16), parseInt(h[2], 16), parseInt(h[3], 16), 1];
+		}
+		var a = (m[4] === undefined) ? 1 : parseFloat(m[4]);
+		return 'rgba(' + m[1] + ', ' + m[2] + ', ' + m[3] + ', ' + (Math.round(a * f * 1000) / 1000) + ')';
+	};
 	function fillDefinition(e, def) {
 		const { linearGradient } = _NS;
 		let q = this;
@@ -156,11 +174,9 @@
 						if (e.fillOpacity <= 0) {
 							return;
 						}
-						if (e.fillOpacity < 1.0) {
-							let s = _NS.utils.ColorToInt(context.fill);
-							let a = e.fillOpacity;
-							const { r, g, b } = _NS.utils.IntToRGB(s);
-							context.fill = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + a + ')';
+						if (e.fillOpacity < 1.0 && typeof (context.fill) == 'string') {
+							// the alpha of the color itself is kept: the opacity multiplies it (not for a brush)
+							context.fill = _multiplyColorAlpha(context.fill, e.fillOpacity);
 						}
 					} else if (i instanceof linearGradient) {
 						context.fill = i.brush;
@@ -372,8 +388,13 @@
 		function CancasPrimitive(m_ctx) {
 			// - CancasPrivimitive encapsuler  
 			// - primitive properties
-			igk.defineProperty(this, "fill", { get: function () { return m_ctx.fillStyle; }, set: function (v) { m_ctx.fillStyle = v; } });
-			igk.defineProperty(this, "stroke", { get: function () { return m_ctx.strokeStyle; }, set: function (v) { m_ctx.strokeStyle = v; } });
+			// a "brush:<id>" value is a brush of the library (see drawing2d/brushes.js): it is resolved for the
+			// element being rendered (currentElement, set by ELEM.renderItem)
+			var _style = function (o, v) {
+				return (_NS.brushes && _NS.brushes.isRef(v)) ? _NS.brushes.resolve(m_ctx, v, o.currentElement) : v;
+			};
+			igk.defineProperty(this, "fill", { get: function () { return m_ctx.fillStyle; }, set: function (v) { m_ctx.fillStyle = _style(this, v); } });
+			igk.defineProperty(this, "stroke", { get: function () { return m_ctx.strokeStyle; }, set: function (v) { m_ctx.strokeStyle = _style(this, v); } });
 			igk.defineProperty(this, "strokeWidth", { get: function () { return m_ctx.lineWidth; }, set: function (v) { m_ctx.lineWidth = v; } });
 			igk.defineProperty(this, "strokeLineJoin", { get() { return m_ctx.lineJoin; }, set(v) { m_ctx.lineJoin = v; } });
 			igk.defineProperty(this, "strokeDashCap", { get() { return m_ctx.lineCap; }, set(v) { m_ctx.lineCap = v; } });
@@ -1233,7 +1254,7 @@
 					if (f instanceof linearGradient) {
 						f = f.brush;
 					}
-					this.stroke = stroke;
+					this.stroke = f;
 				}
 			};
 			// ----------------------------------------------------------------------
@@ -3945,6 +3966,67 @@
 				this.strokeDashCap = 0;
 				this.strokeDashArray = [];
 				this.globalAlpha = 1.0;
+				// ---- shadows (document space values): [{color, blur, x, y}]. shadowColor null = inactive.
+				// shadowColor/shadowBlur/shadowOffsetX/shadowOffsetY are views on the first shadow.
+				var m_shadows = [];
+				var _num = function (v) { v = Number(v); return isNaN(v) ? 0 : v; };
+				var _color = function (v) { return (typeof (v) == 'string' && v && v != 'none' && v != 'null') ? v : null; };
+				var _shadow = function (v) {
+					v = v || {};
+					return { color: _color(v.color), blur: Math.max(0, _num(v.blur)), x: _num(v.x), y: _num(v.y) };
+				};
+				var _first = function () {
+					if (m_shadows.length == 0) {
+						m_shadows.push(_shadow({}));
+					}
+					return m_shadows[0];
+				};
+				igk.defineProperty(this, "shadows", {
+					get: function () { return m_shadows; },
+					set: function (v) { m_shadows = Array.isArray(v) ? v.map(_shadow) : []; }
+				});
+				igk.defineProperty(this, "shadowColor", {
+					get: function () { return m_shadows.length ? m_shadows[0].color : null; },
+					set: function (v) { if (_color(v) || m_shadows.length) { _first().color = _color(v); } }
+				});
+				igk.defineProperty(this, "shadowBlur", {
+					get: function () { return m_shadows.length ? m_shadows[0].blur : 0; },
+					set: function (v) { _first().blur = Math.max(0, _num(v)); }
+				});
+				igk.defineProperty(this, "shadowOffsetX", {
+					get: function () { return m_shadows.length ? m_shadows[0].x : 0; }, set: function (v) { _first().x = _num(v); }
+				});
+				igk.defineProperty(this, "shadowOffsetY", {
+					get: function () { return m_shadows.length ? m_shadows[0].y : 0; }, set: function (v) { _first().y = _num(v); }
+				});
+				var _active = function (s) {
+					return !!s.color && (s.color != 'transparent') && ((s.blur > 0) || (s.x != 0) || (s.y != 0));
+				};
+				/** the shadows that are drawn */
+				this.activeShadows = function () {
+					return m_shadows.filter(_active);
+				};
+				this.hasShadow = function () {
+					return m_shadows.some(_active);
+				};
+				/**
+				 * set the canvas shadow of the element. The canvas ignores the transform for the shadow values:
+				 * the document space offsets/blur are scaled by the current transform (editor zoom included).
+				 * The offsets do not rotate with the element.
+				 * @param {*} o context
+				 * @param {{color,blur,x,y}} [sh] a shadow of the element (the first active one by default)
+				 * @param {number} [devX] extra device offset of the x offset
+				 */
+				this.bindShadow = function (o, sh, devX) {
+					sh = sh || this.activeShadows()[0];
+					if (!sh) {
+						return;
+					}
+					var m = o.currentTransform().element;
+					var sx = Math.hypot(m[0], m[1]);
+					var sy = Math.hypot(m[2], m[3]);
+					o.setShadow(sh.color, sh.blur * ((sx + sy) / 2), sh.x * sx + (devX || 0), sh.y * sy);
+				};
 				this.strokeLineJoin = ELEM.lineJoin.round;
 				this.description = null;
 				var _opts = {}; //internal options
@@ -4436,7 +4518,18 @@
 				name: "visible", "default": true,
 				serializer: function (v) { return v ? null : 'false'; },
 				unserialize: function (v) { return v !== 'false'; }
-			}];
+			},
+			// shadow: see drawing2D.bindShadow
+			{
+				name: "shadows", "default": null,
+				serializer: function (v) { return (v && v.length) ? JSON.stringify(v) : null; },
+				unserialize: function (v) { try { return JSON.parse(v); } catch (e) { return []; } }
+			},
+			// the single shadow attributes of the first versions: still loaded, never written
+			{ name: "shadowColor", "default": null, serializer: function () { return null; } },
+			{ name: "shadowBlur", "default": 0, serializer: function () { return null; }, unserialize: parseFloat },
+			{ name: "shadowOffsetX", "default": 0, serializer: function () { return null; }, unserialize: parseFloat },
+			{ name: "shadowOffsetY", "default": 0, serializer: function () { return null; }, unserialize: parseFloat }];
 			return t;
 		}
 		/**
@@ -4447,13 +4540,19 @@
 			return [
 				{ name: "stroke", "default": "#000" },
 				{ name: "strokeWidth", "default": 1 },
-				{ name: "strokeOpacity", "default": 1 },
+				{ name: "strokeOpacity", "default": 1, unserialize: parseFloat },
 				{ name: "strokeLineJoin", "default": 1 },
 				{ name: "strokeMiterLimit", "default": 1 },
 				{ name: "strokeDashCap", "default": 1 },
-				{ name: "strokeDashArray", "default": [] },
+				{
+					name: "strokeDashArray", "default": [],
+					// saved as json text: back to an array (a string breaks setLineDash)
+					unserialize: function (v) {
+						try { var a = JSON.parse(v); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+					}
+				},
 				{ name: "fill", "default": "#fff" },
-				{ name: "fillOpacity", "default": 1.0 }
+				{ name: "fillOpacity", "default": 1.0, unserialize: parseFloat }
 			];
 		};
 		function getMatrixExport() {

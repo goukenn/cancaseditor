@@ -15,6 +15,8 @@
 		'.ci-root input[type=number],.ci-root input[type=text],.ci-root select{width:100%;box-sizing:border-box;background:var(--ci-input);color:var(--ci-fg);border:1px solid transparent;border-radius:5px;padding:6px 8px;font:inherit;min-width:0}' +
 		'.ci-root input:focus,.ci-root select:focus{outline:none;border-color:var(--ci-accent)}' +
 		'.ci-root input[type=range]{width:100%;accent-color:var(--ci-accent)}' +
+		'.ci-root button:not(.ci-ico):not(.ci-swatch):not(.be-stop){background:var(--ci-input);color:var(--ci-fg);border:1px solid var(--ci-line);border-radius:5px;padding:5px 10px;cursor:pointer;font:inherit}' +
+		'.ci-root button:not(.ci-ico):not(.ci-swatch):not(.be-stop):hover{border-color:var(--ci-accent)}' +
 		'.ci-bar{display:flex;justify-content:space-between;padding:4px 2px 10px}' +
 		'.ci-ico{background:transparent;border:0;color:var(--ci-fg);width:26px;height:26px;padding:3px;border-radius:4px;cursor:pointer;line-height:0}' +
 		'.ci-ico:hover{background:rgba(127,127,127,.25)}.ci-ico.on{color:var(--ci-accent)}.ci-ico svg{width:100%;height:100%}' +
@@ -33,7 +35,8 @@
 		'.ci-title{font-weight:bold;margin:2px 0 8px;opacity:.85}' +
 		// color picker popover
 		'.ci-pop{position:fixed;z-index:1100;width:248px;box-sizing:border-box;padding:12px;background:var(--ci-pop);color:var(--ci-fg);border:1px solid var(--ci-line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.45);font:12px sans-serif}' +
-		'.ci-pop h4{margin:0 0 8px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ci-dim)}' +
+		'.ci-pop-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.ci-pop-head .ci-ico{width:24px;height:24px}' +
+		'.ci-pop h4{margin:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ci-dim)}' +
 		'.ci-sv{position:relative;height:130px;border-radius:5px;overflow:hidden;cursor:crosshair;touch-action:none}.ci-sv canvas{width:100%;height:100%;display:block}' +
 		'.ci-dot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.5);pointer-events:none}' +
 		'.ci-sliders{display:flex;gap:10px;align-items:center;margin:10px 0}.ci-sliders>div:not(.ci-prev){flex:1;display:flex;flex-direction:column;gap:8px}' +
@@ -68,6 +71,9 @@
 		lockOn: svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
 		lockOff: svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/>'),
 		fitW: svg('<path d="M4 4v16M20 4v16"/><path d="m8 12h8M10 9l-3 3 3 3M14 9l3 3-3 3"/>'),
+		close: svg('<path d="M6 6l12 12M18 6 6 18"/>'),
+		fitBoth: svg('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><rect x="8" y="8" width="8" height="8"/>'),
+		pipette: svg('<path d="m15 4 5 5M13.5 5.5l5 5-8 8H5.5v-5z"/><path d="M5 21l1.5-1.5"/>'),
 		fitH: svg('<path d="M4 4h16M4 20h16"/><path d="m12 8v8M9 10l3-3 3 3M9 14l3 3 3-3"/>'),
 		chevron: svg('<path d="m6 9 6 6 6-6"/>', 2)
 	};
@@ -85,6 +91,8 @@
 		const m = /rgba?\(\s*(\d+)\D+(\d+)\D+(\d+)(?:\D+([\d.]+))?/.exec(v);
 		return m ? { r: +m[1], g: +m[2], b: +m[3], a: m[4] === undefined ? 1 : +m[4] } : { r: 0, g: 0, b: 0, a: 1 };
 	}
+	/** #RRGGBB when opaque, rgba(r, g, b, a) otherwise: the alpha stays inside the color */
+	const toCss = (c) => (c.a === undefined || c.a >= 1) ? toHex(c) : 'rgba(' + Math.round(c.r) + ', ' + Math.round(c.g) + ', ' + Math.round(c.b) + ', ' + (Math.round(c.a * 100) / 100) + ')';
 	const toHex = (c) => '#' + [c.r, c.g, c.b].map((n) => Math.round(n).toString(16).padStart(2, '0')).join('').toUpperCase();
 	function rgb2hsv({ r, g, b }) {
 		r /= 255; g /= 255; b /= 255;
@@ -128,8 +136,46 @@
 			_el('div', {}, [hex, lab(T('ins.hex', 'Hex'))]),
 			...nums.map((n, i) => _el('div', {}, [n, lab('RGB'[i])])),
 			_el('div', {}, [aIn, lab(T('ins.alpha', 'Alpha'))])]);
+		// eyedropper: the native EyeDropper (screen wide, Chromium) or the pixels of the editor canvas
+		const pip = _el('button', { className: 'ci-ico', type: 'button', title: T('ins.eyedropper') });
+		pip.innerHTML = ICONS.pipette;
+		let sampling = false;
+		const takeColor = (hexOrRgb) => {
+			const c = typeof hexOrRgb == 'string' ? parseColor(hexOrRgb) : hexOrRgb;
+			Object.assign(hsv, rgb2hsv(c));
+			hue.value = Math.round(hsv.h);
+			drawSV();
+			sync();
+		};
+		pip.onclick = async () => {
+			if (window.EyeDropper) {
+				sampling = true;
+				try { const r = await new window.EyeDropper().open(); takeColor(r.sRGBHex); } catch (e) { /* cancelled */ }
+				sampling = false;
+				return;
+			}
+			const app = _NS.app, cv = app && app.canvas && app.canvas.o;
+			if (!cv) { return; }
+			sampling = true;
+			document.body.style.cursor = 'crosshair';
+			const done = () => { sampling = false; document.body.style.cursor = ''; document.removeEventListener('pointerdown', pick, true); document.removeEventListener('keydown', cancel, true); };
+			const pick = (e) => {
+				if (box.contains(e.target)) { return; }
+				e.preventDefault();
+				e.stopPropagation();
+				const r = cv.getBoundingClientRect();
+				try {
+					const d = cv.getContext('2d').getImageData(Math.floor(e.clientX - r.left), Math.floor(e.clientY - r.top), 1, 1).data;
+					takeColor({ r: d[0], g: d[1], b: d[2], a: d[3] / 255 });
+				} catch (x) { console.warn('[cancasEditor] eyedropper', x); }
+				done();
+			};
+			const cancel = (e) => { if (e.key == 'Escape') { e.stopPropagation(); done(); } };
+			document.addEventListener('pointerdown', pick, true);
+			document.addEventListener('keydown', cancel, true);
+		};
 		const box = _el('div', { className: 'ci-pop ci-root' }, [
-			_el('h4', { textContent: T('ins.colorpicker', 'Color picker') }), sv,
+			_el('div', { className: 'ci-pop-head' }, [_el('h4', { textContent: T('ins.colorpicker', 'Color picker') }), pip]), sv,
 			_el('div', { className: 'ci-sliders' }, [prev, _el('div', {}, [hue, al])]), vals]);
 		const drawSV = () => {
 			const g = canvas.getContext('2d');
@@ -186,7 +232,7 @@
 		box.style.top = clamp(ar.top - 20, 8, Math.max(8, window.innerHeight - bh - 8)) + 'px';
 		drawSV();
 		sync();
-		const outside = (e) => { if (!box.contains(e.target) && !anchor.contains(e.target)) { closePicker(); } };
+		const outside = (e) => { if (!sampling && !box.contains(e.target) && !anchor.contains(e.target)) { closePicker(); } };
 		const esc = (e) => { if (e.key == 'Escape') { closePicker(); } };
 		document.addEventListener('pointerdown', outside, true);
 		document.addEventListener('keydown', esc, true);
@@ -224,45 +270,54 @@
 	 */
 	function colorRow(a) {
 		let last = null; // color kept while the row is disabled
-		const cur = () => a.get();
+		const cur = () => { const v = a.get(); return (typeof v == 'string') ? v : ''; }; // gradients are not edited here
 		const off = (v) => !v || v == 'none' || v == 'transparent';
+		// the legacy opacity property (fillOpacity/strokeOpacity) multiplies the alpha of the color
+		const legacy = () => (a.getOpacity ? a.getOpacity() : 1);
+		const alpha = () => clamp(parseColor(cur()).a * legacy(), 0, 1);
 		const on = _el('input', { type: 'checkbox', checked: !off(cur()) });
 		const sw = _el('button', { className: 'ci-swatch', type: 'button' });
 		const fillSw = _el('i');
 		sw.append(fillSw);
-		const hex = _el('input', { type: 'text', maxLength: 7 });
+		const hex = _el('input', { type: 'text', maxLength: 9, title: '#RRGGBB / #RRGGBBAA' });
 		const op = _el('input', { type: 'number', min: 0, max: 100 });
 		const paint = () => {
 			const c = parseColor(cur());
-			const o = a.getOpacity ? a.getOpacity() : c.a;
-			fillSw.style.background = off(cur()) ? 'transparent' : 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + o + ')';
-			hex.value = off(cur()) ? '' : toHex(c).substr(1);
-			op.value = Math.round((a.getOpacity ? a.getOpacity() : c.a) * 100);
+			fillSw.style.background = off(cur()) ? 'transparent' : 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + alpha() + ')';
+			hex.value = off(cur()) ? '' : toHex(c).substr(1) + (alpha() < 1 ? Math.round(alpha() * 255).toString(16).padStart(2, '0').toUpperCase() : '');
+			op.value = Math.round(alpha() * 100);
 			on.checked = !off(cur());
 		};
+		// the alpha is stored in the color: the legacy opacity is folded into it (and reset to 1)
+		const setColor = (c, al) => a.apply(() => {
+			a.set(toCss(Object.assign({}, c, { a: clamp(al, 0, 1) })));
+			if (a.setOpacity && legacy() != 1) { a.setOpacity(1); }
+		});
 		on.onchange = () => {
-			if (on.checked) { a.apply(() => a.set(last || '#000000')); } else { last = cur(); a.apply(() => a.set('transparent')); }
+			if (on.checked) {
+				const c = parseColor(last || a.defaultColor || '#000000');
+				setColor(c, (last || a.defaultColor) ? c.a : 1);
+			} else { last = toCss(Object.assign(parseColor(cur()), { a: alpha() })); a.apply(() => a.set('transparent')); }
 			paint();
+			a.afterToggle && a.afterToggle(on.checked);
 		};
 		sw.onclick = () => {
 			const c = parseColor(off(cur()) ? (last || '#000000') : cur());
-			c.a = a.getOpacity ? a.getOpacity() : c.a;
-			openPicker(sw, c, (n) => {
-				a.apply(() => { a.set(toHex(n)); if (a.setOpacity) { a.setOpacity(round2(n.a)); } });
-				paint();
-			});
+			c.a = off(cur()) ? c.a : alpha();
+			openPicker(sw, c, (n) => { setColor(n, n.a); paint(); });
 		};
 		hex.onchange = () => {
-			if (/^#?[0-9a-f]{6}$/i.test(hex.value)) { a.apply(() => a.set('#' + hex.value.replace('#', ''))); }
+			const m = /^#?([0-9a-f]{6})([0-9a-f]{2})?$/i.exec(hex.value.trim());
+			if (m) { setColor(parseColor('#' + m[1]), m[2] ? parseInt(m[2], 16) / 255 : alpha()); }
 			paint();
 		};
 		op.oninput = () => {
 			const v = clamp(op.value === '' ? 0 : +op.value, 0, 100) / 100; // empty = 0
-			if (a.setOpacity) { a.apply(() => a.setOpacity(v)); }
+			if (!off(cur())) { setColor(parseColor(cur()), v); }
 		};
 		op.addEventListener('change', () => paint());
 		paint();
-		return _el('div', { className: 'ci-fill' }, [on, sw, hex, a.setOpacity ? _el('div', { className: 'ci-field' }, [op, _el('span', { textContent: '%' })]) : _el('span')]);
+		return _el('div', { className: 'ci-fill' }, [on, sw, hex, _el('div', { className: 'ci-field' }, [op, _el('span', { textContent: '%' })])]);
 	}
 	function sliderRow(label, value, min, max, onchange, suffix) {
 		const r = _el('input', { type: 'range', min, max, value });
@@ -397,13 +452,13 @@
 				field('X', xi), field('Y', yi), field('°', ri), _el('span'),
 				field('W', wi), field('H', hi)]));
 			const fitBtn = (dir) => {
-				const b = _el('button', { className: 'ci-ico', type: 'button', title: T(dir == 'width' ? 'ins.fit.width' : 'ins.fit.height') });
-				b.innerHTML = dir == 'width' ? ICONS.fitW : ICONS.fitH;
+				const b = _el('button', { className: 'ci-ico', type: 'button', title: T(dir == 'width' ? 'ins.fit.width' : dir == 'height' ? 'ins.fit.height' : 'ins.fit.both') });
+				b.innerHTML = dir == 'width' ? ICONS.fitW : dir == 'height' ? ICONS.fitH : ICONS.fitBoth;
 				b.onclick = () => _NS.fit.fit(editor, el, dir);
 				return b;
 			};
 			// fit actions only make sense for an element placed on a layer attached to a document
-			const fits = (_NS.fit && _NS.fit.canFit(el)) ? [fitBtn('width'), fitBtn('height')] : [];
+			const fits = (_NS.fit && _NS.fit.canFit(el)) ? [fitBtn('width'), fitBtn('height'), fitBtn('both')] : [];
 			root.append(_el('div', { className: 'ci-pair', style: 'justify-content:flex-end;margin:-4px 0 6px' }, [...fits, lockBtn, flip(true), flip(false)]));
 		}
 		if (cornerRadius0(el)) {
@@ -431,11 +486,19 @@
 		if (('fill' in el) || ('stroke' in el)) {
 			root.append(section('style', T('ins.style'), (body) => {
 				if ('fill' in el) {
-					body.append(_el('div', { className: 'ci-sub', textContent: T('ins.fills') }), colorRow({
-						get: () => el.fill, set: (v) => { el.fill = v; }, apply,
-						getOpacity: ('fillOpacity' in el) ? () => (typeof el.fillOpacity == 'number' ? el.fillOpacity : 1) : null,
-						setOpacity: ('fillOpacity' in el) ? (v) => { el.fillOpacity = v; } : null
-					}));
+					body.append(_el('div', { className: 'ci-sub', textContent: T('ins.fills') }));
+					// brush styles (solid, gradients, texture, library): see tools/BrushEditor.js
+					const brushable = !!_NS.brushEditor && !!_NS.brushes && _NS.brushEditor.canBrush(el);
+					if (brushable) {
+						body.append(_NS.brushEditor.build(editor, el, 'fill', apply, () => editor.raiseEvent('selectChanged', { items: [el] })));
+					}
+					if (!(brushable && _NS.brushes.isRef(el.fill))) {
+						body.append(colorRow({
+							get: () => el.fill, set: (v) => { el.fill = v; }, apply,
+							getOpacity: ('fillOpacity' in el) ? () => (typeof el.fillOpacity == 'number' ? el.fillOpacity : 1) : null,
+							setOpacity: ('fillOpacity' in el) ? (v) => { el.fillOpacity = v; } : null
+						}));
+					}
 				}
 				if ('stroke' in el) {
 					body.append(_el('div', { className: 'ci-sub', textContent: T('ins.borders') }), colorRow({
@@ -448,6 +511,36 @@
 							_el('div', { className: 'ci-field', style: 'width:90px' }, [numInput(el.strokeWidth, (v) => apply(() => { el.strokeWidth = v; }), { min: 0, step: 0.5 }), _el('span', { textContent: 'px' })])]));
 					}
 				}
+			}));
+		}
+		if ('shadows' in el) {
+			root.append(section('shadow', T('ins.shadow'), (body) => {
+				const rebuild = () => editor.raiseEvent('selectChanged', { items: [el] }); // the list shows the new shadows
+				const DEFAULT = { color: 'rgba(0, 0, 0, 0.35)', blur: 8, x: 4, y: 4 };
+				el.shadows.forEach((sh, i) => {
+					const head = _el('div', { className: 'ci-sub' }, [_el('span', { textContent: T('ins.shadow.n') + ' ' + (i + 1) })]);
+					const del = _el('button', { type: 'button', className: 'ci-ico', title: T('ins.shadow.remove') });
+					del.innerHTML = ICONS.close;
+					del.onclick = () => { apply(() => { el.shadows = el.shadows.filter((_, k) => k != i); }); rebuild(); };
+					head.append(del);
+					body.append(head, colorRow({
+						get: () => sh.color || '', set: (v) => { sh.color = v; }, apply,
+						defaultColor: DEFAULT.color,
+						afterToggle: (enabled) => {
+							// a shadow without offset and blur would be invisible: start with a visible one
+							if (enabled && !(sh.blur > 0 || sh.x || sh.y)) { apply(() => { sh.blur = DEFAULT.blur; sh.x = DEFAULT.x; sh.y = DEFAULT.y; }); }
+							rebuild();
+						}
+					}));
+					body.append(_el('div', { className: 'ci-grid', style: 'margin-top:8px' }, [
+						field('X', numInput(round2(sh.x), (v) => apply(() => { sh.x = v; }), { step: 1 })),
+						field('Y', numInput(round2(sh.y), (v) => apply(() => { sh.y = v; }), { step: 1 })),
+						field(T('ins.shadow.blur'), numInput(round2(sh.blur), (v) => apply(() => { sh.blur = Math.max(0, v); }), { min: 0, step: 1 }))]));
+				});
+				const add = _el('button', { type: 'button', textContent: '+ ' + T('ins.shadow.add') });
+				add.style.marginTop = '6px';
+				add.onclick = () => { apply(() => { el.shadows = el.shadows.concat([Object.assign({}, DEFAULT)]); }); rebuild(); };
+				body.append(add);
 			}));
 		}
 		if (el.getType() == 'htmlnode' && _NS.htmlEditor) {
@@ -505,5 +598,5 @@
 		if (editor.document) { return documentPanel(editor, editor.document); }
 		return _el('div', { className: 'ci-root' }, [_el('div', { className: 'ci-title', textContent: T('prop.nodoc') })]);
 	}
-	_NS.inspector = { build, openPicker, closePicker, parseColor, toHex, validDocumentId };
+	_NS.inspector = { build, openPicker, closePicker, parseColor, toHex, toCss, validDocumentId, numInput, field };
 })();

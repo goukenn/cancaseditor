@@ -33,6 +33,44 @@ var BLENDING = {
 	"luminosity":1
 };
 ELEM.BLENDING = BLENDING;
+/**
+ * render a child element: with its shadow when it has one (the shadow is set on the context before it renders)
+ */
+ELEM.renderItem = function(a, q){
+	var sh = (q.activeShadows && a.setShadow) ? q.activeShadows() : [];
+	var prev = a.currentElement; // the element being rendered (brush fills are resolved against its bound)
+	a.currentElement = q;
+	try {
+		if (sh.length == 0){
+			q.render(a);
+		}
+		else if (sh.length == 1){
+			a.save();
+			q.bindShadow(a, sh[0]);
+			q.render(a);
+			a.restore();
+		}
+		else {
+			// the canvas has one shadow per drawing: each shadow is drawn alone (the element is drawn 20000 px
+			// away and the shadow offset compensates it), then the element is drawn once without shadow
+			var BIG = 20000;
+			var T = a.currentTransform();
+			for (var i = 0; i < sh.length; i++){
+				a.save();
+				a.resetTransform();
+				a.transform(new Matrix([1, 0, 0, 1, BIG, 0]));
+				a.transform(T);
+				q.bindShadow(a, sh[i], -BIG);
+				q.render(a);
+				a.restore();
+			}
+			q.render(a);
+		}
+	}
+	finally {
+		a.currentElement = prev;
+	}
+};
 igk.system.createClass(ELEM, {name:"layer", parent: ELEM.drawing2DContainer }, function(){
 	// ELEM.drawing2DContainer.apply(this);
 	//blending operation 
@@ -107,7 +145,7 @@ igk.system.createClass(ELEM, {name:"layer", parent: ELEM.drawing2DContainer }, f
 			var q  = _elements.root;
 			while(q){
 				if (q.visible){
-					q.render(a);
+					ELEM.renderItem(a, q);
 				}
 				q = q.next;
 			}

@@ -14,14 +14,173 @@
 		}
 		return s;
 	};
+	var SVG_NS = "http://www.w3.org/2000/svg";
+	/**
+	 * split a css color in a plain color and its alpha: old svg viewers ignore rgba()
+	 * @returns {{c:string, a:number}}
+	 */
+	function svgColor(css) {
+		if (typeof (css) != 'string') {
+			return { c: css, a: 1 };
+		}
+		var ctx = document.createElement('canvas').getContext('2d');
+		ctx.fillStyle = '#000000';
+		ctx.fillStyle = css;
+		var v = ctx.fillStyle;
+		var m = /^rgba?\(\s*(\d+)\D+(\d+)\D+(\d+)(?:\D+([\d.]+))?/.exec(v);
+		if (!m) {
+			return { c: v, a: 1 }; // '#rrggbb'
+		}
+		var hex = '#' + [m[1], m[2], m[3]].map(function (n) { return (+n).toString(16).padStart(2, '0'); }).join('');
+		return { c: hex, a: m[4] === undefined ? 1 : parseFloat(m[4]) };
+	};
+	/**
+	 * the shadows of an element: one filter in the defs of the svg root. Each shadow is a blurred, offset and
+	 * colored copy of the alpha of the element; they are merged under the source graphic.
+	 */
+	function svgShadow(p) {
+		var shadows = (this.activeShadows && this.activeShadows()) || [];
+		if (shadows.length == 0) {
+			return;
+		}
+		var doc = p.o.ownerDocument;
+		var root = doc.documentElement;
+		var defs = null;
+		for (var i = 0; i < root.childNodes.length; i++) {
+			if (root.childNodes[i].localName == 'defs') {
+				defs = root.childNodes[i];
+				break;
+			}
+		}
+		if (!defs) {
+			defs = doc.createElementNS(SVG_NS, 'defs');
+			root.insertBefore(defs, root.firstChild);
+		}
+		var f = doc.createElementNS(SVG_NS, 'filter');
+		var id = 'sh_' + this.id;
+		f.setAttribute('id', id);
+		f.setAttribute('x', '-50%');
+		f.setAttribute('y', '-50%');
+		f.setAttribute('width', '200%');
+		f.setAttribute('height', '200%');
+		var merge = doc.createElementNS(SVG_NS, 'feMerge');
+		var node = function (name, attrs) {
+			var n = doc.createElementNS(SVG_NS, name);
+			for (var k in attrs) {
+				n.setAttribute(k, attrs[k]);
+			}
+			f.appendChild(n);
+			return n;
+		};
+		shadows.forEach(function (sh, i) {
+			var sc = svgColor(sh.color);
+			node('feGaussianBlur', { 'in': 'SourceAlpha', stdDeviation: sh.blur / 2, result: 'b' + i }); // canvas blur ~ 2 x the deviation
+			node('feOffset', { 'in': 'b' + i, dx: sh.x, dy: sh.y, result: 'o' + i });
+			node('feFlood', { 'flood-color': sc.c, 'flood-opacity': sc.a, result: 'c' + i });
+			node('feComposite', { 'in': 'c' + i, in2: 'o' + i, operator: 'in', result: 's' + i });
+		});
+		// the first shadow is the top most one: merged last (the merge draws in document order)
+		for (var j = shadows.length - 1; j >= 0; j--) {
+			var m = doc.createElementNS(SVG_NS, 'feMergeNode');
+			m.setAttribute('in', 's' + j);
+			merge.appendChild(m);
+		}
+		var src = doc.createElementNS(SVG_NS, 'feMergeNode');
+		src.setAttribute('in', 'SourceGraphic');
+		merge.appendChild(src);
+		f.appendChild(merge);
+		defs.appendChild(f);
+		p.setAttribute('filter', 'url(#' + id + ')');
+	};
+	/** the defs element of the svg root (created when missing) */
+	function svgDefs(p) {
+		var doc = p.o.ownerDocument;
+		var root = doc.documentElement;
+		for (var i = 0; i < root.childNodes.length; i++) {
+			if (root.childNodes[i].localName == 'defs') {
+				return root.childNodes[i];
+			}
+		}
+		var defs = doc.createElementNS(SVG_NS, 'defs');
+		root.insertBefore(defs, root.firstChild);
+		return defs;
+	};
+	/**
+	 * a brush of the library as a svg paint server in the defs: the coordinates are in the space of the element
+	 * (userSpaceOnUse, like the canvas) so the transform of the element applies to it.
+	 * @returns {string} the paint: url(#id)
+	 */
+	function svgBrush(p, el, ref) {
+		var B = _NS.brushes;
+		var def = B && B.get(B.idOf(ref));
+		if (!def) {
+			return 'none';
+		}
+		var doc = p.o.ownerDocument;
+		var defs = svgDefs(p);
+		var id = 'br_' + def.id + '_' + el.id;
+		var b = el.bound;
+		if (Array.isArray(b)) { b = b[0]; }
+		if (!b || typeof b.x != 'number') { b = { x: 0, y: 0, width: 100, height: 100 }; }
+		var mk = function (name, attrs, parent) {
+			var n = doc.createElementNS(SVG_NS, name);
+			for (var k in attrs) {
+				n.setAttribute(k, attrs[k]);
+			}
+			(parent || defs).appendChild(n);
+			return n;
+		};
+		var stops = function (g) {
+			def.stops.forEach(function (st) {
+				var c = svgColor(st.c);
+				mk('stop', { offset: st.o, 'stop-color': c.c, 'stop-opacity': c.a }, g);
+			});
+		};
+		if (def.type == 'texture') {
+			var sz = B.textureSize(def);
+			var pt = mk('pattern', { id: id, patternUnits: 'userSpaceOnUse', x: b.x, y: b.y, width: sz.w * def.scale, height: sz.h * def.scale });
+			var im = mk('image', { x: 0, y: 0, width: sz.w * def.scale, height: sz.h * def.scale }, pt);
+			im.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', def.image);
+			im.setAttribute('href', def.image);
+		} else if (def.type == 'radial') {
+			var R = Math.max(b.width, b.height);
+			var g = mk('radialGradient', {
+				id: id, gradientUnits: 'userSpaceOnUse', cx: b.x + def.center.x * b.width, cy: b.y + def.center.y * b.height,
+				r: def.r1 * R, fx: b.x + def.center.x * b.width, fy: b.y + def.center.y * b.height
+			});
+			stops(g);
+		} else {
+			var lg = mk('linearGradient', {
+				id: id, gradientUnits: 'userSpaceOnUse', x1: b.x + def.p1.x * b.width, y1: b.y + def.p1.y * b.height,
+				x2: b.x + def.p2.x * b.width, y2: b.y + def.p2.y * b.height
+			});
+			stops(lg);
+		}
+		return 'url(#' + id + ')';
+	};
 	function svgbindSetting(p) {
 		p.setAttribute("id", this.id);
-		if ('stroke' in this) {
-			p.setAttribute("stroke", this.stroke);
+		if ('stroke' in this && _NS.brushes && _NS.brushes.isRef(this.stroke)) {
+			p.setAttribute("stroke", svgBrush(p, this, this.stroke));
+		} else if ('stroke' in this) {
+			var sc = svgColor(this.stroke);
+			p.setAttribute("stroke", sc.c);
+			var so = sc.a * ((typeof (this.strokeOpacity) == 'number') ? this.strokeOpacity : 1);
+			if (so < 1) {
+				p.setAttribute("stroke-opacity", Math.round(so * 1000) / 1000);
+			}
 		}
-		if ('fill' in this) {
-			p.setAttribute("fill", this.fill);
+		if ('fill' in this && _NS.brushes && _NS.brushes.isRef(this.fill)) {
+			p.setAttribute("fill", svgBrush(p, this, this.fill));
+		} else if ('fill' in this) {
+			var fc = svgColor(this.fill);
+			p.setAttribute("fill", fc.c);
+			var fo = fc.a * ((typeof (this.fillOpacity) == 'number') ? this.fillOpacity : 1);
+			if (fo < 1) {
+				p.setAttribute("fill-opacity", Math.round(fo * 1000) / 1000);
+			}
 		}
+		svgShadow.apply(this, [p]);
 		if ('strokeWidth' in this) {
 			p.setAttribute("stroke-width", this.strokeWidth);
 		}

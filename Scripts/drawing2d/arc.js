@@ -57,7 +57,7 @@ igk.system.createClass(ELEM, {name:"arc", parent:ELEM.fullname+".circle" }, func
 			o.save();				
 			o.fill = this.fill;
 			o.stroke = this.stroke;
-			o.strokeWith = this.strokeWidth;
+			o.strokeWidth = this.strokeWidth;
 			o.setTransform(this.matrix);
 			o.fillPath(_path_ , this.fillMode);
 			o.drawPath(_path_, this.fillMode);

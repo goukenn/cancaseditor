@@ -39,15 +39,51 @@
 	/**
 	 * @param {*} editor
 	 * @param {*} el element
-	 * @param {'width'|'height'} dir
+	 * @param {'width'|'height'|'both'} dir
 	 * @returns {boolean} true when the element was changed
 	 */
+	/**
+	 * stretch the element to the size of the document: the matrix is reset to identity first.
+	 * Geometry that is not driven by the bound (circle, star...) is stretched with a scale matrix.
+	 */
+	function fitBoth(editor, el, doc) {
+		const W = doc.width, H = doc.height;
+		el.matrix.copytransform([1, 0, 0, 1, 0, 0]);
+		const type = el.getType();
+		if (type == 'ellipse' && el.center) {
+			// a radius pair {x, y} stretches the ellipse
+			el.center = { x: W / 2, y: H / 2 };
+			el.radius = { x: W / 2, y: H / 2 };
+			el.initialize && el.initialize();
+		} else if ((type == 'star' || type == 'circle') && el.center) {
+			// driven by one radius: they cannot be stretched, they fill the smallest side of the document
+			el.center = { x: W / 2, y: H / 2 };
+			el.radius = Math.min(W, H) / 2;
+			el.initialize && el.initialize();
+		} else {
+			try { el.bound = { x: 0, y: 0, width: W, height: H }; } catch (e) { /* computed bound */ }
+			el.initialize && el.initialize();
+			const w = worldBound(el); // identity matrix: the bound of the geometry
+			if (Math.abs(w.x) > 0.5 || Math.abs(w.y) > 0.5 || Math.abs(w.width - W) > 0.5 || Math.abs(w.height - H) > 0.5) {
+				if (w.width > 0 && w.height > 0) {
+					const sx = W / w.width, sy = H / w.height;
+					el.matrix.copytransform([sx, 0, 0, sy, -w.x * sx, -w.y * sy]);
+				}
+			}
+		}
+		editor.refresh();
+		editor.raiseEvent('selectChanged', { items: [el] });
+		return true;
+	}
 	function fit(editor, el, dir) {
 		if (!canFit(el)) {
 			_NS.gui.notify.Show(editor, R()['msg.fit.nodoc']);
 			return false;
 		}
 		const doc = documentOf(el);
+		if (dir == 'both') {
+			return fitBoth(editor, el, doc);
+		}
 		const w = worldBound(el);
 		const size = dir == 'width' ? w.width : w.height;
 		if (!(size > 0)) { return false; }
@@ -78,5 +114,6 @@
 	const target = (a) => a.element || (a.tool && a.tool.elem) || null;
 	AC.regMenuAction("edit.fitWidth", { index: 600, callback: (a) => fit(a, target(a), 'width') });
 	AC.regMenuAction("edit.fitHeight", { index: 601, callback: (a) => fit(a, target(a), 'height') });
+	AC.regMenuAction("edit.fitBoth", { index: 602, callback: (a) => fit(a, target(a), 'both') });
 	_NS.fit = { fit, canFit, documentOf };
 })();

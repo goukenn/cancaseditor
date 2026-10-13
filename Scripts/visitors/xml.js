@@ -95,6 +95,19 @@
 				}
 				}
 			}
+			// the brushes used by the elements are embedded: the document still renders without the user library
+			var B = igk.winui.cancasEditor.brushes;
+			if (B) {
+				var used = B.usedIds(list);
+				if (used.length > 0) {
+					var bs = e.add("brushes");
+					used.forEach(function (id) {
+						var br = bs.add("brush");
+						br.setAttribute("id", id);
+						br.setAttribute("data", JSON.stringify(B.get(id)));
+					});
+				}
+			}
 			var d = igk.createNode("div");
 			d.add(e);
 		   return d.o.innerHTML; //e.render();

@@ -73,7 +73,7 @@
 			o.save();
 			o.fill = this.fill;
 			o.stroke = this.stroke;
-			o.strokeWidth = this.strokeWith;
+			o.strokeWidth = this.strokeWidth;
 			o.fillRule = 'nonzero';
 			o.setTransform(this.matrix);
 			o.fillPath(_path_, this.fillMode);

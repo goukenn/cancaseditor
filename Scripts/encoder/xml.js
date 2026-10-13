@@ -27,6 +27,17 @@ G.xml.decodeString = function(xml, a){
 	if (!gkds || (gkds.getAttribute("app")!="cancasEditor")){
 		return false;
 	}
+	// brushes embedded in the document (referenced by "brush:<id>" fills)
+	if (_NS.brushes){
+		gkds.qselect("brush").each_all(function(){
+			try{
+				_NS.brushes.embed(JSON.parse(this.getAttribute("data")));
+			}
+			catch(e){
+				console.warn("[cancasEditor] invalid embedded brush", e);
+			}
+		});
+	}
 	var doc = [];
 	var s = 0; // start
 	try{
