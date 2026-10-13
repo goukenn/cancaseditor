@@ -42,8 +42,17 @@
 		field('height', doc.height, 'number', size);
 		return form;
 	}
-	/** build the inspector content for the current selection */
+	/** design mode content (tools/InspectorPanel.js), the generic form when it fails */
 	function buildContent(editor) {
+		try {
+			return _NS.inspector.build(editor);
+		} catch (e) {
+			console.error('inspector panel', e);
+			return legacyContent(editor);
+		}
+	}
+	/** generic property form of the selection */
+	function legacyContent(editor) {
 		const T = R();
 		const root = _el('div');
 		const el = _selected(editor);

@@ -91,7 +91,7 @@
 		};
 		tabs.visual = _el('button', { textContent: T['editor.selectool.html'] || 'Visual', onclick: () => show('visual') });
 		tabs.source = _el('button', { textContent: T['window.htmlSource'], onclick: () => show('source') });
-		const close = () => dlg.remove();
+		const close = () => { dlg.remove(); _NS.Actions.focusEditor(); };
 		const apply = _el('button', {
 			textContent: T['html.source.apply'], onclick: () => {
 				const h = mode == 'visual' ? bodyHtml() : area.value;

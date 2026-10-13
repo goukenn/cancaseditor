@@ -1878,6 +1878,9 @@
 				m_canvas.o.width = '100';
 				m_canvas.o.height = '100';
 				this.settings.canvas = m_canvas;
+				// the surface owns the keyboard shortcuts once it was clicked (see Actions.hasFocus)
+				m_canvas.o.parentNode.setAttribute("tabindex", "-1");
+				_NS.Actions.bindSurface(m_canvas.o.parentNode);
 				this.initContext();
 				m_canvas.o.width = igk.getNumber(m_canvas.getComputedStyle("width"));
 				m_canvas.o.height = igk.getNumber(m_canvas.getComputedStyle("height"));
@@ -2976,7 +2979,8 @@
 				return keys_event ? keys_event.ctrlKey : !1;
 			};
 			function __handleKey(e) {
-				if (igk.winui.dialogs.isOpen())
+				// shortcuts belong to the editor only when it has the focus
+				if (igk.winui.dialogs.isOpen() || !_NS.Actions.hasFocus())
 					return;
 				keys_event = e;
 				var k = _NS.Actions.getKeyFromEvent(e);
@@ -4603,8 +4607,11 @@
 					}
 					//_hideall(li, menuKey);
 					setTimeout(function () {
-						if (fc)
+						if (fc) {
 							fc.apply(self.editor, [self.editor, self]);
+							// a tool picked from the menu must answer to its keys at once
+							_NS.Actions.focusEditor();
+						}
 						if (self.callback) {
 							self.callback.apply(this);
 						};
@@ -4941,7 +4948,56 @@
 			return v;
 		};
 		var handle_action = 0;
+		// ---------------------------------------------------------------------
+		// editor focus: the shortcut keys are for the editor only when its surface was
+		// clicked/focused. Text fields, dialogs and the property inspector keep their keys.
+		// ---------------------------------------------------------------------
+		var m_surface = null;
+		var m_surface_active = false; // the last pointer interaction was on the surface
+		var FIELD_SELECTOR = 'input, textarea, select, iframe, [contenteditable=""], [contenteditable="true"]';
+		var OVERLAY_SELECTOR = '.cancas-modal, .cancas-html-dlg, .canvas-editor-gui_dialog, .telerik-dialogbox';
+		function overlayOpen() {
+			return !!document.querySelector(OVERLAY_SELECTOR);
+		};
+		function hasFocus() {
+			if (!m_surface || overlayOpen()) {
+				return false;
+			}
+			var a = document.activeElement;
+			if (a && (a !== document.body) && (a !== document.documentElement)) {
+				if (a.matches(FIELD_SELECTOR) || a.closest('.ci-panel')) {
+					return false;
+				}
+				return m_surface.contains(a);
+			}
+			return m_surface_active;
+		};
+		function focusEditor() {
+			// give the focus back to the editor (after a dialog or a menu action)
+			if (!m_surface || overlayOpen()) {
+				return;
+			}
+			m_surface_active = true;
+			m_surface.focus({ preventScroll: true });
+		};
+		function bindSurface(surface) {
+			m_surface = surface;
+			if (!bindSurface.bound) {
+				bindSurface.bound = 1;
+				// capture: a click on a field, a dialog or the inspector takes the keys away
+				document.addEventListener('pointerdown', function (e) {
+					m_surface_active = !!(m_surface && m_surface.contains(e.target));
+					if (m_surface_active) {
+						m_surface.focus({ preventScroll: true });
+					}
+				}, true);
+			}
+		};
 		$igk(document).on("keyup", function (e) {
+			if (!hasFocus()) {
+				handle_action = 0;
+				return;
+			}
 			//console.debug(e.type);
 			// e.shiftKey
 			// SHIFT | DELETE | 13
@@ -4974,6 +5030,10 @@
 				}
 			}
 		}).on("keydown", function (e) {
+			if (!hasFocus()) {
+				handle_action = 0;
+				return;
+			}
 			//stop key handle if is registrated on shortcut
 			var v = __getkey(e);
 			if (v in shortcut) {
@@ -5029,6 +5089,9 @@
 		};
 		igk.defineProperty(igk.winui.cancasEditor.Actions, "Key", { get: function () { return Key; } });
 		igk.winui.cancasEditor.Actions.getKeyFromEvent = __getkey;
+		igk.winui.cancasEditor.Actions.hasFocus = hasFocus;
+		igk.winui.cancasEditor.Actions.focusEditor = focusEditor;
+		igk.winui.cancasEditor.Actions.bindSurface = bindSurface;
 		AC.regActions(Key.Ctrl | Key.C, "editor.copy", function (a, e) {
 			if (e.target && e.target.tagName && (e.target.tagName.toLowerCase() == "input")) {
 				e.handle = 0;

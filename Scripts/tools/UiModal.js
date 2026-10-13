@@ -57,7 +57,18 @@
 		const sp = document.createElement('span');
 		sp.className = 'sp';
 		hd.append(title, sp);
-		const close = () => { root.remove(); o.onclose && o.onclose(); };
+		// Escape closes the top most modal
+		const onKey = (e) => {
+			const all = document.querySelectorAll('.cancas-modal');
+			if (e.key == 'Escape' && all[all.length - 1] === root) { close(); }
+		};
+		const close = () => {
+			document.removeEventListener('keydown', onKey);
+			root.remove();
+			o.onclose && o.onclose();
+			_NS.Actions.focusEditor(); // the shortcuts work again (no-op while another dialog is open)
+		};
+		document.addEventListener('keydown', onKey);
 		(o.buttons || [{ text: (_NS.R && _NS.R['btn.close']) || 'Close', onclick: () => close() }]).forEach((b) => {
 			const e = document.createElement('button');
 			e.textContent = b.text;
