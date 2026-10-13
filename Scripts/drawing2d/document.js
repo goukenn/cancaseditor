@@ -124,7 +124,6 @@ var EXPORTS = igk.winui.cancasEditor.Exports;
 	{name:"title", "default": ""},
 	{name:"x", "default": 0},
 	{name:"y", "default": 0},
-	{name:"filter", "default": 0}, 
 	]);			
 	return c;
 });

@@ -37,6 +37,21 @@ ELEM.BLENDING = BLENDING;
  * render a child element: with its shadow when it has one (the shadow is set on the context before it renders)
  */
 ELEM.renderItem = function(a, q){
+	// global opacity and filter of a 2d element (layers and groups apply their own when they render)
+	if (!arguments[2] && !('Elements' in q) && ((q.opacity < 1) || q.filter)){
+		a.save();
+		try {
+			if (q.opacity < 1)
+				a.setAlpha(a.getAlpha() * q.opacity);
+			if (q.filter)
+				a.setFilter(q.filter);
+			ELEM.renderItem(a, q, true);
+		}
+		finally {
+			a.restore();
+		}
+		return;
+	}
 	var sh = (q.activeShadows && a.setShadow) ? q.activeShadows() : [];
 	var prev = a.currentElement; // the element being rendered (brush fills are resolved against its bound)
 	a.currentElement = q;
@@ -126,7 +141,7 @@ igk.system.createClass(ELEM, {name:"layer", parent: ELEM.drawing2DContainer }, f
 		a.save();
 		a.setFilter(this.filter);
 		a.setGlobalCompositeOperation(this.blendingMode);
-		a.setAlpha(this.opacity);
+		a.setAlpha(this.opacity * (a.getAlpha ? a.getAlpha() : 1)); // a group inside a layer / group multiplies the opacity
 		var _clip = this.clip;
 		if (_clip){
 			if ('path' in _clip){
@@ -153,8 +168,8 @@ igk.system.createClass(ELEM, {name:"layer", parent: ELEM.drawing2DContainer }, f
 		a.restore();
 	};
 	this.add = function(i){
-		if (igk.system.isInherit(i, ELEM.layer)){
-			return 0;
+		if (igk.system.isInherit(i, ELEM.layer) && (i.getType() != 'group')){
+			return 0; // a layer is added to a document; a group can be added to a layer
 		}
 		//console.debug(ELEM.drawing2DContainer.prototype.add);
 		ELEM.drawing2DContainer.prototype.add.apply(this, [i]);
@@ -178,17 +193,60 @@ igk.system.createClass(ELEM, {name:"layer", parent: ELEM.drawing2DContainer }, f
 	};
 	//+| computed bound
 	Object.defineProperty(this, 'bound', {get(){
-		return {x:0, y: 0, height: 100, width: 100};
+		// the union of the visible children (a group is selected and moved with it), a default box when empty
+		var e = this.Elements, x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+		for(var i = 0; e && i < e.length; i++){
+			var c = e[i];
+			if (!c.visible || !c.bound)
+				continue;
+			var b = _NS.CoreMathOperation.GetElemBound(c);
+			if (!(b.width >= 0) || !(b.height >= 0))
+				continue;
+			x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y);
+			x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height);
+		}
+		if (x0 === Infinity)
+			return {x:0, y: 0, height: 100, width: 100};
+		return {x:x0, y: y0, height: y1 - y0, width: x1 - x0};
 	}});
+});
+/**
+ * group: a layer placed inside a layer (or a group) that behaves as one element. It keeps the properties of a
+ * layer (opacity, blending mode, filter, clip, matrix, visibility) and is selected, moved and ordered as a whole.
+ */
+igk.system.createClass(ELEM, {name:"group", parent: ELEM.layer}, function(){
+	this.isgroup = true;
+	this.add = function(i){
+		var t = i.getType();
+		if ((t == 'layer') || (t == 'document'))
+			return 0;
+		ELEM.drawing2DContainer.prototype.add.apply(this, [i]);
+	};
+	// hit test: the group is hit when one child is (the children are not selected on their own)
+	this.contains = function(x, y, editor){
+		var e = this.Elements;
+		var m = this.matrix;
+		if (m && !m.isIdentity()){ // to the local space of the group
+			var t = m.element, det = t[0] * t[3] - t[1] * t[2];
+			if (det == 0)
+				return false;
+			var px = x - t[4], py = y - t[5];
+			x = (t[3] * px - t[2] * py) / det;
+			y = (t[0] * py - t[1] * px) / det;
+		}
+		for(var i = e.length - 1; i >= 0; i--){
+			if (e[i].visible && e[i].contains && e[i].contains(x, y, editor, []))
+				return true;
+		}
+		return false;
+	};
 });
 // exports
 var EXPORTS = igk.winui.cancasEditor.Exports;
  EXPORTS.register("layer", function(){
 	var c = EXPORTS.initExport().concat([
-	{name:"opacity", "default": 1}, 
 	// the visibility is exported by every element (Exports.initExport)
 
-	{name:"filter", "default": 0}, 
 	{name:"clip", "default": null, serializer: function(v){
 		if (typeof(v)=='object'){
 			return '#'+v.id;
@@ -207,6 +265,12 @@ var EXPORTS = igk.winui.cancasEditor.Exports;
 			item.clip = g;
 		}		
 	};
+	return c;
+});
+EXPORTS.register("group", function(){
+	// the properties of a layer + the matrix (a group is moved as a whole)
+	var c = EXPORTS.layer.apply();
+	EXPORTS.matrixExport().forEach(function(m){ c.push(m); });
 	return c;
 });
 var AC = igk.winui.cancasEditor.Actions;

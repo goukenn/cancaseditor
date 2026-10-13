@@ -29,7 +29,7 @@
 				}
 				return;
 			}
-			drag = { doc: l.doc, sx: e.clientX, sy: e.clientY, ox: l.doc.x, oy: l.doc.y, moved: false };
+			drag = { doc: l.doc, sx: e.clientX, sy: e.clientY, ox: l.doc.x, oy: l.doc.y, view: editor.getView(), moved: false };
 			try { c.setPointerCapture(e.pointerId); } catch (x) { }
 			e.preventDefault(); // also cancels the compatibility mouse events
 			e.stopImmediatePropagation();
@@ -40,15 +40,16 @@
 				if (!drag.moved && Math.abs(dx) < MOVE_THRESHOLD && Math.abs(dy) < MOVE_THRESHOLD) { return; }
 				drag.moved = true;
 				// screen pixels => scene units (the view of the current document is the reference)
-				const nx = drag.ox + dx / editor.zoomX, ny = drag.oy + dy / editor.zoomY;
+				// the distance between the press point and the cursor on the surface (screen pixels) gives the
+				// move in scene units; computed from the start state so that nothing accumulates
+				const v = drag.view;
+				drag.doc.x = drag.ox + dx / v.zoom;
+				drag.doc.y = drag.oy + dy / v.zoom;
 				if (drag.doc === editor.document) {
 					// the view is relative to the current document: pan with it, or it would stay still on screen
 					// while all the other documents move the opposite way
-					editor.panRight((nx - drag.doc.x) * editor.zoomX);
-					editor.panDown((ny - drag.doc.y) * editor.zoomY);
+					editor.setView({ zoom: v.zoom, panx: v.panx + dx, pany: v.pany + dy });
 				}
-				drag.doc.x = nx;
-				drag.doc.y = ny;
 				editor.refresh();
 				e.stopImmediatePropagation();
 				return;
@@ -62,6 +63,7 @@
 			const d = drag;
 			drag = null;
 			try { c.releasePointerCapture(e.pointerId); } catch (x) { }
+			if (d.moved) { editor.documentsArea = editor.getDocumentsArea(); } // review the area holding all the documents
 			if (!d.moved && e.type == 'pointerup') { // a click: select the document
 				editor.document = d.doc;
 				const ly = d.doc.getLayers();

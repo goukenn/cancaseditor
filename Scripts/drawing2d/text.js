@@ -107,7 +107,6 @@
 		var fontStyle = 'regular';
 		var mode = "text";
 		var m_blending = "source-over";
-		var m_opacity = 1;
 		var matrix = new Matrix();
 		igk.defineProperty(this, "text", { get: function () { return text; }, set: function (v) { text = v; m_model = 0; } });
 		igk.defineProperty(this, "mode", { get: function () { return mode; }, set: function (v) { mode = v; } });
@@ -122,15 +121,6 @@
 				}
 			}
 		});
-		igk.defineProperty(this, "opacity", {
-			get: function () { return m_opacity; }, set: function (v) {
-				if (v < 0)
-					v = 0;
-				if (v > 1)
-					v = 1;
-				m_opacity = v;
-			}
-		});
 		mode = "html";
 		var m_model = 0; 
 		var measures = []; // measure all 
@@ -141,7 +131,6 @@
 			a.save();
 			a.setTransform(this.matrix);
 			a.setGlobalCompositeOperation(this.blendingMode);
-			a.setAlpha(this.opacity);
 			a.fill = this.fill;
 			a.stroke = this.stroke;
 			a.setFont(font);
@@ -251,7 +240,6 @@
 	var EXPORTS = igk.winui.cancasEditor.Exports;
 	EXPORTS.register("text", function () {
 		var c = EXPORTS.initExport().concat([
-			{ name: "opacity", "default": 1 },
 			{ name: "blendingMode", 'default': 'source-over' },
 			{ name: "font", 'default': '12px console' },
 			{ name: "textAlign", 'default': 'left' },

@@ -157,6 +157,8 @@
 			editor.layer = ly.length > 0 ? ly[ly.length - 1] : null;
 			assign(); // switching the document stored the view of the previous one
 		}
+		// several documents: open on the area that contains all of them
+		if (editor.documents.length > 1) { editor.viewAllDocuments(); return true; }
 		const v = editor.document && editor.document.view;
 		if (v) { editor.setView(v); return true; }
 		return false;
@@ -220,6 +222,8 @@
 		get canUndo() { return m_hist.index > 0; },
 		get canRedo() { return m_hist.index < m_hist.list.length - 1; },
 		get historySize() { return m_hist.list.length; },
+		/** warn and return true while several entities share an id (nothing can be saved then) */
+		blockedByDuplicates(editor) { return blockedByDuplicates(editor); },
 		onChange: [],
 		_emit() { this.onChange.forEach((f) => f(this)); },
 		/** take a snapshot now: store it and push it on the undo stack when it changed */
@@ -367,6 +371,8 @@
 				return false;
 			}
 			if (!applyViews(editor)) { editor.resetFitAreaZoom(); }
+			// an opened document starts with the selection tool
+			if (!(editor.tool instanceof _NS.Tools.Selection)) { _NS.Actions.invoke('editor.selectool.selection'); }
 			editor.refresh();
 			try {
 				const h = JSON.parse(store.get(KEY_HIST) || 'null');

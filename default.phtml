@@ -16,6 +16,8 @@ use IGK\System\Html\XML\XmlNode;
 use IGK\System\Http\RequestResponseCode;
 use igk_default\Models\CancasOptions;
 use igk_default\Models\CancasPlugins;
+use igk_default\Models\CancasSurfaces;
+use Com\IGKDEV\App\CancasEditor\Surfaces;
 
 use function igk_resources_gets as __; 
 include_once(ViewHelper::Dir()."/.common.pinc");  
@@ -327,6 +329,67 @@ EFO		);
 			$id = $item ? (int)$item->{CancasPlugins::FD_ID} : 0;
 		}
 		igk_wl(json_encode(["ok" => true, "id" => $id]));
+		igk_exit();
+	},
+	"surfaces" => function () use ($ctrl) {
+		// surfaces saved on the account (connected users only).
+		// GET => {quota, used, mine[], shared[], public[]} | GET id=<n> => the xml of a readable surface
+		// POST op=save (name, content) | rename (id, name) | delete (id) | visibility (id, value) | share / unshare (id, login)
+		require_once __DIR__ . "/Lib/Classes/Surfaces.php";
+		$me = ($u = $ctrl->getUser()) ? $u->model() : null;
+		if (!$me) {
+			igk_header_set_contenttype("json");
+			igk_set_header(401);
+			igk_wl(json_encode(["error" => "login required"]));
+			igk_exit();
+		}
+		if ($_SERVER["REQUEST_METHOD"] == "GET") {
+			$id = (int)igk_getv($_GET, "id", 0);
+			if ($id) {
+				$r = Surfaces::readable($me, $id);
+				if (!$r) {
+					igk_set_header(404);
+					igk_exit();
+				}
+				igk_header_set_contenttype("xml");
+				igk_wl($r->{CancasSurfaces::FD_CONTENT});
+				igk_exit();
+			}
+			igk_header_set_contenttype("json");
+			igk_wl(json_encode(Surfaces::listAll($me)));
+			igk_exit();
+		}
+		igk_header_set_contenttype("json");
+		if ($_SERVER["REQUEST_METHOD"] != "POST") {
+			igk_set_header(405);
+			igk_wl(json_encode(["error" => "method not allowed"]));
+			igk_exit();
+		}
+		$id = (int)igk_getv($_POST, "id", 0);
+		switch (igk_getv($_POST, "op")) {
+			case "save":
+				$r = Surfaces::save($me, igk_getv($_POST, "name", ""), igk_getv($_POST, "content", ""));
+				break;
+			case "rename":
+				$r = Surfaces::rename($me, $id, igk_getv($_POST, "name", ""));
+				break;
+			case "delete":
+				$r = Surfaces::delete($me, $id);
+				break;
+			case "visibility":
+				$r = Surfaces::setVisibility($me, $id, igk_getv($_POST, "value", ""));
+				break;
+			case "share":
+			case "unshare":
+				$r = Surfaces::share($me, $id, igk_getv($_POST, "login", ""), $_POST["op"] == "share");
+				break;
+			default:
+				$r = ["error" => "unknown operation"];
+		}
+		if (isset($r["error"])) {
+			igk_set_header($r["error"] == "quota" ? 403 : ($r["error"] == "not found" ? 404 : 400));
+		}
+		igk_wl(json_encode($r));
 		igk_exit();
 	},
 	"store" => function () {

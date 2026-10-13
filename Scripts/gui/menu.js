@@ -19,19 +19,5 @@
     AC.regMenuAction('view.zoom.actualsize', function (a, e) {
         a.actualSize();
     });
-    /**
-     * group selected element 
-     */
-    AC.regMenuAction('edit.group', function (a, e) {
-        throw new _NS.exceptions.Error('Not implement');
-    });
-    const bactions = {
-        'edit.group': function (a, e) {
-            throw new _NS.exceptions.Error('Not implement');
-        },
-        'edit.ungroup': function (a, e) {
-            throw new _NS.exceptions.Error('Not implement');
-        },
-    }; 
-    AC.regMenuActions(bactions); 
+    // edit.group / edit.ungroup: tools/GroupActions.js
 })();

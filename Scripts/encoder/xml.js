@@ -260,7 +260,14 @@ function _loadItems(o, src, a, exports){
 					// a layer is added to the document, not to the previously loaded layer
 					a.layer = null;
 				}
-				var b = a.add(nn);
+				var b = null;
+				if ((nn == "group") || ((q.t.getType) && (q.t.getType() == "group"))){
+					// a group takes its own children (the current layer of the editor stays the same)
+					b = a.createElement(nn);
+					b && q.t.add(b);
+				} else {
+					b = a.add(nn);
+				}
 				if (b!=null){	
 					//initialize special item
 					mExports.initItemApp(a, b);

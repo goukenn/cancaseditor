@@ -19,10 +19,11 @@
 		'.le-ico{background:transparent;border:0;color:inherit;width:20px;height:20px;padding:2px;line-height:0;cursor:pointer;border-radius:3px;flex:none}' +
 		'.le-ico:hover{background:rgba(127,127,127,.3)}.le-ico svg{width:100%;height:100%}.le-ico.off{opacity:.45}' +
 		'.le-empty{opacity:.6;padding:4px 8px;font-style:italic}' +
-		'.le-row.drop-above{box-shadow:inset 0 2px 0 var(--ci-accent,#a14fd0)}.le-row.drop-below{box-shadow:inset 0 -2px 0 var(--ci-accent,#a14fd0)}' +
+		'.le-row.drop-above{box-shadow:inset 0 2px 0 var(--ci-accent,#a14fd0)}.le-row.drop-below{box-shadow:inset 0 -2px 0 var(--ci-accent,#a14fd0)}.le-row.drop-into{outline:2px solid var(--ci-accent,#a14fd0);outline-offset:-2px}' +
 		'.le-row.dragging{opacity:.4}' +
+		'.le-row input.le-edit{flex:1;min-width:0;font:inherit;color:inherit;background:rgba(127,127,127,.2);border:1px solid var(--ci-accent,#a14fd0);border-radius:3px;padding:1px 4px;outline:none}' +
 		'.le-menu{position:fixed;z-index:100000;min-width:150px;background:var(--ci-bg,#333);color:var(--ci-fg,#ddd);border:1px solid var(--ci-line,#4a4a4a);border-radius:6px;padding:4px;box-shadow:0 4px 14px rgba(0,0,0,.4);font-size:12px}' +
-		'.le-menu div{padding:4px 10px;border-radius:4px;cursor:pointer}.le-menu div:hover{background:rgba(127,127,127,.25)}';
+		'.le-menu div{padding:4px 10px;border-radius:4px;cursor:pointer}.le-menu div:hover{background:rgba(127,127,127,.25)}.le-menu .le-sep{height:1px;padding:0;margin:4px 0;background:var(--ci-line,#4a4a4a);cursor:default}';
 	const svg = (d) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>';
 	const ICON = {
 		eye: svg('<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),
@@ -90,13 +91,119 @@
 		ORDER.forEach(([method, key]) => {
 			m.append(_el('div', { textContent: T('lay.' + key), onclick: () => { closeMenu(); if (reorder(editor, item, method)) { rerender(); } } }));
 		});
+		if (typeOf(item) != 'layer' && typeOf(item) != 'document') {
+			// move the element to another layer of the current document
+			const targets = layersOf(editor).filter((l) => l !== item['@container']);
+			if (targets.length > 0) { m.append(_el('div', { className: 'le-sep' })); }
+			targets.forEach((l) => m.append(_el('div', {
+				textContent: T('lay.moveto') + ' ' + l.id,
+				onclick: () => { closeMenu(); relocate(editor, item, l); editor.refresh(); rerender(); }
+			})));
+		}
 		m.style.left = Math.min(e.clientX, window.innerWidth - 170) + 'px';
-		m.style.top = Math.min(e.clientY, window.innerHeight - 130) + 'px';
+		m.style.top = Math.min(e.clientY, window.innerHeight - 130 - 22 * layersOf(editor).length) + 'px';
 		document.body.append(m);
 		m_menu = m;
 		setTimeout(() => document.addEventListener('click', closeMenu, { once: true }), 0);
 	}
+	const typeOf = (x) => (x.getType ? x.getType() : '');
+	const isBox = (x) => { const t = typeOf(x); return t == 'layer' || t == 'group'; }; // can hold elements
+	const insideOf = (x, c) => { for (let n = 0; x && n < 20; n++, x = x['@container']) { if (x === c) { return true; } } return false; };
+	const mulM = (m2, m1) => [
+		m2[0] * m1[0] + m2[2] * m1[1], m2[1] * m1[0] + m2[3] * m1[1],
+		m2[0] * m1[2] + m2[2] * m1[3], m2[1] * m1[2] + m2[3] * m1[3],
+		m2[0] * m1[4] + m2[2] * m1[5] + m2[4], m2[1] * m1[4] + m2[3] * m1[5] + m2[5]];
+	/** the matrix of the space of a layer / group inside its document */
+	function spaceOf(c) {
+		let m = [1, 0, 0, 1, 0, 0];
+		for (let n = 0; c && typeOf(c) != 'document' && n < 20; n++, c = c['@container']) {
+			if (c.matrix) { m = mulM(c.matrix.element.slice(0, 6), m); }
+		}
+		return m;
+	}
+	/**
+	 * what dropping `drag` on the row of `item` does, or null when not allowed.
+	 * A layer is only reordered inside its document. An element can go above / below another element (of any
+	 * layer or group), or into a layer or a group (the middle of its row).
+	 */
+	function dropTarget(drag, item, e, row) {
+		if (!drag || drag === item) { return null; }
+		const b = row.getBoundingClientRect(), f = (e.clientY - b.top) / (b.height || 1);
+		const dt = typeOf(drag), it = typeOf(item);
+		if (dt == 'layer') {
+			if (it != 'layer' || drag['@container'] !== item['@container']) { return null; }
+			return { mode: f < .5 ? 'above' : 'below', container: item['@container'] };
+		}
+		if (dt == 'document' || insideOf(item, drag)) { return null; } // not into itself
+		if (it == 'layer') { return { mode: 'into', container: item }; }
+		if (it == 'group' && f >= .25 && f <= .75) { return { mode: 'into', container: item }; }
+		const c = item['@container'];
+		if (!c || !isBox(c) || insideOf(c, drag)) { return null; }
+		return { mode: f < .5 ? 'above' : 'below', container: c };
+	}
+	/** move an element to another layer / group, keeping its look when their matrices differ */
+	function relocate(editor, el, target) {
+		const old = el['@container'];
+		if (old === target) { return true; }
+		const wOld = spaceOf(old), wNew = spaceOf(target);
+		old.remove(el);
+		el['@container'] = null;
+		target.add(el);
+		const id = (m) => m[0] == 1 && m[1] == 0 && m[2] == 0 && m[3] == 1 && m[4] == 0 && m[5] == 0;
+		if (!(id(wOld) && id(wNew)) && el.matrix) {
+			const det = wNew[0] * wNew[3] - wNew[1] * wNew[2];
+			if (det != 0) {
+				const inv = [wNew[3] / det, -wNew[1] / det, -wNew[2] / det, wNew[0] / det, 0, 0];
+				inv[4] = -(inv[0] * wNew[4] + inv[2] * wNew[5]);
+				inv[5] = -(inv[1] * wNew[4] + inv[3] * wNew[5]);
+				el.matrix.copytransform(mulM(inv, mulM(wOld, el.matrix.element.slice(0, 6))));
+				el.initialize && el.initialize();
+			}
+		}
+		return true;
+	}
+	function layersOf(editor) { // the layers of the current document
+		return editor.document ? editor.document.getLayers() : [];
+	}
 	let m_drag = null; // the row being dragged: the layer / element
+	// inline rename of an id (double click / long touch): the entity and the text being typed
+	let m_edit = null;
+	let m_lastClick = { target: null, t: 0 };
+	const DBL_MS = 400;
+	const LONG_MS = 600;
+	/** an id is a valid name, used by no other entity (document, layer, element) of the scene */
+	function validId(editor, target, id) {
+		if (!/^[A-Za-z_][\w.\-]*$/.test(id)) { return false; }
+		let used = false;
+		const walk = (l) => Array.prototype.forEach.call(l || [], (e) => {
+			if (e !== target && e.id == id) { used = true; }
+			if (e.Elements) { walk(e.Elements); }
+		});
+		walk(editor.list);
+		return !used;
+	}
+	function startEdit(target, rerender) {
+		m_edit = { target, value: target.id };
+		rerender();
+	}
+	function commitEdit(editor, rerender) {
+		const e = m_edit;
+		m_edit = null;
+		if (!e) { return; }
+		const v = (e.value || '').trim();
+		if (v != e.target.id) {
+			if (!validId(editor, e.target, v)) {
+				_NS.gui.notify.Show(editor, T('doc.id.invalid'));
+			} else {
+				e.target.id = v;
+				editor.refresh();
+				if (e.target.getType && e.target.getType() == 'document') {
+					editor.raiseEvent('currentDocumentChanged', { old: e.target, current: e.target }); // status bar, inspector
+				}
+			}
+		}
+		rerender();
+	}
 	/** @returns {HTMLElement} the explorer of the scene */
 	function build(editor) {
 		_css();
@@ -120,13 +227,52 @@
 			if (o.eye) {
 				r.append(iconBtn(o.hidden ? ICON.eyeOff : ICON.eye, T(o.hidden ? 'lay.show' : 'lay.hide'), () => { o.eye(o.hidden); editor.refresh(); rerender(); } /* hidden now => show */, o.hidden));
 			}
-			r.append(_el('span', { className: 'le-label', textContent: o.label }));
+			if (m_edit && m_edit.target === o.target) {
+				const inp = _el('input', { type: 'text', className: 'le-edit', value: m_edit.value });
+				inp.oninput = () => { m_edit.value = inp.value; };
+				inp.onclick = (e) => e.stopPropagation();
+				inp.ondblclick = (e) => e.stopPropagation();
+				inp.onkeydown = (e) => {
+					e.stopPropagation();
+					if (e.key == 'Enter') { e.preventDefault(); commitEdit(editor, rerender); }
+					else if (e.key == 'Escape') { m_edit = null; rerender(); }
+				};
+				inp.onblur = () => { if (m_edit && m_edit.target === o.target) { commitEdit(editor, rerender); } };
+				r.append(inp);
+				setTimeout(() => { inp.focus(); inp.select(); }, 0);
+			} else {
+				r.append(_el('span', { className: 'le-label', textContent: o.label }));
+			}
 			if (o.sub) { r.append(_el('span', { className: 'le-sub', textContent: o.sub })); }
 			(o.actions || []).forEach((a) => r.append(a));
-			r.onclick = o.onclick;
+			// a second click on the same row = double click: rename (the first click already redraws the rows)
+			r.onclick = (e) => {
+				const now = Date.now();
+				if (o.target && m_lastClick.target === o.target && now - m_lastClick.t < DBL_MS) {
+					m_lastClick = { target: null, t: 0 };
+					startEdit(o.target, rerender);
+					return;
+				}
+				m_lastClick = { target: o.target, t: now };
+				o.onclick(e);
+			};
+			if (o.target) {
+				// long touch
+				let timer = null;
+				const cancel = () => { clearTimeout(timer); timer = null; };
+				r.addEventListener('pointerdown', (e) => {
+					if (e.pointerType != 'touch') { return; }
+					cancel();
+					timer = setTimeout(() => { timer = null; r._longTouch = Date.now(); startEdit(o.target, rerender); }, LONG_MS);
+				});
+				['pointerup', 'pointercancel', 'pointermove', 'dragstart'].forEach((n) => r.addEventListener(n, cancel));
+			}
 			if (o.item) {
 				const item = o.item;
-				r.oncontextmenu = (e) => showMenu(e, item, editor, rerender);
+				r.oncontextmenu = (e) => {
+					if (r._longTouch && Date.now() - r._longTouch < 1500) { e.preventDefault(); return; } // long touch = rename
+					showMenu(e, item, editor, rerender);
+				};
 				r.draggable = true;
 				r.ondragstart = (e) => {
 					m_drag = item;
@@ -135,27 +281,34 @@
 					r.classList.add('dragging');
 				};
 				r.ondragend = () => { m_drag = null; r.classList.remove('dragging'); };
-				const clear = () => r.classList.remove('drop-above', 'drop-below');
-				const upper = (e) => { const b = r.getBoundingClientRect(); return e.clientY < b.top + b.height / 2; };
+				const clear = () => r.classList.remove('drop-above', 'drop-below', 'drop-into');
 				r.ondragover = (e) => {
-					// only inside the same container (layers of a document, elements of a layer)
-					if (!m_drag || m_drag === item || m_drag['@container'] !== item['@container']) { return; }
+					const d = dropTarget(m_drag, item, e, r);
+					if (!d) { return; }
 					e.preventDefault();
 					clear();
-					r.classList.add(upper(e) ? 'drop-above' : 'drop-below');
+					r.classList.add('drop-' + d.mode);
 				};
 				r.ondragleave = clear;
 				r.ondrop = (e) => {
 					e.preventDefault();
 					clear();
-					const c = item['@container'];
-					if (!m_drag || m_drag === item || !c || m_drag['@container'] !== c) { return; }
-					// rows are listed top most first: the upper half drops above the target in the z-order
-					const rest = Array.prototype.slice.call(c.Elements).filter((q) => q !== m_drag);
-					const idx = rest.indexOf(item) + (upper(e) ? 1 : 0);
 					const dragged = m_drag;
+					const d = dropTarget(dragged, item, e, r);
 					m_drag = null;
-					if (c.setChildIndex(dragged, idx)) { editor.refresh(); }
+					if (!d) { return; }
+					const c = d.container;
+					if (d.mode == 'into') {
+						relocate(editor, dragged, c);
+						c.setChildIndex(dragged, c.Elements.length - 1); // on top of the target
+					} else {
+						// rows are listed top most first: the upper half drops above the target in the z-order
+						const rest = Array.prototype.slice.call(c.Elements).filter((q) => q !== dragged);
+						const idx = rest.indexOf(item) + (d.mode == 'above' ? 1 : 0);
+						relocate(editor, dragged, c);
+						c.setChildIndex(dragged, idx);
+					}
+					editor.refresh();
 					rerender();
 				};
 			}
@@ -166,7 +319,7 @@
 			const dkey = 'd:' + doc.id;
 			const isCur = editor.document === doc;
 			root.append(row({
-				depth: 0, key: dkey, toggle: true, label: doc.id, sub: doc.width + '×' + doc.height, active: isCur,
+				depth: 0, key: dkey, toggle: true, target: doc, label: doc.id, sub: doc.width + '×' + doc.height, active: isCur,
 				actions: docs.length > 1 ? [iconBtn(ICON.close, T('lay.removedoc'), () => editor.removeDocument(doc))] : [],
 				onclick: () => { editor.document = doc; editor.layer = lastLayer(doc); editor.refresh(); }
 			}));
@@ -178,21 +331,27 @@
 				const lkey = 'l:' + doc.id + ':' + ly.id;
 				const items = ly.Elements ? Array.prototype.slice.call(ly.Elements) : [];
 				root.append(row({
-					depth: 1, key: lkey, toggle: true, item: ly, label: ly.id, sub: String(items.length), hidden: !ly.visible,
+					depth: 1, key: lkey, toggle: true, item: ly, target: ly, label: ly.id, sub: String(items.length), hidden: !ly.visible,
 					active: isCur && editor.layer === ly,
 					eye: (v) => { ly.visible = v; },
 					onclick: () => { editor.document = doc; editor.layer = ly; editor.refresh(); rerender(); }
 				}));
 				if (collapsed[lkey]) { return; }
 				if (items.length == 0) { root.append(_el('div', { className: 'le-empty', style: 'padding-left:' + (4 + 2 * 14 + 20) + 'px', textContent: T('lay.noelements') })); }
-				items.slice().reverse().forEach((el) => {
+				// the elements, top most first; a group lists its own members below it
+				const list = (arr, depth) => Array.prototype.slice.call(arr).reverse().forEach((el) => {
+					const isGroup = el.getType() == 'group';
+					const ekey = 'e:' + el.id;
 					root.append(row({
-						depth: 2, key: 'e:' + el.id, item: el, label: el.getType() + ' #' + el.id, hidden: !el.visible,
+						depth, key: ekey, toggle: isGroup, item: el, target: el, label: el.getType() + ' #' + el.id, hidden: !el.visible,
+						sub: isGroup ? String(el.Elements.length) : '',
 						selected: editor.element === el,
 						eye: (v) => { el.visible = v; },
 						onclick: () => selectElement(editor, el)
 					}));
+					if (isGroup && !collapsed[ekey]) { list(el.Elements, depth + 1); }
 				});
+				list(items, 2);
 			});
 		});
 		return root;

@@ -632,6 +632,9 @@
 				setAlpha: function (v) {
 					m_ctx.globalAlpha = v;
 				},
+				getAlpha: function () {
+					return m_ctx.globalAlpha;
+				},
 				setTransform: function (matrix) {
 					var e = matrix.element || matrix;
 					m_ctx.transform(e[0], e[1], e[2], e[3], e[4], e[5]);
@@ -1308,7 +1311,7 @@
 			// free space above the document: the canvas runs under the menu bar, plus the band of the document id
 			var _topInset = function () {
 				var mn = document.querySelector("ul.menu");
-				return (mn ? mn.getBoundingClientRect().bottom : 0) + 22;
+				return (mn ? mn.getBoundingClientRect().bottom : 0) + 22 + ((_NS.rulers && _NS.rulers.visible()) ? _NS.rulers.SIZE : 0);
 			};
 			this.getTransform = function (update) {
 				if (!m_matrix) {
@@ -1509,28 +1512,39 @@
 					this.getTransform(true);
 					this.refresh();
 				},
-				/** zoom and pan so that every document of the scene is visible */
-				viewAllDocuments: function () {
+				/** the area of the surface that contains every document, in coordinates relative to the current document */
+				getDocumentsArea: function () {
 					var cur = this.document;
 					var docs = this.documents;
 					if (!cur || docs.length == 0) {
-						return;
+						return null;
 					}
 					var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-					docs.forEach(function (d) { // coordinates relative to the current document
+					docs.forEach(function (d) {
 						x0 = Math.min(x0, d.x - cur.x);
 						y0 = Math.min(y0, d.y - cur.y);
 						x1 = Math.max(x1, d.x - cur.x + d.width);
 						y1 = Math.max(y1, d.y - cur.y + d.height);
 					});
+					return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
+				},
+				/** zoom and pan so that every document of the scene is visible, with a padding of 2em */
+				viewAllDocuments: function () {
+					var cur = this.document;
+					var r = this.getDocumentsArea();
+					if (!r) {
+						return;
+					}
 					var s = this.canvas.getSize();
 					var ti = _topInset();
-					var z = Math.min((s.w - 40) / (x1 - x0), (s.h - ti - 40) / (y1 - y0));
+					var host = this.canvas.o && this.canvas.o.parentElement;
+					var pad = 2 * (parseFloat(host ? getComputedStyle(host).fontSize : 16) || 16);
+					var z = Math.min((s.w - 2 * pad) / r.width, (s.h - ti - 2 * pad) / r.height);
 					z = Math.max(0.01, Math.min(8, z));
 					m_zoomx = m_zoomy = z;
-					// the current document is centered when the pan is 0: shift to center the whole box
-					m_panx = -z * ((x0 + x1) / 2 - cur.width / 2);
-					m_pany = -z * ((y0 + y1) / 2 - cur.height / 2);
+					// the current document is centered when the pan is 0: shift to center the whole area
+					m_panx = -z * (r.x + r.width / 2 - cur.width / 2);
+					m_pany = -z * (r.y + r.height / 2 - cur.height / 2);
 					this.getTransform(true);
 					this.refresh();
 				},
@@ -1697,6 +1711,10 @@
 					var dy = m.element[5];
 					var ex = m.element[0];
 					var ey = m.element[3];
+					// background texture of the surface (settings): behind the documents
+					if (_NS.surfaceTexture) {
+						_NS.surfaceTexture.draw(m_ctx, m_ctx.canvas.width, m_ctx.canvas.height, dx, dy, ex);
+					}
 					a.save();
 					if (a.document && a.document.fill == 'transparent') {
 						//(b.x*ex)+dx
@@ -1787,6 +1805,10 @@
 					// + | render overlay layers
 					for (var i = 0; i < a.overlayLayer.length; i++) {
 						a.overlayLayer[i].render(a);
+					}
+					// + | rulers attached to the current document
+					if (_NS.rulers) {
+						_NS.rulers.draw(m_ctx, m_ctx.canvas.width, m_ctx.canvas.height, dx, dy, ex, a.document);
 					}
 				},
 				clear: function () {
@@ -2105,11 +2127,7 @@
 				this.overlayLayer.push(new _NS.Layers.pageLayer(this));
 				this.overlayLayer.push(new _NS.Layers.snippets(this));
 				//init default tool
-				if (!this.settings.isDebug)
-					this.tool = new _NS.Tools.Selection();
-				else
-					// this.tool = new _NS.Tools.CircleMecanism();		
-					this.tool = new _NS.Tools.RoundRectMecanism();
+				this.tool = new _NS.Tools.Selection(); // the selection tool is the default, debug mode included
 				return this;
 			},
 			/**
@@ -4065,6 +4083,19 @@
 				this.strokeDashCap = 0;
 				this.strokeDashArray = [];
 				this.globalAlpha = 1.0;
+				// ---- global opacity and css filter of the element (applied by ELEM.renderItem, over the whole element)
+				var m_opacity = 1;
+				var m_filter = 0;
+				Object.defineProperty(this, "opacity", {
+					configurable: true, enumerable: true,
+					get: function () { return m_opacity; },
+					set: function (v) { v = Number(v); if (!isNaN(v)) { m_opacity = Math.max(0, Math.min(1, v)); } }
+				});
+				Object.defineProperty(this, "filter", {
+					configurable: true, enumerable: true,
+					get: function () { return m_filter; },
+					set: function (v) { m_filter = (typeof v == 'string' && v && v !== '0' && v !== 'none') ? v : 0; }
+				});
 				// ---- shadows (document space values): [{color, blur, x, y}]. shadowColor null = inactive.
 				// shadowColor/shadowBlur/shadowOffsetX/shadowOffsetY are views on the first shadow.
 				var m_shadows = [];
@@ -4655,6 +4686,9 @@
 				serializer: function (v) { return v ? null : 'false'; },
 				unserialize: function (v) { return v !== 'false'; }
 			},
+			// global opacity and css filter (drawing2D, layers, groups)
+			{ name: "opacity", "default": 1 },
+			{ name: "filter", "default": 0 },
 			// shadow: see drawing2D.bindShadow
 			{
 				name: "shadows", "default": null,
@@ -5775,6 +5809,7 @@
 				index: -90,
 				callback: function (a) {
 					_NS.storage.saveNow(a);
+					_NS.surfaces && _NS.surfaces.saveCurrent(a); // connected: also on the account
 				}
 			});
 			AC.regMenuAction("file.exportLangResources", {

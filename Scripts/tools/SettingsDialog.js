@@ -67,7 +67,11 @@
 			panelOpen: prefs.get('panelOpen', true),
 			autosave: prefs.get('autosave', true) !== false,
 			undoLimit: Number(prefs.get('undoLimit', 100)) || 100,
-			avatar: prefs.get('avatar', '')
+			avatar: prefs.get('avatar', ''),
+			rulers: prefs.get('rulers', false) === true,
+			surfaceTexture: prefs.get('surfaceTexture', 'none'),
+			surfaceGridSize: Number(prefs.get('surfaceGridSize', 20)) || 20,
+			surfaceTextureColor: prefs.get('surfaceTextureColor', '#7f7f7f')
 		};
 		const shortcutDraft = _NS.shortcutSettings.createDraft(); // custom keys edited by the shortcuts page
 		const select = (values, current, label, onchange) => {
@@ -95,6 +99,21 @@
 						n.style.width = '6em';
 						n.onchange = () => { draft.undoLimit = Math.max(1, Math.min(1000, Math.floor(Number(n.value)) || 100)); n.value = draft.undoLimit; };
 						return n;
+					})()));
+				// background texture of the editor surface, rulers
+				p.append(
+					row(T['settings.rulers'], checkbox(draft.rulers, (v) => { draft.rulers = v; })),
+					row(T['settings.surfaceTexture'], select(_NS.surfaceTexture.TEXTURES, draft.surfaceTexture, (v) => T['settings.surfaceTexture.' + v], (v) => { draft.surfaceTexture = v; })),
+					row(T['settings.surfaceGridSize'], (() => {
+						const n = _el('input', { type: 'number', min: 2, max: 1000, value: draft.surfaceGridSize });
+						n.style.width = '6em';
+						n.onchange = () => { draft.surfaceGridSize = Math.max(2, Math.min(1000, Math.floor(Number(n.value)) || 20)); n.value = draft.surfaceGridSize; };
+						return n;
+					})()),
+					row(T['settings.surfaceTextureColor'], (() => {
+						const c = _el('input', { type: 'color', value: /^#[0-9a-f]{6}$/i.test(draft.surfaceTextureColor) ? draft.surfaceTextureColor : '#7f7f7f' });
+						c.onchange = () => { draft.surfaceTextureColor = c.value; };
+						return c;
 					})()));
 				const b = _el('button', { textContent: T['settings.plugins.manage'] });
 				b.onclick = () => _NS.storage.showPlugins(editor);
@@ -139,6 +158,10 @@
 				prefs.set('autosave', draft.autosave);
 				prefs.set('undoLimit', draft.undoLimit);
 				prefs.set('avatar', draft.avatar);
+				prefs.set('rulers', draft.rulers);
+				prefs.set('surfaceTexture', draft.surfaceTexture);
+				prefs.set('surfaceGridSize', draft.surfaceGridSize);
+				prefs.set('surfaceTextureColor', draft.surfaceTextureColor);
 				_NS.shortcutSettings.save(shortcutDraft);
 				if (_NS.lang && draft.lang != _NS.lang.current) { _NS.lang.set(draft.lang, editor); }
 				close();

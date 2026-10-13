@@ -399,6 +399,42 @@
 			});
 		});
 	}
+	// ---------------------------------------------------------------- css filter
+	// function => [neutral value, max, unit]
+	const FILTERS = {
+		blur: [0, 20, 'px'], brightness: [100, 200, '%'], contrast: [100, 200, '%'], grayscale: [0, 100, '%'],
+		'hue-rotate': [0, 360, 'deg'], invert: [0, 100, '%'], opacity: [100, 100, '%'], saturate: [100, 200, '%'], sepia: [0, 100, '%']
+	};
+	function filterSupported() {
+		try {
+			return typeof CanvasRenderingContext2D != 'undefined' && ('filter' in CanvasRenderingContext2D.prototype) &&
+				(typeof CSS == 'undefined' || !CSS.supports || CSS.supports('filter', 'blur(1px)'));
+		} catch (e) { return false; }
+	}
+	function parseFilter(str) {
+		const vals = {};
+		let rest = typeof str == 'string' ? str : '';
+		rest = rest.replace(/([a-z-]+)\(\s*(-?[\d.]+)[a-z%]*\s*\)/gi, (m, n, v) => {
+			if (n in FILTERS) { vals[n] = +v; return ''; }
+			return m;
+		});
+		return { vals, extra: rest.trim() }; // extra: functions without a control (drop-shadow, url...) are kept
+	}
+	function buildFilter(body, el, apply) {
+		const st = parseFilter(el.filter);
+		const write = () => {
+			const parts = Object.keys(FILTERS).filter((n) => n in st.vals && st.vals[n] != FILTERS[n][0]).map((n) => n + '(' + st.vals[n] + FILTERS[n][2] + ')');
+			if (st.extra) { parts.push(st.extra); }
+			apply(() => { el.filter = parts.length ? parts.join(' ') : 0; });
+		};
+		Object.keys(FILTERS).forEach((n) => {
+			const [neutral, max] = FILTERS[n];
+			body.append(sliderRow(T('ins.filter.' + n, n), n in st.vals ? st.vals[n] : neutral, 0, max, (v) => { st.vals[n] = v; write(); }));
+		});
+		const reset = _el('button', { type: 'button', className: 'igk-btn', textContent: T('ins.filter.reset') });
+		reset.onclick = () => apply(() => { el.filter = 0; });
+		body.append(reset);
+	}
 	// ---------------------------------------------------------------- panels
 	const cornerRadius0 = (el) => el.getType() == 'roundrect' && typeof el.radius == 'number';
 	function elementPanel(editor, el) {
@@ -465,7 +501,7 @@
 			const b = hasBound(el) ? el.bound : { width: 200, height: 200 };
 			root.append(sliderRow(T('ins.radius'), el.radius, 0, Math.max(10, Math.round(Math.min(b.width, b.height) / 2), Math.round(el.radius)), (v) => apply(() => { el.radius = v; })));
 		}
-		const skip = ['id', 'fill', 'stroke', 'strokeWidth', 'opacity', 'blendingMode'];
+		const skip = ['id', 'fill', 'stroke', 'strokeWidth', 'opacity', 'blendingMode', 'filter', 'clip'];
 		const cornerRadius = el.getType() == 'roundrect' && typeof el.radius == 'number'; // other shapes edit their radius in the extra block
 		if (cornerRadius) { skip.push('radius'); }
 		const extra = extraSection(editor, el, apply, skip);
@@ -482,6 +518,22 @@
 					body.append(_el('div', { className: 'ci-sub', textContent: T('ins.blending') }), sel);
 				}
 			}));
+		}
+		// css filter (layers and groups), when the browser supports it on a canvas
+		if (('filter' in el) && filterSupported()) {
+			root.append(section('filter', T('ins.filter'), (body) => buildFilter(body, el, apply)));
+		}
+		// clip of a layer / group: one of the sibling shapes
+		if (('clip' in el) && el['@container'] && typeof el.clip != 'undefined') {
+			const shapes = Array.prototype.filter.call(el['@container'].Elements, (e) => e !== el && ('path' in e));
+			if (shapes.length > 0 || el.clip) {
+				root.append(section('clip', T('ins.clip'), (body) => {
+					const opts = [_el('option', { value: '', textContent: '-' })].concat(shapes.map((e) => _el('option', { value: e.id, textContent: e.getType() + ' #' + e.id, selected: el.clip === e })));
+					const sel = _el('select', {}, opts);
+					sel.onchange = () => apply(() => { el.clip = shapes.find((e) => e.id == sel.value) || null; });
+					body.append(sel);
+				}));
+			}
 		}
 		if (('fill' in el) || ('stroke' in el)) {
 			root.append(section('style', T('ins.style'), (body) => {
