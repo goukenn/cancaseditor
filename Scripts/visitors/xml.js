@@ -1,17 +1,13 @@
-
 "use strict";
-
 (function(){
-
     //visitor private functions
     var visitor = {
-
     };
-
 	function __getValue(d){
+		if (d === 0)
+			return 0;
 		if (!d)
 			return null;
-		
 		switch(typeof(d)){
 			case 'Array':
 			case 'object':
@@ -21,12 +17,10 @@
 	};
 		// console.debug("datae : "+igk.system.Date.format(Date.now(), "Y:m:d"));
 	//throw ("b");
-	
     igk.system.createNS("igk.winui.cancasEditor.visitors", {
         xml: function(list, inf){
 			var EXPORTS = igk.winui.cancasEditor.Exports;
 			var ELEM = igk.winui.cancasEditor.DrawingElements;
-
             var e = $igk(igk.dom.createXMLDocument("gkds").documentElement); 
 			e.setAttribute("app", "cancasEditor");
 			e.setAttribute("app-version", "1.0");
@@ -37,13 +31,11 @@
             e.addComment("App: CancasEditor");
             e.addComment("Version: 1.0");
             e.addComment("Date: "+igk.system.Date.format(Date.now(), "d/m/Y"));
-			
 			var glist = [{list:list, host: e}];
 			var q = 0;
 			while(q = glist.pop())
 			{			
 				for(var i = 0; i < q.list.length; i++){
-
                 var c = q.list[i];
                 var n = c.getType();
 				var host = q.host;
@@ -53,25 +45,20 @@
 					var tab = c.exports || EXPORTS.getExports(n) || [];					
 					var g  = host.add(n);
 					var name = "";					
-					
 					for(var m = 0; m < tab.length; m++){	
 						var s = tab[m];
 						var v = null;
 						var attr = 1;
 						if (typeof(s)=='object'){
-							
 							name = s.name;
 							if ('generate' in s){
 								v = s.generate(c);
 							}
 							else 
 								v = c[name];
-
-							
 							if (s['default'] == v){
 								continue;
 							} 
-							
 							if (s.serializer){
 								v = s.serializer(v);
 								if((name=='matrix') && (v==null))	
@@ -80,18 +67,20 @@
 							if (s.serializeAs == 'element'){
 								attr=0;
 							}
-							
 						}else{
 							v = c[tab[m]];
 							name = tab[m];
 						}
 						if (attr){
-							g.setAttribute(name, __getValue(v)); //c[tab[m]]));
+							// no value: no attribute (setAttribute(name, null) would write the text "null")
+							v = __getValue(v);
+							if (v !== null && v !== undefined){
+								g.setAttribute(name, v);
+							}
 						}else{
 							g.setHtml(v);
 						}
 					}
-
 					if (igk.system.isInherit(c, ELEM.drawing2DContainer))
 					{
 						// console.debug("load instance .....");
@@ -104,16 +93,11 @@
 						// console.debug(n + " not an instance of drawing2DContainer");
 					// }
 				}
-
 				}
 			}
-           
 			var d = igk.createNode("div");
 			d.add(e);
 		   return d.o.innerHTML; //e.render();
         }
     });
-
-
-
 })();

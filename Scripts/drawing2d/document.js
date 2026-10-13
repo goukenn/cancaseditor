@@ -1,6 +1,9 @@
+// author: C.A.D. BONDJE DOUE
+// file: document.js
+// @date: 20250101 11:34:44
+// @desc: document used to render 
 "use strict";
 (function(){
-
 var _NS = igk.winui.cancasEditor;
 var CoreMathOperation = _NS.CoreMathOperation;
 var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
@@ -10,10 +13,8 @@ var R = _NS.R;
 var GUI =  igk.system.createNS("igk.winui.cancasEditor.gui", {});
 var CT = igk.system.convert;
 var assets = _NS.assetManager;
-
 igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer }, function(){
 	// ELEM.drawing2DContainer.apply(this);
-	
 	var m_width = 1024;
 	var m_height = 768;
 	var m_fill = "white";
@@ -29,28 +30,29 @@ igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer },
 			source: this
 		});
 	};
-	
-	
 	igk.defineProperty(this, "filter", {get:function(){return m_filter; },
 	set:function(v){		
 			m_filter = v;		
 	}});	
-	
 	igk.defineProperty(this, "width", {get:function(){return m_width; }});
 	igk.defineProperty(this, "height", {get:function(){return m_height; }});
-	igk.defineProperty(this, "stroke", {get:function(){return m_stroke; }});
-	igk.defineProperty(this, "fill", {get:function(){return m_fill; }});
+	igk.defineProperty(this, "stroke", {get:function(){return m_stroke; }, set: function(v){
+		if (typeof(v)=='string')
+			m_stroke = v;
+	}});
+	// background of the document: a color, or 'transparent' to disable it
+	igk.defineProperty(this, "fill", {get:function(){return m_fill; }, set: function(v){
+		if (typeof(v)=='string' && v)
+			m_fill = v;
+	}});
 	igk.defineProperty(this, "title", {get:function(){return m_title; } , set: function(v){
 		if((v==null) || (typeof(v)=='string'))
 		m_title = v;
 	}});
-	
-	
 	this.render = function(a){
 		var _elements = this.Elements;
 		a.save();
 		a.setTransform(m_matrix);
-		
 		if (m_fill!='transparent' && !(a.transparentBg)){
 			a.fill = m_fill;
 			a.stroke = m_stroke;
@@ -65,7 +67,6 @@ igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer },
 			}
 		}
 		a.restore();
-		
 	};
 	var _base_add =  this.add;
 	this.add = function(i){
@@ -85,7 +86,7 @@ igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer },
 		// e.item = i; 
 	};
 	this.initialize = function(){
-		
+		// do nothing 
 	};
 	this.getLayers = function(){
 		var tab = []; 
@@ -96,11 +97,7 @@ igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer },
 		}
 		return tab;
 	};
-	
 });
-
-
-
 // exports
 var EXPORTS = igk.winui.cancasEditor.Exports;
  EXPORTS.register("document", function(){
@@ -108,40 +105,29 @@ var EXPORTS = igk.winui.cancasEditor.Exports;
 	"stroke", 
 	"width", 
 	"height",
+	{name:"fill", "default": "white"},
+	{name:"title", "default": ""},
 	{name:"filter", "default": 0}, 
 	]);			
 	return c;
 });
-
-
 var AC = igk.winui.cancasEditor.Actions;
 var Key = AC.Key;
-
-
 AC.regMenuAction("document.properties", { callback: function(a){
 	//show about dialog
 	if (a.document==null)
 		return;
-		
-	var d = (new DocumentSettingDialog(a, a.document)).control;
-	GUI.dialog.showDialog(R.title_options, d);
+	_NS.showDocumentSettings(a); // tools/DocumentSettingsDialog.js
 }, index:100});
-
-
-
 function DocumentSettingDialog(a, document){
-	
 	var d = igk.createNode("div");
-	
 	var frm = d.add("form");
 	var engine = igk.winui.engine.getEngine("bmc", frm, R); // get prefered engine 
 	var W = document.width;
 	var H = document.height;
 	var _title = document.title;
-	
 	engine.setAsset(R);
-	engine	
-	.addGroup()
+	engine.addGroup()
 	.addControlLabel("id", document.id)
 	.addGroup()
 	.addControlLabel("title", document.title)
@@ -149,23 +135,19 @@ function DocumentSettingDialog(a, document){
 	.addControlLabel("width", document.width)
 	.addGroup()
 	.addControlLabel("height", document.height);
-	
 	if ('blendingMode' in this){
 		var g = igk.winui.cancasEditor.enums.blendings.getComboboxEnumValue();							
 		engine.addGroup().
 		addCombobox("blendingMode", this.blendingMode, g );		
 	}
-	
 	frm.select('input').each_all(function(){
 		this.on("keyup change", function(){
 			update_value();
 		});
 	});
-	
 	function update_value(){
 		var w = CT.parseToInt(frm.engine.getItem("width").val()) || document.width;
 		var h =  CT.parseToInt(frm.engine.getItem("height").val()) || document.height;
-		
 		// console.debug("set size : "+w+"x"+h);
 		document.setSize(w, h);
 		document.title = frm.engine.getItem("title").val();
@@ -179,7 +161,6 @@ function DocumentSettingDialog(a, document){
 		frm.engine.getItem("height").val(H); 
 		update_value();
 	};
-	
 	var bar = frm.add("div").addClass("igk-action-bar");
 	bar.add("input").setAttributes({
 		"type":"button",
@@ -188,12 +169,7 @@ function DocumentSettingDialog(a, document){
 	}).on("click", function(){
 		reset();
 	});
-		
 	reset();
 	this.control = d;
-	
 }
-
-
-
 })();

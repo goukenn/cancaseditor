@@ -1,164 +1,105 @@
-<?php 
-//file : default cancaseditor view 
-//Project : canvas editor project view
-use function igk_resources_gets as __;
+<?php
+// @author: C.A.D BONDJE DOUE
+// @file : default cancaseditor view 
+// @Project : canvas editor project view
+// @MainLayout()
+
+/**
+ * 
+ * @var mixed $t mixed type definition 
+ * @var mixed $bge
+ */
+use IGK\Helper\IO;
+use IGK\Helper\ViewHelper;
+use IGK\Resources\R;
+use IGK\System\Html\XML\XmlNode;
+use IGK\System\Http\RequestResponseCode;
+use igk_default\Models\CancasOptions;
+use igk_default\Models\CancasPlugins;
+
+use function igk_resources_gets as __; 
+include_once(ViewHelper::Dir()."/.common.pinc");  
+$scripts = igk_uri($ctrl->getDeclaredDir(). "/Scripts");
+$bge = isset($bge) ? $bge : []; 
 
 
-include_once(".header.pinc");
-
-
-$scripts = igk_html_uri(dirname(__FILE__)."/Scripts");
-// !solution to avoid warning code warning in vs code editor
-extract([]);
- 
-
-
- 
-// igk_html_js_lang("igk.winui.cancasEditor.R", [
-// "btn_ok"=>__("OK"),
-// "file"=>__("File"),
-// ]);
-
-// clear cache for reloading ... 
-//igk_clear_cache();
-// $ctrl->Configs->auto_generate = 0;
-// if (!$ctrl->Configs->auto_generate){
-// 	if (!igk_io_is_subdir(igk_io_basedir(), $ln = $scripts)){
-// 		$_rs = 	IGKResourceUriResolver::getInstance();
-// 		foreach (igk_io_getfiles($ln, "/\.(js(on)?|xml|js|bmp|png|jpg|jpeg)$/") as $file){			 
-// 			$_rs->resolve($file, null);
-// 		} 
-// 	}
-// 	$ctrl->Configs->auto_generate = 1; 
-// }
-
-
-// igk_wln_e("force auto generate ");
-
-// igk_reg_hook("generateLink", function($e){
-// 	// igk_html_debug(": generated link");
-// // 	$links = $e->args["link"];
-// 	 $out = $e->args["source"];
-// 	 realpath(__FILE__."/../");
-
-// 	 igk_wln_e("generate ", $e);
-
-// 	$ln = dirname($links);
-// 	if (basename($links)=="main.js"){
-// 		foreach (igk_io_getfiles($ln, "/\.(json|xml|js|bmp|js|)$/") as $file){
-// 			if ($links == $file){
-// 				continue;
-// 			}
-// 			// igk_wln("create link to ");
-// 			$s = substr($file, strlen($ln));
-// 			IGKIO::CreateDir(dirname($out."/".$s));  
-
-// 			// igk_wln($file ." <=====> ".$out."/".$s);
-// 			igk_io_symlink($file, $out."/".$s);//); 
-// 		}
-// 	}
-// 	//igk_wln_e("generated link", $e);
-// });
-
-// }
-// igk_reg_hook(IGKEvents::HOOK_HTML_HEAD, function(){
-	// igk_wln("render header");
-// });
-
-// igk_reg_hook(IGKEvents::HOOK_HTML_FOOTER, function($e)use($doc){
-	// igk_wln("Pied de page ok : ".get_class($e->args[0]));
-// });
-
-
-// igk_hook(IGKEvents::HOOK_HTML_HEAD);
-// igk_exit();
-
-
-define("CE_SCRIPT_NAME", "cancas-editor"); //name of production scripts
-define("CE_CACHE_VERSION", "1.0"); //name of production script
-define("CE_CACHE_NAME", "cancaseditor-".CE_CACHE_VERSION.""); //name of production script
-define("CE_APP_NAME", "com.igkdev.cancaseditor"); //name of production script
-define("CE_APP_LABEL", "CancasEditor"); //name of production script
-define("CE_APP_DESC", "CancasEditor Tools @ igkdev ".date('Y')); //name of production script
-define("CE_APP_VERSION", "1.2"); //name of production script
-
+define("CE_SCRIPT_NAME", "cancas-editor"); 
+define("CE_CACHE_VERSION", "1.0"); 
+define("CE_CACHE_NAME", "cancaseditor-" . CE_CACHE_VERSION . ""); 
+define("CE_APP_NAME", "com.igkdev.cancaseditor"); 
+define("CE_APP_LABEL", "CancasEditor"); 
+define("CE_APP_DESC", "CancasEditor Tools @ igkdev " . date('Y')); 
+define("CE_APP_VERSION", "1.2"); 
 $buri = igk_io_root_entryuri();
-$ruri  = $buri.dirname($fname)."/";
+$ruri  = $buri . dirname($fname) . "/";
 
-///<summary> requirement for canvas editor</summary>
-function igk_html_node_CancasEditorApp($setting=null){
-$n = igk_createNode("div");
-$n["class"] = "igk-cancas-editor-app";
-$n["igk:settings"] = $setting;
-return $n;
-} 
- 
-// force directory on the current canvas editor
 igk_io_force_dir_entry($ctrl, $fname);
-//reset current view
-$this->setFlag(self::CURRENT_VIEW, null);
-// igk_wln_e($this->getCurrentView(), "currentview", $fname);
-//--------------------------------------------------------------------------------------------
-//action handle ------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------
-igk_view_handle_actions($fname, Array(
-	"(@error)"=>array(
-	404=>function($uri='')use($t, $doc){ 
-		
-		$t->clearchilds();
-		$t->addDiv()->addObData(function(){
-	?>
-	CancasEditor - Page not found
+$ctrl->setFlag($ctrl::CURRENT_VIEW, null);
+igk_view_handle_actions($fname, array(
+	"(@error)" => array(
+		RequestResponseCode::NotFound => function ($uri = '', int $code=0) use ($t, $doc, $ctrl) {
+			$t->clearChilds();
+			$t->addDiv()->addObData(function () {
+?>
+		CancasEditor - Page not found
 	<?php
-			
-		});
-		$t->addSectionTitle(4)->Content = "404 - Resource page not found";
-		$t->addDiv()->Content = $uri;
-		$doc->title  =  R::gets('!Oups page not found') . " - ".igk_app()->Configs->website_title;
-		igk_set_header(404);
-		igk_render_node($t, $doc, 1);
-		igk_exit();
-	}
+			});
+
+			$t->addSectionTitle(4)->text(sprintf(__("cancas.page.notfound"), $code));
+			$t->addDiv()->Content = '/'.$uri;
+			$t->div()->a($ctrl::uri('@/'))->text(__('cancas.page.gohome'));
+
+			$doc->title  =  __('cancas.page.notfound.title') . " - " . igk_app()->Configs->website_title;
+			igk_set_header($code);
+			igk_render_node($t, $doc, 1);
+			igk_exit();
+		}
 	),
-	"assets"=>function(){	
-	$assets = igk_createXmlNode("assets");	
-	igk_header_set_contenttype('xml'); 
-	$assets->renderAJX();
-	igk_exit();
+	"assets" => function (...$params) {
+		if ($params){
+			$path = implode(DIRECTORY_SEPARATOR, $params);
+			$file = ViewHelper::Dir().'/assets/'.$path;
+			if (igk_io_cache_file_exists($file)){
+				igk_header_cache_output();
+				igk_header_content_file($file);
+				readfile($file);
+				igk_exit();
+			}
+		}
+		$assets = new XmlNode("assets");
+		igk_header_set_contenttype('xml');
+		$assets->renderAJX();
+		igk_exit();
 	},
-	// "request"=>function() {
-		// // requeset server info
-		// igk_ilog($_SERVER);
-		// igk_exit();
-	// },
-	// "data.json"=>function()use($t){
-			// header("Content-Type: text/html");
-			// $d = igk_createNode("div");
-			// $btn = $d->addButton();
-			// $btn->setAttribute("onclick", "javascript: ns_igk.system.io.getData('http://localhost:8080/igkdev/cancaseditor/data1.json'); return false; ");
-			// $btn->setContent("click me");	
-	
-	// $d->addA('http://localhost:8080/igkdev/cancaseditor/data1.json')->Content = "Direct Click";	
-			// $t->add($d);//->RenderAJX();
-			
-	// },
-	// "data1.json/assets"=>function(){
-	// 	igk_ilog($_SERVER);
-	// 	igk_exit();
-	// },
-	"manifest.json"=>function()use($entryuri, $fname){
+	"lang" => function ($name = null) use ($ctrl) { 
+		// serve the cancas.* entries of Configs/Lang/lang.<lg>.presx as {key: value}
+		$lg = $name ? basename($name, ".json") : "";
+		if (!in_array($lg, ["fr", "en", "nl"])) {
+			igk_set_header(404);
+			igk_exit();
+		}
+		$file = $ctrl->configDir() . "/Lang/lang." . $lg . ".presx";
+		$l = [];
+		if (file_exists($file)) {
+			include $file;
+		}
+		$g = [];
+		foreach ($l as $k => $v) {
+			if (strpos($k, "cancas.") === 0) {
+				$g[substr($k, 7)] = $v;
+			}
+		}
 		igk_header_set_contenttype("json");
-		$buri = igk_io_root_entryuri();
-		$ruri  = $buri.dirname($fname)."/";
-	
-	$uri = igk_html_uri($buri.igk_io_basepath(dirname(__FILE__))."/Scripts/assets");
-	
-	// igk_wln("buri:".$buri);
-	// igk_wln("manifest =".$uri);
-	
-	$const = "constant";
-	igk_wl(<<<EFO
-	
+		igk_wl(json_encode($g, JSON_UNESCAPED_UNICODE));
+		igk_exit();
+	},
+	"manifest.json" => function (){
+		igk_header_set_contenttype("json");
+		$buri = igk_io_root_entryuri(); 
+		$uri = igk_uri($buri . igk_io_basepath(dirname(__FILE__)) . "/Scripts/assets"); 
+		$const = "constant";
+		igk_wl(
+<<<EFO
 	{
 	  "name": "{$const('CE_APP_NAME')}",
 	  "short_name": "{$const('CE_APP_LABEL')}",
@@ -181,426 +122,297 @@ igk_view_handle_actions($fname, Array(
 	}
 	  ]
 	}
-
-EFO
-);	igk_exit();
+EFO		);
+		igk_exit();
 	},
-	
-	"favicon.ico"=>function(){
-		$icon =dirname(__FILE__)."/Scripts/assets/favicon.png";
-		igk_header_set_contenttype("png");	
-		igk_header_cache(1200 * 60);
+	"favicon.ico" => function () {
+		$icon = dirname(__FILE__) . "/Scripts/assets/favicon.png";
+		igk_header_set_contenttype("png");
+		igk_header_cache_output(1200 * 60);
 		igk_wl(igk_io_read_allfile($icon));
 		igk_exit();
 	},
-	"cancas-app.sw.js"=>function()use($entryuri, $fname, $doc, $bge, $bmc){
-
-		igk_wln_e("error");
-
+	"cancas-app.sw.js" => function () use ($fname, $doc) { 
+		$bmc = igk_get_module('igk/mbc');
+		$bge = igk_get_module('igk/bge');
+		
 		header("Content-Type: text/javascript");
-		$icon =dirname(__FILE__)."/Scripts/.cancas-app.sw.jsinc";
+		$icon = dirname(__FILE__) . "/Scripts/.cancas-app.sw.jsinc";
 		$buri = igk_io_root_entryuri();
-		$ruri  = $buri.dirname($fname)."/";
-		
-		//igk_wln("is root ? ".igk_io_basedir_is_root());
-		// igk_wl($buri."\n");
-		// igk_wl($ruri."\n");
-		// igk_exit();
-		
-		// igk_ilog("buri : ".$buri);
-		// igk_ilog("ruri : ".$ruri);
+		$ruri  = $buri . dirname($fname) . "/"; 
 		$s = "";
 		$tab = array();
-		//entry uri definition
 		$tab[] = $ruri;
-		$tab[] = $ruri."manifest.json";	
-		$tab[] = $ruri."about";	
-		$tab[] = $ruri."wiki";
-		$tab[] = $ruri."cancas-app.sw.js"; //do not cache service worker
-		$tab[] = $ruri."favicon.ico";
-	
-		// igk_wln($tab);
-		// exit();
-		//system uri definition
-		$tab[] = $buri."R/Styles/balafon.css";
-		$tab[] = $buri."Lib/tiny_mce/tinymce.min.js";
-		$tab[] = $buri."Lib/igk/Default/R/Img/pics_24x24/session_btn.png";
-		$tab[] = $buri."!@res//google/cssfont/Roboto100x200x400x700x900/KFOkCnqEu92Fr1MmgVxIIzI.woff2";
-		// $tab[] = $buri."Projects/igk_default/Views/cancaseditor/Scripts/assets/192x192.png";
-		// $tab[] = $buri."Packages/Modules/igk/bge/Scripts/bge/load_shader.php"; 
-		// igk_wln("rootdir : ".igk_io_rootdir());
-		// igk_wln("rootdir : ".igk_io_rootdir());
-		
+		$tab[] = $ruri . "manifest.json";
+		$tab[] = $ruri . "about";
+		$tab[] = $ruri . "wiki";
+		$tab[] = $ruri . "cancas-app.sw.js"; 
+		$tab[] = $ruri . "favicon.ico";
+		$tab[] = $buri . "R/Styles/balafon.css";
+		$tab[] = $buri . "Lib/tiny_mce/tinymce.min.js";
+		$tab[] = $buri . "Lib/igk/Default/R/Img/pics_24x24/session_btn.png";
+		$tab[] = $buri . "!@res//google/cssfont/Roboto100x200x400x700x900/KFOkCnqEu92Fr1MmgVxIIzI.woff2";
 		$lib = new IGKWPALinkCacheDocument($tab, null, $doc);
 		igk_bge_init($lib);
-		
 		$lib->cacheLib($bge->getScriptDir());
 		$lib->cacheLib($bmc->getScriptDir());
-		
-	
-		
-		// $links = $doc->head->getElementsByTagName("link");
-		// if ($links){
-			// // igk_wln("rooturi :".igk_io_root_entryuri() ."\n");
-			// // igk_wln("rootrequesturi :".igk_io_rootrequesturi()."\n");
-			// // igk_wln("baseuri :".igk_io_baseuri()."\n");
-			// // igk_wln("rooturi :".igk_io_root_uri()."\n");
-			// // igk_wln("rooturi :".IGKIO::GetRootUri()."\n");
-			// $root_uri = igk_io_root_uri();
-			// $root_ln = strlen($root_uri)-1;
-			// foreach($links as $k=>$v){
-				// $lnk = IGKHtmlUtils::GetValue($v["href"]);
-				
-				// if ($lnk){
-					// if($s = strstr($lnk, $root_uri)){
-						// $c = substr($lnk,$root_ln);
-						// // igk_ilog($c);
-						// $tab[] = $c;
-					// } 
-				// }else{
-					// igk_ilog("not load ".$v->Render());
-				// }
-				// //igk_ilog(IGKHtmlUtils::GetValue($v["href"]));
-			// }
-		// }
-	 
-		
-		$ln = strlen(igk_io_rootdir());	
-		
-		if (igk_sys_env_production()){
-			$tab[] = $buri."R/Scripts/balafon.js?v=".IGK_BALAFON_JS_VERSION;
-			$tab[] = $buri."!@res/Scripts/".CE_SCRIPT_NAME."?strict=1";
-			
-		}else{
-			//incluscript
-				
-			igk_io_getfiles(IGK_LIB_DIR."/Scripts", function($f)use($ln, & $tab){
-				if ((basename($f)[0]!='.') && preg_match("/\.js$/", $f)){
-					$tab[] =igk_html_uri(substr($f, $ln));
+		$ln = strlen(igk_io_rootdir());
+		if (igk_sys_env_production()) {
+			$tab[] = $buri . "R/Scripts/balafon.js?v=" . IGK_BALAFON_JS_VERSION;
+			$tab[] = $buri . "!@res/Scripts/" . CE_SCRIPT_NAME . "?strict=1";
+		} else {
+			// + | include scripts
+			igk_io_getfiles(IGK_LIB_DIR . "/Scripts", function ($f) use ($ln, &$tab) {
+				if ((basename($f)[0] != '.') && preg_match("/\.js$/", $f)) {
+					$tab[] = igk_uri(substr($f, $ln));
 				}
 			});
-		 
 		}
-		
-		igk_io_getfiles(dirname(__FILE__)."/Scripts", function($f)use($ln, & $tab){
-				if ((basename($f)[0]!='.') && preg_match("/\.(png|jp(e)?g|json)$/", $f)){
-					$tab[] =igk_html_uri(substr($f, $ln)); 
-				}
-				
-			});
-			
-			
-		
-		
+		igk_io_getfiles(dirname(__FILE__) . "/Scripts", function ($f) use ($ln, &$tab) {
+			if ((basename($f)[0] != '.') && preg_match("/\.(png|jp(e)?g|json)$/", $f)) {
+				$tab[] = igk_uri(substr($f, $ln));
+			}
+		});
 		$s = "";
-		$s .= "var cachelist = ".json_encode($tab).";\n";
-		$s .= "var version = ".CE_CACHE_VERSION.";\n";
-		$s .= "var cacheName = '".CE_CACHE_NAME."';\n";
+		$s .= "var cachelist = " . json_encode($tab) . ";\n";
+		$s .= "var version = " . CE_CACHE_VERSION . ";\n";
+		$s .= "var cacheName = '" . CE_CACHE_NAME . "';\n";
 		$s .= igk_io_read_allfile($icon);
 		igk_header_set_contenttype("js");
 		igk_wl($s);
 		igk_exit();
 	},
-	"about"=>function()use ($entryuri){
-		$d = igk_createNode("div");
-		
-		$d->setStyle("min-width: 320px");		
-		$d->add("div")->setContent("Author : C.A.D. BONDJE DOUE");
-		$d->add("div")->setContent("Version: ".CE_APP_VERSION);
-		$d->add("div")->setContent("Company: IGKDEV");
-		$d->add("div")->setContent("Copyright: IGKDEV @ ".date('Y')." all rights reserved");
-		$d->add("div")->addA("mailto:bondje.doue@igkdev.com")->setContent("@bondje.doue");
-		$d->add("div")->addA($entryuri."/wiki")
-		->setAttributes(["target"=>"__blank"])	
-		->setContent("wiki");
-		igk_ajx_panel_dialog("About", $d);
+	"about" => function () use ($entry_uri) {
+		$d = igk_create_node("div");
+		$d->setStyle("min-width: 320px");
+		$d->add("div")->setContent(__("cancas.about.author") . " : C.A.D. BONDJE DOUE");
+		$d->add("div")->setContent(__("cancas.about.version") . ": " . CE_APP_VERSION);
+		$d->add("div")->setContent(__("cancas.about.company") . ": IGKDEV");
+		$d->add("div")->setContent("Copyright: IGKDEV @ " . date('Y') . " " . __("cancas.about.copyright"));
+		$d->add("div")->addA("#")->setAttribute("onclick", "javascript: window.open('mailto:bondje.doue@igkdev.com'); ")->setContent("@bondje.doue");
+		$d->add("div")->addA($entry_uri . "/wiki")
+			->setAttributes(["target" => "__blank"])
+			->setContent(__("cancas.about.wiki"));
+		igk_ajx_panel_dialog(__("cancas.about.title"), $d);
 		igk_exit();
-		
 	},
-	"share"=>function(){
+	"share" => function () {
 		$data = igk_io_get_uploaded_data();
-		$todecode = substr($data, strpos($data, ",")+1);
+		$todecode = substr($data, strpos($data, ",") + 1);
 		$deco = base64_decode($todecode);
-		
-		
-		igk_io_w2file(dirname(__FILE__)."/Data/shared/image.png", $deco);
-		igk_ajx_toast("data uploaded");
+		igk_io_w2file(dirname(__FILE__) . "/Data/shared/image.png", $deco);
+		igk_ajx_toast(__("cancas.share.uploaded"));
 		igk_exit();
 	},
-	"packages"=>function($cmd=null) use($query_options){
-		// package management 
-		$fmt = igk_getv($query_options, "fmt", "json");
-	
-	
-		if ($cmd == null ){
-			// load available user package
-			$u = $this->getUser();
-			$package = array("file"=>"",
-			"coast"=>"",
-			"start"=>""); 
-			if ($u == null){
-				//load package
-				igk_set_header(403);
-				
-			} 
-		}
-		else {
-			$data = dirname( __FILE__)."/Data/packages/";
-			switch($cmd){
-				case 'list' :
-						
-					$file = $data."/package.json";
-					switch($fmt){
-					case "xml":
-						igk_header_set_contenttype("xml");
-						if (file_exists($file)){
-							$d = igk_json_parse(igk_io_read_allfile($file));
-							$pack = igk_createNode("packages");
-							igk_xml_to_node($d, $pack);
-							// igk_wln($d);
-							$pack->renderAJX();
-						}else{
-							igk_set_header(404);
-							igk_wln(R::gets("package.json not found on this server"));
-						}
-						break;
-					case "json":
-					default:
-						if (file_exists($file)){
-							// igk_zip_output(
-							igk_header_set_contenttype("json");
-							igk_wl(igk_zip_output(igk_io_read_allfile($file))); // data."/packages.json"))
-						}else{
-							igk_set_header(404);						
-							igk_wln(R::gets("package.json not found on this server"));
-						}
-						
-						break;
+	"packages" => function ($cmd = null) use ($query_options) {
+		$fmt = igk_getv($query_options, "fmt", "json");  
+		if ($cmd == null) { 
+			igk_set_header(403);
+			igk_exit();
+		} else {
+			$data = dirname(__FILE__) . "/Data/packages/";
+			switch ($cmd) {
+				case 'list':
+					$file = $data . "/package.json";
+					switch ($fmt) {
+						case "xml":
+							igk_header_set_contenttype("xml");
+							if (igk_io_cache_file_exists($file)) {
+								$d = igk_json_parse(igk_io_read_allfile($file));
+								$pack = igk_create_node("packages");
+								igk_xml_to_node($d, $pack);
+								$pack->renderAJX();
+							} else {
+								igk_set_header(404);
+								igk_wln(R::gets("package.json not found on this server"));
+							}
+							break;
+						case "json":
+						default:
+							if (igk_io_cache_file_exists($file)) {
+								igk_header_set_contenttype("json");
+								igk_wl(igk_zip_output(igk_io_read_allfile($file))); 
+							} else {
+								igk_set_header(404);
+								igk_wln(R::gets("package.json not found on this server"));
+							}
+							break;
 					}
-				
 					break;
 			}
 		}
-		// igk_wln("packages");
-		// igk_wln($cmd);
 		igk_exit();
 	},
-	"plugins"=>function(){
-		// extra plugins management
+	"settings" => function () use ($ctrl) {
+		// per-user editor options (authenticated users only): GET => {options, plugins}, POST options=<json {name: value}>
+		$me = ($u = $ctrl->getUser()) ? $u->model() : null;
+		igk_header_set_contenttype("json");
+		if (!$me) {
+			igk_set_header(401);
+			igk_wl(json_encode(["error" => "login required"]));
+			igk_exit();
+		}
+		$owner = $me->clGuid;
+		if ($_SERVER["REQUEST_METHOD"] == "POST") {
+			$data = json_decode(igk_getv($_POST, "options", "{}"), true);
+			if (!is_array($data)) {
+				igk_set_header(400);
+				igk_wl(json_encode(["error" => "invalid options"]));
+				igk_exit();
+			}
+			foreach ($data as $k => $v) {
+				$k = (string)$k;
+				if (!preg_match('/^[a-zA-Z][a-zA-Z0-9_.]{0,119}$/', $k)) {
+					continue;
+				}
+				$v = is_scalar($v) ? (string)$v : json_encode($v);
+				if (strlen($v) > 4096) {
+					continue;
+				}
+				$cond = [CancasOptions::FD_OWNER => $owner, CancasOptions::FD_NAME => $k];
+				if (CancasOptions::select_row($cond)) {
+					CancasOptions::update([CancasOptions::FD_VALUE => $v], $cond);
+				} else {
+					CancasOptions::Insert(["name" => $k, "value" => $v, "owner" => $owner]);
+				}
+			}
+		}
+		$options = [];
+		foreach (CancasOptions::select_all([CancasOptions::FD_OWNER => $owner]) ?: [] as $r) {
+			$options[$r->{CancasOptions::FD_NAME}] = $r->{CancasOptions::FD_VALUE};
+		}
+		$plugins = [];
+		foreach (CancasPlugins::select_all([CancasPlugins::FD_OWNER => $owner]) ?: [] as $r) {
+			$plugins[] = [
+				"id" => (int)$r->{CancasPlugins::FD_ID},
+				"name" => $r->{CancasPlugins::FD_NAME},
+				"url" => $r->{CancasPlugins::FD_URL},
+				"enabled" => (int)$r->{CancasPlugins::FD_ENABLED}
+			];
+		}
+		igk_wl(json_encode(["user" => $me->clLogin, "options" => (object)$options, "plugins" => $plugins]));
+		igk_exit();
 	},
-	"store"=>function(){
-		// store job on server
+	"plugins" => function () use ($ctrl) {
+		// POST op=save (id?, name, url, enabled) | op=delete (id)
+		$me = ($u = $ctrl->getUser()) ? $u->model() : null;
+		igk_header_set_contenttype("json");
+		if (!$me || $_SERVER["REQUEST_METHOD"] != "POST") {
+			igk_set_header($me ? 405 : 401);
+			igk_wl(json_encode(["error" => $me ? "method not allowed" : "login required"]));
+			igk_exit();
+		}
+		$owner = $me->clGuid;
+		$id = (int)igk_getv($_POST, "id", 0);
+		if (igk_getv($_POST, "op") == "delete") {
+			$id && CancasPlugins::delete([CancasPlugins::FD_ID => $id, CancasPlugins::FD_OWNER => $owner]);
+			igk_wl(json_encode(["ok" => true]));
+			igk_exit();
+		}
+		$name = trim((string)igk_getv($_POST, "name", ""));
+		$url = trim((string)igk_getv($_POST, "url", ""));
+		if ($name === "" || strlen($name) > 120 || strlen($url) > 500 ||
+			!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('#^https?://#i', $url)) {
+			igk_set_header(400);
+			igk_wl(json_encode(["error" => "invalid plugin"]));
+			igk_exit();
+		}
+		$enabled = igk_getv($_POST, "enabled", 1) ? 1 : 0;
+		if ($id) {
+			CancasPlugins::update([
+				CancasPlugins::FD_NAME => $name, CancasPlugins::FD_URL => $url, CancasPlugins::FD_ENABLED => $enabled
+			], [CancasPlugins::FD_ID => $id, CancasPlugins::FD_OWNER => $owner]);
+		} else {
+			$item = CancasPlugins::Insert(["name" => $name, "url" => $url, "enabled" => $enabled, "owner" => $owner]);
+			$id = $item ? (int)$item->{CancasPlugins::FD_ID} : 0;
+		}
+		igk_wl(json_encode(["ok" => true, "id" => $id]));
+		igk_exit();
+	},
+	"store" => function () {
 	}
-	
-	), $params);
-
-
-// // igk_pwa_protect_entrydir($this);
-// $p = $this->getParam("redirectpost");
-// if (!$is_direntry && count($params)==0){
-	
-	// if ($this->getParam("redirect")){
-		// igk_wln(igk_io_request_uri());
-		// igk_wln("already redirecting : ".$is_direntry);
-		// igk_exit();
-	// }
-	// $this->setParam("redirectpost", $_POST);
-	// $query = igk_getv(parse_url(igk_io_request_uri()), "query");
-	// if ($query)
-		// $query = "?".$query;
-	// $this->setParam("redirect", 1);
-	// igk_navto($entryuri.'/'.$query);	
-// }else{
-	
-	// $this->setParam("redirectpost", null);
-	// $this->setParam("redirect", null);
-	
-	// if ($p){
-		// $_POST = $p;//retrieve the posted value
-		// igk_ilog("retrieve post");
-	// }
-	
-// }
+), $params); 
 
 
 
-// igk_wln("rootdir : ".igk_io_rootdir());
-// igk_wln("basedir : ".igk_io_basedir());
-// igk_exit();
- 
-$t->clearChilds();
 $t["class"] = "+fit +google-Roboto -igk-page";
-$doc->title = "cancasEditor - [".igk_app()->Configs->website_title."]"; 
+$doc->title = "cancasEditor - [" . igk_app()->Configs->website_title . "]";
 $doc->setHeaderColor("#444");
-igk_svg_bind_svgs($doc); 
  
+igk_svg_bind_svgs($doc); 
 
-
-
-if (IGKUserAgent::IsOldSafariAgent()){	
+if (IGKUserAgent::IsOldSafariAgent()) {
 	$dv = $t->addDiv();
 	$row = $dv->addContainer()->addRow();
-	igk_include_view($this, $row, $dir."/Contents/404.application.failed.php");
-	return;// safari application no available. 	
+	igk_include_view($ctrl, $row, $dir . "/Contents/404.application.failed.php");
+	return; 
 }
-//testing params----------------------------------------------------------------------------------------------------------------------
-// $params = array("cancas-app.sw.js");
-$_DIR = dirname(__FILE__);
-
-$styles = $_DIR."/Styles";
-$folder  = $_DIR."/Scripts";
+$_DIR = ViewHelper::Dir();
+$styles = $_DIR . "/Styles";
+$folder  = $_DIR . "/Scripts";
 $resolver = IGKResourceUriResolver::getInstance();
 $cachedir = igk_io_cacheddist_jsdir();
-
-//igk_wln($_SERVER);
- 
-
-if (igk_environment()->is("production")){
-	$sdir = $cachedir."/".CE_SCRIPT_NAME;
-	if (!is_dir($sdir)){
-		IGKIO::CreateDir($sdir);
+if (igk_environment()->is("production")) {
+	$sdir = $cachedir . "/" . CE_SCRIPT_NAME;
+	if (!is_dir($sdir)) {
+		IO::CreateDir($sdir);
 		$resolver->resolve($sdir);
-		igk_cache_gen_cache($folder, $sdir ,null, "igk_cache_js_callback");
-		
-	}	
+		igk_cache_gen_cache($folder, $sdir, null, "igk_cache_js_callback");
+	}
 	$folder = $cachedir;
 }
 
-
-$tab = $this->getParam("jsscript");
-$clist = [];
-if (!$tab){
-	$clist = igk_io_getfiles($folder, "/\.js$/");
-}
-else{
-	$clist = $tab;
-}
-foreach($clist as $f){
-	 $tab[]  = $f;
-	 $doc->addTempScript($f)->activate("defer");
-}
-$this->setParam("jsscript", $tab);
-
-
-
-/*
-///loading script folder 
-igk_doc_load_temp_script($doc, array(
-	"folder"=>$scripts,
-	"mergescript"=>CE_SCRIPT_NAME,
-	"controller"=>$ctrl,
-	"callback"=>function($doc, $folder, $created){ 
-	$cachedir = igk_io_cacheddist_jsdir();
-	$is_prod = igk_environment()->is("production");
-	if ($is_prod || !igk_io_is_subdir(igk_io_basedir(), $cachedir)){
- 
-		$dir = $cachedir."/".CE_SCRIPT_NAME;
-		$resolver = IGKResourceUriResolver::getInstance();
-		if (!$is_prod){
-			//igk_wln_e("resolving all", $is_prod);
-			foreach($cfiles = igk_io_getfiles($folder, "/\.(js(on)?|xml|xls|img|jpg|png|pjs|php)$/") as $b){
-				$resolver->resolve($b, null);
-				if (igk_io_path_ext($b)=="js"){
-					$doc->addTempScript($b)->activate("defer");
-				} 
-			}   
-			
-		}else{
-			igk_wln_e("genereate cache folder .....");
-			$sdir = $cachedir."/".CE_SCRIPT_NAME;
-			if (!is_dir($sdir)){
-				//generate script cache
-				igk_cache_gen_cache($folder, $sdir ,null, igk_cache_js_callback::class);
-				
-			}
-			
-			$resolver->resolve($sdir);
-			
-			$doc->addTempScript($cachedir."/".CE_SCRIPT_NAME."/".CE_SCRIPT_NAME.".js");
-			// if ($created || !$this->Configs->auto_generate){				
-				// foreach (igk_io_getfiles($folder, "/\.(json|xml|js|bmp|png|jpg|jpeg)$/") as $file){						 
-					// $resolver->resolve($file, null);
-				// }				
-				// $this->Configs->auto_generate = 1; 
-			// }
-			
-			
-			
-			
-			
-			// igk_wln_e("auto resolve", $created, $this->Configs->auto_generate,
-			// $this->Configs->auto_generate);
-		}
-		// $file = $resolver->resolveOnly($cachedir."/".CE_SCRIPT_NAME."/.cache");
-		// if (file_exists($file))
-		// 	return;
-		//igk_resolv_resources();
-		//create link
-		// foreach(igk_io_getfiles($dir, "/\.(json|xml|xls|img|jpg|png)$/") as $b){
-		// 	$resolver->resolve($b, null);
-		// } 
-
-		// igk_io_w2file($file, json_encode((object)array(
-		// 	"date"=>date("Ymd"),
-		// 	"dev"=>"link"
-		// )));			
-		// igk_wln_e("resolkdkdk", $resolver->resolveOnly($cachdir."/".CE_SCRIPT_NAME."/.cache"));
-		//$doc->addTempScript($cachedir."/".CE_SCRIPT_NAME."/".CE_SCRIPT_NAME.".js");
-	} else {		
-		foreach(igk_io_getfiles($folder, "/\.js$/") as $file){
-			$doc->addTempScript($file)->activate("defer");
-		}
-	}
-
-}), CE_SCRIPT_NAME, 1);
-//*/
- 
-$doc->setBaseAsset($_DIR."/Scripts/assets");
-
-
- 
-
-$themefile = get_theme_file($this) ?? "default.pcss";
-igk_css_reg_global_style_file( $styles."/".$themefile, $doc->Theme);
-
-
-
-   
-// initialize the footer
-igk_reg_hook(IGKEvents::HOOK_HTML_FOOTER, function(){ 
-	$s = igk_createnode("script")->activate("defer");
-	$s["src"] = IGKResourceUriResolver::getInstance()->resolve(dirname(__FILE__)."/assets/js/telerik.js");
+load_cancas_scripts($ctrl, $doc, $folder);
+$doc->setParam('baseAsset', $_DIR . "/Scripts/assets");
+$themefile = get_theme_file($ctrl) ?? "default.pcss";
+igk_css_reg_global_style_file($styles . "/" . $themefile, $doc->Theme);
+igk_reg_hook(IGKEvents::HOOK_HTML_FOOTER, function () {
+	$s = igk_create_node("script")->activate("defer");
+	$s["src"] =  ViewHelper::Dir(). "/assets/js/telerik.js";
 	$s->renderAJX();
 });
-
-
-function get_theme_file($ctrl){
+function get_theme_file($ctrl)
+{
 	return null;
 }
+$doc->head->addSingleViewNode()->addObData(function () {
+	?>
+	<meta name="robots" content="nofollow" />
+	<meta name="googlebot" content="noindex" />
+<?php
+}, 'notagnode');
 
 
 $uri = IGKResourceUriResolver::getInstance()->resolve($folder, false);
-
 $t->addJSView()->Content = <<<EOF
 if (/FxiOS/.test(window.navigator.appVersion)){
-    igk.dom.body().addClass("FxiOS");
-	var s = "body.FxiOS {height: "+window.outerHeight+"px !important}";	 
-	igk.css.appendRule(s);   
+igk.dom.body().addClass("FxiOS");
+var s = "body.FxiOS {height: "+window.outerHeight+"px !important}";	 
+igk.css.appendRule(s);   
 } 
 EOF;
-
-$n = $t->addCancasEditorApp(igk_json_encode((object)[
-"Name"=>"Canca Editor Demonstration",
-"Version"=>CE_APP_VERSION,
-"isDebug"=>!igk_sys_env_production(),
-"Plugins"=> [],
-"appUri"=>$entryuri,
-"appCacheName"=>CE_CACHE_NAME,
-"appAssets"=>$uri, // igk_io_fullpath2fulluri(dirname(__FILE__)."/Scripts"),
-"menu"=>["status", "menu", "tools"]
+$n = $t->addCancasEditorApp(json_encode((object)[
+	"Name" => "Canca Editor Demonstration",
+	"Version" => CE_APP_VERSION,
+	"isDebug" => !igk_sys_env_production(),
+	"Plugins" => [],
+	"appUri" => $entry_uri,
+	"appCacheName" => CE_CACHE_NAME,
+	"appAssets" => $uri,
+	"menu" => ["status", "menu", "tools"],
+	"signinUri" => $ctrl::uri('@/signin/identifier')
 ]));
-
-$n->addCenterBox()->Content = __("Initializing ...");
-
-
- 
+// startup page: shown until the scripts, resources, settings and document are ready (tools/BootLoader.js)
+$t->add("style")->Content = "@keyframes cancas-spin{to{transform:rotate(360deg)}}" .
+	"#cancas-loader{position:fixed;top:0;right:0;bottom:0;left:0;z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#2b2b2b;color:#eee;font:14px sans-serif;transition:opacity .3s}" .
+	"#cancas-loader .cancas-spinner{width:44px;height:44px;margin-bottom:16px;border:4px solid rgba(255,255,255,.2);border-top-color:#5b4bd6;border-radius:50%;animation:cancas-spin .9s linear infinite}";
+$ld = $t->addDiv();
+$ld["id"] = "cancas-loader";
+$ld["data-t-scripts"] = __("cancas.loading.scripts");
+$ld["data-t-resources"] = __("cancas.loading.resources");
+$ld["data-t-settings"] = __("cancas.loading.settings");
+$ld["data-t-document"] = __("cancas.loading.document");
+$ld->addDiv()["class"] = "cancas-spinner";
+$txt = $ld->addDiv();
+$txt["class"] = "cancas-loader-text";
+$txt->Content = __("cancas.loading");

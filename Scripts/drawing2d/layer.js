@@ -1,10 +1,9 @@
 "use strict";
 (function(){
-
-var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
+const _NS = igk.winui.cancasEditor;
+const { CoreMathOperation, Matrix } = _NS; 
 var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
-var SERI = igk.winui.cancasEditor.Serializer;
-var Matrix = igk.winui.cancasEditor.Matrix;
+var SERI = igk.winui.cancasEditor.Serializer; 
 var BLENDING = {
 	"source-over":1,
 	"source-in":1,
@@ -33,13 +32,9 @@ var BLENDING = {
 	"color":1,
 	"luminosity":1
 };
-
 ELEM.BLENDING = BLENDING;
-
-
 igk.system.createClass(ELEM, {name:"layer", parent: ELEM.drawing2DContainer }, function(){
 	// ELEM.drawing2DContainer.apply(this);
-	
 	//blending operation 
 	var m_blending = "source-over";
 	var m_opacity = 1;
@@ -47,7 +42,13 @@ igk.system.createClass(ELEM, {name:"layer", parent: ELEM.drawing2DContainer }, f
 	var m_filter = 0;
 	var m_clip = null;
 	var m_visible = !0;
-	
+	var m_matrix = new _NS.Matrix();
+	var m_isgroup = false;
+	Object.defineProperty(this, 'matrix', {get(){return m_matrix; }});
+	/**
+	 * when group is a grouping layer that allow to manage or select group contains
+	 */
+	Object.defineProperty(this, 'isgroup', {get(){return m_isgroup; }, set(v){ m_isgroup = v; }});
 	igk.defineProperty(this, "filter", {get:function(){return m_filter; },
 	set:function(v){		
 			m_filter = v;		
@@ -62,17 +63,16 @@ igk.system.createClass(ELEM, {name:"layer", parent: ELEM.drawing2DContainer }, f
 			m_blending = v;
 		}
 	}});
-	
-	
 	igk.defineProperty(this, "visible", {get:function(){return m_visible; },
 	set:function(v){
 		if (typeof(v)=='boolean'){
 			m_visible = v;		
 		}
 	}});
-	
-	
 	igk.defineProperty(this, "opacity", {get:function(){return m_opacity; } ,set:function(v){
+		v = Number(v); // loaded from an attribute: a string
+		if (isNaN(v))
+			return;
 		if (v<0)
 			v = 0;
 		if (v>1)
@@ -100,6 +100,9 @@ igk.system.createClass(ELEM, {name:"layer", parent: ELEM.drawing2DContainer }, f
 				a.setTransform(m);
 			}
 		}
+		if (!this.matrix.isIdentity()){
+			a.setTransform(this.matrix);
+		}
 		if (_elements && _elements.root){
 			var q  = _elements.root;
 			while(q){
@@ -110,7 +113,6 @@ igk.system.createClass(ELEM, {name:"layer", parent: ELEM.drawing2DContainer }, f
 			}
 		}
 		a.restore();
-		
 	};
 	this.add = function(i){
 		if (igk.system.isInherit(i, ELEM.layer)){
@@ -120,17 +122,38 @@ igk.system.createClass(ELEM, {name:"layer", parent: ELEM.drawing2DContainer }, f
 		ELEM.drawing2DContainer.prototype.add.apply(this, [i]);
 	};
 	this.initialize = function(){
-		
 	}
-	
+	this.contains = function(x, y, editor, list){
+		console.log(this);
+		const _elements = this.Elements;
+		list = list || [];
+		if (_elements && _elements.root){
+			var q  = _elements.root;
+			while(q){
+				if (q.visible && q.contains(x,y, editor, list)){
+					list.push(q);
+				}
+				q = q.next;
+			}
+		} 
+		return false;
+	};
+	//+| computed bound
+	Object.defineProperty(this, 'bound', {get(){
+		return {x:0, y: 0, height: 100, width: 100};
+	}});
 });
-
-
 // exports
 var EXPORTS = igk.winui.cancasEditor.Exports;
  EXPORTS.register("layer", function(){
 	var c = EXPORTS.initExport().concat([
 	{name:"opacity", "default": 1}, 
+	// a hidden layer is exported as visible="false"
+	{name:"visible", "default": true, serializer: function(v){
+		return v ? null : 'false';
+	}, unserialize: function(v){
+		return v !== 'false';
+	}}, 
 	{name:"filter", "default": 0}, 
 	{name:"clip", "default": null, serializer: function(v){
 		if (typeof(v)=='object'){
@@ -141,7 +164,6 @@ var EXPORTS = igk.winui.cancasEditor.Exports;
 		item.clip = d;
 	}}, 
 	{name:"blendingMode", 'default':'source-over'}]);
-
 	c.loadingComplete = function(item, a){
 		if(typeof(item.clip)=='string'){
 			var n = item.clip.trim();
@@ -153,18 +175,14 @@ var EXPORTS = igk.winui.cancasEditor.Exports;
 	};
 	return c;
 });
-
 var AC = igk.winui.cancasEditor.Actions;
 var Key = AC.Key;
-
 AC.regMenuAction("layer.new", { callback: function(a){
 	// new layer
 	if (!a.document){
-		var doc =  a.createElement("document");
-		// AC.invoke("file.new");
+		var doc =  a.createElement("document"); 
 		a.add(doc);
-		a.document = doc;
-		// return;
+		a.document = doc; 
 	}
 	var layer  = a.createElement("layer");
 	if (!layer)
@@ -172,12 +190,8 @@ AC.regMenuAction("layer.new", { callback: function(a){
 	a.document.add(layer);
 	layer.setDocument(a.document);
 	a.layer = layer;
-	a.refresh();
-	
+	a.refresh(); 
 }, index:0});
-
-
-
 AC.regMenuAction("layer.clear", { callback: function(a){
 	// - clear the current layer
 	if (a.layer){
@@ -190,8 +204,6 @@ AC.regMenuAction("layer.clear", { callback: function(a){
 		a.refresh();
 	}
 }, index:0});
-
-
 AC.regMenuAction("layer.clip", { callback: function(a){
 	// - set clip to current layer 
 	if (a.layer){
@@ -199,12 +211,10 @@ AC.regMenuAction("layer.clip", { callback: function(a){
 			a.layer.clip = a.element;
 		}else 
 			a.layer.clip = null;
-		
 		a.refresh();
 		//a.editElement(a.layer);
 	}
 }, index:10});
-
 AC.regMenuAction("layer.resetclip", { callback: function(a){
 	// - reset current layer clip
 	if (a.layer && a.layer.clip){ 
@@ -213,12 +223,9 @@ AC.regMenuAction("layer.resetclip", { callback: function(a){
 		//a.editElement(a.layer);
 	}
 }, index:11});
-
 AC.regMenuAction("layer.properties", { callback: function(a){
-	//show layer property
+	//show layer property (compositing page of the document settings)
 	if (a.layer)
-		a.editElement(a.layer);
+		_NS.showDocumentSettings(a, 'layers');
 }, index:100});
-
-
 })();

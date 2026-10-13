@@ -1,99 +1,91 @@
 "use strict";
-
 // date : 28/11/2018
 // author: C.A.D.  BONDJE DOUE
 // version : 1.0
 // desc: represent xml decoder 
 // partof : cancasEditor 
-
 (function(){
-
-
 // console.debug("encoder....");
 // promise
 var _P = igk.system.promiseCall; 
 var _NS = igk.winui.cancasEditor;
-
 var G = igk.system.createNS("igk.winui.cancasEditor.encoder", {
 "xml":function(){
-
 }
 });
-
-
+/**
+ * load a gkds xml document string in the editor
+ * @param {string} xml document source
+ * @param {*} a editor
+ * @returns {boolean} false when the source is not a cancasEditor document
+ */
+G.xml.decodeString = function(xml, a){
+	var  q = igk.createNode("dummy");
+	var txt = igk.html.closeEmptyTag(xml) ;
+	q.setHtml(txt);
+	var gkds = q.select("gkds").first();
+	if (!gkds || (gkds.getAttribute("app")!="cancasEditor")){
+		return false;
+	}
+	var doc = [];
+	var s = 0; // start
+	try{
+		gkds.qselect("document").each_all(function(){
+			var W = this.getAttribute("width");
+			var H = this.getAttribute("height");
+			var _doc = a.createElement("document");
+			_doc.setSize(Number(W), Number(H));
+			// other document properties
+			["fill", "stroke", "title"].forEach((n) => {
+				var v = this.getAttribute(n);
+				if (v !== null && v !== undefined) {
+					_doc[n] = v;
+				}
+			});
+			if (!s){
+				a["@loading"] = 1;
+				a.clear();
+				a.add(_doc);
+				a.document = _doc;
+				s = 1;
+			};
+			doc.push(_doc);
+			_loadItems(_doc, this, a);
+		});
+		if (doc.length == 0)
+		{
+			a.clear();
+			var dummyList = new function(){
+				this.initialize=function(){
+				};
+			};
+			_loadItems(dummyList, gkds , a);
+		}
+	}
+	finally{
+		delete(a["@loading"]);
+	}
+	a.refresh();
+	return true;
+};
 G.xml.decode = function(file, a){
 	var P = _P();
-	
 	// if (typeof(FileReader) != 'function')
 		// return P;
 	// if (typeof(URL) != 'function')
 		// return P;
-	
 	var uri =  URL.createObjectURL(file);
-
-	
 	igk.ajx.bindHeader({
 		"Content-type":"text/xml"
 	});
 	igk.ajx.get(uri, null, function(xhr){
-		
 		if(this.isReady()){
-			var  q = igk.createNode("dummy");
-			var txt = igk.html.closeEmptyTag(xhr.responseText) ;
-			
-			q.setHtml(txt);
-			
-			var gkds = q.select("gkds").first();
-			if (!gkds || (gkds.getAttribute("app")!="cancasEditor")){
+			if (!G.xml.decodeString(xhr.responseText, a)){
 				P.error({msg: _NS.R.err_gkds_file_error});
 				return;
 			}
-			var doc = [];
-			var s = 0; // start
-			
-			// console.debug(gkds.getHtml());
-			
-			gkds.qselect("document").each_all(function(){
-				// console.debug("load document gkds app document");
-				var W = this.getAttribute("width");
-				var H = this.getAttribute("height");
-				
-				var _doc = a.createElement("document");
-				_doc.setSize(W, H);
-				if (!s){
-					a["@loading"] = 1;
-					a.clear();
-					a.add(_doc);
-					a.document = _doc;
-						s = 1;
-				};
-				doc.push(_doc);
-				
-				_loadItems(_doc, this, a);				
-			});
-			
-			
-
-			if (doc.length == 0)
-			{
-				
-				// console.debug("no document registered");			 
-				a.clear();
-				var dummyList = new function(){
-					this.initialize=function(){
-						
-					};
-				};
-				_loadItems(dummyList, gkds , a);	
-				delete(a["@loading"]); 				
-				// console.debug("loaded item "+ a);
-				// console.debug(a.list.item);
-			}			
-			delete(a["@loading"]); 
-			a.refresh();
 			P.resolve();
 			//a.title = file.name;
-			
 	}else {
 		// console.debug(xhr.readyState);
 		// console.debug(xhr.status);
@@ -102,17 +94,11 @@ G.xml.decode = function(file, a){
 		}
 	}
 });
-	
-
 	return P;
 };
-
-
 var EXPORTS =  igk.winui.cancasEditor.Exports;
-
 function BaseSerie(item)
 {
-	
 	return function (n, v, g){
 	if (n in g){
 		//no serialise
@@ -131,7 +117,6 @@ function BaseSerie(item)
 		g[kr][n](item, v);
 		return;
 	}
-	
 	if (n in g[k]){
 		var fc = g[k][n];
 		if (typeof(fc) == 'function'){
@@ -141,20 +126,20 @@ function BaseSerie(item)
 		}
 		return null;
 	}
-
 	// found the properties with the name 
+	// attribute names are lower cased by the html parser: compare without case
+	var ln = n.toLowerCase();
 	for(var j = 0; j < g.length; j++){
-		if (g[j]==n){
+		if ((typeof(g[j])=='string') && (g[j].toLowerCase()==ln)){
 			g[k][n] = function(v){return v;};
 			return v;
 		}
-		if ((typeof(g[j])=='object') && (g[j].name == n)){
-			
+		if ((typeof(g[j])=='object') && (g[j].name.toLowerCase() == ln)){
 			if (g[j].resolv){
 				//priority to resolution
 				g[k][n] = null; 
 				g[kr][n] = g[j].resolv;
-				g[j].resolve(item, v);
+				g[j].resolv(item, v, n); // the export definition names it resolv
 				return;
 			}
 			if (g[j].unserialize){
@@ -172,54 +157,55 @@ function BaseSerie(item)
 	}
 	return v;	
 }
-
 };
-
 function loadAttributes(o, attr, a){
 	var g = EXPORTS.getExports(o.getType());
+	if (!g){
+		// element without export definition: nothing can be loaded
+		return;
+	}
 	if (!g.__attribs__){
 		//load attributes list
 		g.__attribs__ = (function(){
 			var names = {};
-			
 			for(var j = 0; j < g.length; j++){
 				var s = g[j];
-				
 				if (typeof(s)=='string')
 					names[s.toLowerCase()] = s;
 				else {
 					names[s.name.toLowerCase()] = s.name;
 				}
 			}
-			
 			return function(n){
 				return names[n.toLowerCase()];
 			}
 		})();
 	}
 	// console.debug(g);
-	
 	var Unserialize = BaseSerie(o);
 	var _tv= null;
-		
 	for(var i = 0; i < attr.length; i++){
 		var n = attr[i].name;
 		var v = attr[i].value;
-		
-		
-		
+		if ((v === 'null') || (v === 'undefined')){
+			// written by an earlier version for an empty value: use the default
+			continue;
+		}
 		//if deserialize request special attribute.
 		// console.debug(n);
-		
 		 _tv = Unserialize(n, v, g);
-		 if( (typeof(_tv) !='undefined') || !(n in g['@_resolv']))
-			o[g.__attribs__(n)]  = _tv;
-		
+		 if( (typeof(_tv) !='undefined') || !(n in g['@_resolv'])){
+			try{
+				o[g.__attribs__(n)]  = _tv;
+			}
+			catch(e){
+				// read only or invalid property: keep the default value instead of aborting the whole load
+				console.warn("[cancasEditor] attribute '"+n+"' of "+o.getType()+" not loaded: "+e.message);
+			}
+		}
 	}
 }
-
 function _loadItems(o, src, a, exports){
-	
 	src = $igk(src);
 	var tq = [{o: src.o, t: o }];
 	var q = 0;
@@ -233,7 +219,7 @@ function _loadItems(o, src, a, exports){
 		if (q.o.childNodes.length>0){			
 			if (g && ('unserialize' in g)){
 				g.unserialize.apply(q.t, [ { "src": q.o, "a":a }] );
-				g.initialize();
+				q.t.initialize && q.t.initialize(); // the element, not its export definition
 				continue;
 			}
 			// else{
@@ -244,7 +230,6 @@ function _loadItems(o, src, a, exports){
 			// }
 			var childs = q.o.childNodes;
 			var cln = childs.length;
-			
 			for(var i = 0;  i < cln; i++){
 				var gsrc = childs[i];
 				if(gsrc.nodeType != 1){
@@ -252,18 +237,16 @@ function _loadItems(o, src, a, exports){
 				}
 				var nn = gsrc.tagName.toLowerCase(); //child name
 				// console.debug("load : "+nn);
+				if (nn == "layer"){
+					// a layer is added to the document, not to the previously loaded layer
+					a.layer = null;
+				}
 				var b = a.add(nn);
-			
-			
 				if (b!=null){	
 					//initialize special item
 					mExports.initItemApp(a, b);
-					
-			
-			
 				//load definition properties
 					loadAttributes( b, gsrc.attributes, a);
-			
 					//load attribute
 					tq.push({
 						o: gsrc,
@@ -278,9 +261,6 @@ function _loadItems(o, src, a, exports){
 				}
 			}
 		}
-
-	
-		
 		// console.debug("initialize "+tn + " tn : "+q.tn + " index : "+q.index);
 		if (q.p){
 			q.t.initialize();		
@@ -289,8 +269,5 @@ function _loadItems(o, src, a, exports){
 			q.g.loadingComplete(q.host, a);
 		}
 	}
-	
 };
-
-
 })();
