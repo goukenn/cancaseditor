@@ -88,9 +88,14 @@
 		e.stopPropagation();
 		closeMenu();
 		const m = _el('div', { className: 'le-menu' });
-		ORDER.forEach(([method, key]) => {
+		const isDoc = typeOf(item) == 'document';
+		ORDER.filter(() => !isDoc).forEach(([method, key]) => {
 			m.append(_el('div', { textContent: T('lay.' + key), onclick: () => { closeMenu(); if (reorder(editor, item, method)) { rerender(); } } }));
 		});
+		if (canDelete(item)) {
+			if (!isDoc) { m.append(_el('div', { className: 'le-sep' })); }
+			m.append(_el('div', { textContent: T('lay.delete'), onclick: () => { closeMenu(); requestDelete(editor, item, rerender); } }));
+		}
 		if (typeOf(item) != 'layer' && typeOf(item) != 'document') {
 			// move the element to another layer of the current document
 			const targets = layersOf(editor).filter((l) => l !== item['@container']);
@@ -106,6 +111,69 @@
 		m_menu = m;
 		setTimeout(() => document.addEventListener('click', closeMenu, { once: true }), 0);
 	}
+	/** an element / group can always be deleted, a layer only when it is not the last one of its document */
+	function canDelete(el) {
+		const c = el && el['@container'];
+		if (typeOf(el) == 'document') { return !!el['@container']; }
+		if (!c) { return false; }
+		return typeOf(el) != 'layer' || c.getLayers().length > 1;
+	}
+	/**
+	 * delete from the explorer (menu, key, button). The last document of the scene asks for a confirmation first.
+	 * @returns {boolean} false when the item cannot be deleted
+	 */
+	function requestDelete(editor, item, rerender) {
+		if (!canDelete(item)) { return false; }
+		if (typeOf(item) != 'document') {
+			if (deleteItem(editor, item)) { rerender(); }
+			return true;
+		}
+		const remove = () => { editor.removeDocument(item); rerender(); };
+		if (editor.documents.length > 1) { remove(); return true; }
+		_NS.ui.modal({
+			title: T('lay.removedoc'), content: _el('div', { textContent: T('lay.confirm.lastdoc') }),
+			buttons: [
+				{ text: T('lay.cancel'), onclick: (close) => close() },
+				{ text: T('lay.delete'), primary: true, onclick: (close) => { close(); remove(); } }
+			]
+		});
+		return true;
+	}
+	/** remove a layer, an element or a group from its container (the selection tool is told when it is the selected one) */
+	function deleteItem(editor, el) {
+		if (!canDelete(el)) { return false; }
+		const c = el['@container'];
+		const t = editor.tool;
+		if (typeOf(el) == 'layer') {
+			editor.Edit(null, t); // drop the selection (it may be inside the layer)
+			c.remove(el);
+			if (editor.layer === el) { editor.layer = lastLayer(c); }
+			editor.refresh();
+			return true;
+		}
+		if (editor.element === el && t && typeof t.deleteSelected == 'function') {
+			t.deleteSelected();
+		} else {
+			c.remove(el);
+			if (editor.element === el) { editor.Edit(null, t); }
+			editor.refresh();
+		}
+		return true;
+	}
+	// backspace (macOS) / delete (windows) remove the element selected in the explorer, while the last pointer
+	// interaction was on the explorer (the surface handles the keys itself when it has the focus)
+	let m_ctx = null; // {editor, rerender} of the explorer on screen
+	let m_active = false;
+	let m_sel = null; // the layer / element whose row was clicked last
+	document.addEventListener('pointerdown', (e) => { m_active = !!(e.target.closest && e.target.closest('.le-root')); }, true);
+	document.addEventListener('keydown', (e) => {
+		if (!m_active || !m_ctx || !m_sel || (e.key != 'Backspace' && e.key != 'Delete')) { return; }
+		if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]')) { return; }
+		if (requestDelete(m_ctx.editor, m_sel, m_ctx.rerender)) {
+			e.preventDefault();
+			m_sel = null;
+		}
+	});
 	const typeOf = (x) => (x.getType ? x.getType() : '');
 	const isBox = (x) => { const t = typeOf(x); return t == 'layer' || t == 'group'; }; // can hold elements
 	const insideOf = (x, c) => { for (let n = 0; x && n < 20; n++, x = x['@container']) { if (x === c) { return true; } } return false; };
@@ -254,6 +322,7 @@
 					return;
 				}
 				m_lastClick = { target: o.target, t: now };
+				m_sel = o.item || null;
 				o.onclick(e);
 			};
 			if (o.target) {
@@ -273,7 +342,7 @@
 					if (r._longTouch && Date.now() - r._longTouch < 1500) { e.preventDefault(); return; } // long touch = rename
 					showMenu(e, item, editor, rerender);
 				};
-				r.draggable = true;
+				r.draggable = typeOf(item) != 'document';
 				r.ondragstart = (e) => {
 					m_drag = item;
 					e.dataTransfer.effectAllowed = 'move';
@@ -315,12 +384,14 @@
 			return r;
 		};
 		const rerender = () => { const p = root.parentNode; if (p) { p.replaceChild(build(editor), root); } };
+		m_ctx = { editor, rerender };
 		docs.forEach((doc) => {
 			const dkey = 'd:' + doc.id;
 			const isCur = editor.document === doc;
 			root.append(row({
 				depth: 0, key: dkey, toggle: true, target: doc, label: doc.id, sub: doc.width + '×' + doc.height, active: isCur,
-				actions: docs.length > 1 ? [iconBtn(ICON.close, T('lay.removedoc'), () => editor.removeDocument(doc))] : [],
+				item: doc,
+				actions: [iconBtn(ICON.close, T('lay.removedoc'), () => requestDelete(editor, doc, rerender))],
 				onclick: () => { editor.document = doc; editor.layer = lastLayer(doc); editor.refresh(); }
 			}));
 			if (collapsed[dkey]) { return; }

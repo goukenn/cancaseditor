@@ -1,6 +1,4 @@
 "use strict";
-
-
 (function(){
 //filter Editor Tool
 var _NS = igk.winui.cancasEditor; 
@@ -8,16 +6,11 @@ var AC = _NS.Actions;
 var R = _NS.R; //.Actions;
 var Key = AC.Key;
 var CT = igk.system.convert;
-
 var initc = 0;
-
-
 AC.regMenuAction("window.filter", { callback: function(a)
 {
 		//filter expression 
 		var prop = ['sepia','blur', 'contrast', 'brightness', 'grayscale','hue-rotate','invert','saturate', 'opacity'];
-	
-	
 		var GUI =  igk.winui.cancasEditor.gui;
 		var d = igk.createNode("div");
 		var frm = d.add("form");
@@ -32,7 +25,6 @@ AC.regMenuAction("window.filter", { callback: function(a)
 			}
 			return 0;
 		};
-		
 		function update_v(max, min, t, i, s){ // update input value
 			var s = s || 1;
 			if (i){
@@ -42,9 +34,7 @@ AC.regMenuAction("window.filter", { callback: function(a)
 			}
 			v[t.id] = CT.parseToInt(t.value);
 		};
-		
 		if (engine){
-		
 			for(var i = 0 ; i< prop.length; i++){
 				v[prop[i]] = getdef(prop[i]) || 0;
 				engine
@@ -55,7 +45,6 @@ AC.regMenuAction("window.filter", { callback: function(a)
 					 maxlength:3,
 					 pattern: '^[0-9]{1,3}$'
 				});
-				
 			}
 		}
 		frm.select("input")
@@ -69,7 +58,6 @@ AC.regMenuAction("window.filter", { callback: function(a)
 			var max = e.target.max || 100;
 			var delta = 0; // Math.abs(e.deltaY);
 			//console.debug('e: delta : '+e.deltaY);
-			
 			update_v(max, min, e.target, i, delta);
 			updatevalue();
 			e.preventDefault();
@@ -82,12 +70,10 @@ AC.regMenuAction("window.filter", { callback: function(a)
 			var data = null;
 			if (!e.clipboardData){
 				//for ie string data
-					
 				// console.debug("can't paste data");
 				// console.debug(e);
 				e.preventDefault();
 				e.stopPropagation();
-			
 				if (!clip)
 					return;
 				// ie data transfert : text
@@ -104,17 +90,14 @@ AC.regMenuAction("window.filter", { callback: function(a)
 			var f = l.anchorNode || l.focusNode; 
 			// console.debug(l);
 			// if (e.target == f){
-				
 				// if (l.rangeCount > 0){
 				// }
 			// }
-				
 			if (data){
 				var x = CT.parseToInt(data);				
 				if (data == ""+x){					
 					var min = e.target.min || 0;
 					var max = e.target.max || 100;
-					
 					if ((x >= min) && (x<=max)){
 						e.target.value = x;
 					}		
@@ -136,13 +119,10 @@ AC.regMenuAction("window.filter", { callback: function(a)
 			var min = e.target.min || 0;
 			var max = e.target.max || 100;
 			var ck = AC.getKeyFromEvent(e); 
-		
 			if (e.type == "keydown"){
-								
 				switch(ck)
 				{
 					case Key.Plus:
-					
 					e.target.value = Math.min(!e.target.value? 1 :parseInt(e.target.value)+1, max); 
 					h=1;
 					break;
@@ -152,7 +132,6 @@ AC.regMenuAction("window.filter", { callback: function(a)
 					break;
 					case Key.Ctrl:
 					break;
-					
 					default:
 					// e.target.value = parseInt(""+e.target.value);
 					//console.debug("down : "+e.target.value);
@@ -166,7 +145,6 @@ AC.regMenuAction("window.filter", { callback: function(a)
 					}
 					else {
 						if (!Key.IsControl(ck)){
-							
 							if (!Key.IsModifier(ck))
 							{
 								console.debug("prevent1");
@@ -178,25 +156,15 @@ AC.regMenuAction("window.filter", { callback: function(a)
 					}
 					break;
 				}
-			
-						
 			}else{
 				h = 1;
 			}
 			// console.debug("esc "+h);
 			if (h){
-				//if (e.type == 'keyup'){
-					// console.debug("Control :::: "+(Key.Ctrl|Key.C));
-					// console.debug("??? cancel "+e.type + " "+Key.IsControlModifier(ck) + " "+ck + " ::: "+(ck==(Key.Ctrl|Key.C)));
-					// console.debug(Key.IsControlModifier(ck) + " vs :: "+(( ck & Key.Ctrl) ==Key.Ctrl));
-					// // console.debug(e);
-					// return;
-					
 					if (Key.IsControlModifier(ck) || ((ck & Key.Escape)==Key.Escape)){
 						//console.debug("is controllll - modifier");
 						return;
 					}
-				
 				//}
 				v[e.target.id] = igk.system.convert.parseToInt(e.target.value);
 				updatevalue();
@@ -239,18 +207,15 @@ AC.regMenuAction("window.filter", { callback: function(a)
 			_i.on('input mousewheel', _update_track);
 			_update_track();
 		});
-		
 		engine.addGroup().addLabel(null, "",  {
 			text: "",
 			id: "result"
 		});
 		var _l = frm.select("#result").first();
-		
 		function reset(){
 			for(var i = 0 ; i< prop.length; i++){
 				v[prop[i]] = getdef(prop[i]) || 0;
 			};
-			
 			frm.select("input").each_all(function(){
 				if (this.o.id && (this.o.id in v)){
 					this.o.value = v[this.o.id];
@@ -258,10 +223,8 @@ AC.regMenuAction("window.filter", { callback: function(a)
 			});
 			updatevalue();
 		};
-	 
 		function updatevalue(){
 			var sfilter = {};
-
 			sfilter.grayscale = v.grayscale + "%";//"0
 			sfilter.huerotate = Math.ceil(v['hue-rotate']  * 360/100) + "deg";// ("
 			sfilter.blur = v.blur + "px";// ("0x
@@ -271,14 +234,9 @@ AC.regMenuAction("window.filter", { callback: function(a)
 			sfilter.opacity = (100 - v.opacity) + "%";
 			sfilter.brightness = (v.brightness * 2  ) + "%";// scale from 0 - 200  / default is 100
 			sfilter.contrast = (100-v.contrast) + "%";
-				
-				
 			// console.debug(igk.canvas.getFilterString(sfilter));
 			if (_l){
-				
-				
 				_l.setHtml(igk.canvas.toStringExpression(v));
-				
 				var s = a.selectedItem || a.layer || a.document;
 				if (s){
 					s.filter = igk.canvas.getFilterString(sfilter);
@@ -290,7 +248,6 @@ AC.regMenuAction("window.filter", { callback: function(a)
 		// frm.add("input").setAttribute("value", "#ff00FF0CFF");
 		// d.setHtml("Filter : ");
 		updatevalue();
-		
 		var bar = frm.add("div").addClass("igk-action-bar");
 		bar.add("input").setAttributes({
 			"type":"button",
@@ -302,11 +259,6 @@ AC.regMenuAction("window.filter", { callback: function(a)
 		// bar.add("input").setAttributes({
 			// "type":"button"
 		// });
-		
-		
-		
 		GUI.dialog.showDialog(R.title_filter || "Filter", d);
 	}, index:0});
-
-
 })();

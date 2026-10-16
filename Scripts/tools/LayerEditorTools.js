@@ -1,8 +1,5 @@
 (function(){
-
 //register layer tool
-
-
 function LayerEditorTool(){
 	igk.winui.cancasEditor.Editor.Tool.apply(this);
 	var lb = igk.createNode("span").addClass("layertool").setCss({
@@ -10,7 +7,6 @@ function LayerEditorTool(){
 		paddingRight: "4px",
 		cursor: 'pointer'
 	});
-	
 	lb.setHtml("");
 	var self = this;
 	var doc = lb.add("span").setHtml("scene");
@@ -27,28 +23,28 @@ function LayerEditorTool(){
 		zIndex:'10',
 		backgroundColor:'#444'
 	});
-	lyv.setHtml("");
-	// lyv.add("li").setHtml("layer 1");
-	// lyv.add("li").setHtml("layer 2");
-	// lyv.add("li").setHtml("layer 3");
-	var selectedLi = 0;
+	lyv.setHtml(""); 
+	var selectedLi = -1;
 	var _visible = 0;
-	function _select(li, layer){
-		
-		
+	function _select(li, layer){ 
 		return function(){
-			if (selectedLi != li){
-				selectedLi.rmClass("igk-active");
+			if (selectedLi==-1){
 				self.editor.layer = layer;
 				selectedLi = li;
+				return;
 			}
+			if (selectedLi && (selectedLi != li)){
+				selectedLi.rmClass("igk-active");
+			}
+			self.editor.layer = layer;
+			selectedLi = li;
 		};
 	}
 	ly.on("click",function(e){
 		if (!_visible && self.editor.document){
 		var layers = self.editor.document.getLayers();
 		//init layers
-		lyv.setHtml("");
+		lyv.setHtml(""); 
 		for(var i = 0; i < layers.length; i++){
 			var li = lyv.add("li").setHtml(layers[i].id);
 			if (layers[i] == self.editor.layer){
@@ -67,21 +63,18 @@ function LayerEditorTool(){
 		this.host = t;
 		this.editor =editor;
 		this.host.add(lb);
-		
 		editor.on("currentLayerChanged", function(){
 			var s = "";
 			if (editor.layer)
 				s = " : "+editor.layer.id;
 			ly.title.setHtml(s);
 			}).on("click", function(){
-				if (_visible){
-					// console.debug("hide....");
+				if (_visible){ 
 					lyv.toggleClass("dispn");
 					_visible = 0;
 				}
 			});
 	}
 }
-
 igk.winui.cancasEditor.Editor.regTool("Bottom", new LayerEditorTool());
 })();

@@ -1,0 +1,47 @@
+<?php
+
+use IGK\Controllers\BaseController;
+
+function igk_html_node_CancasEditorApp($setting = null)
+{
+	$n = igk_create_node("div");
+	$n["class"] = "igk-cancas-editor-app";
+	$n["igk:settings"] = $setting;
+	return $n;
+}
+
+/**
+ * 
+ * @param BaseController $ctrl 
+ * @param mixed $doc 
+ * @param string $folder script directory 
+ * @return void 
+ */
+function load_cancas_scripts(igk_default $ctrl, $doc, string $folder) {
+	$tab = $ctrl->getParam("jsscript");
+	$clist = [];
+	if (!$tab) {
+		$clist = igk_io_getfiles($folder, function($f){
+			if (preg_match("/\b(node_modules|git)\b/", dirname($f))){
+				return false;
+			}
+			if (preg_match("/\.autoload\.js$/", basename($f))){
+				return false;
+			}
+			return preg_match("/\.js$/", $f);
+		}); 
+	} else {
+		$clist = $tab;
+	}
+
+
+	if ($clist) {
+		$v_res_resolver = IGKResourceUriResolver::getInstance();
+		$p = $v_res_resolver->resolve($folder);
+		foreach ($clist as $f) {
+			$tab[]  = $f;
+			$r = $doc->addTempScript($f);
+			$r->activate('defer'); 
+		} 
+	}
+};

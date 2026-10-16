@@ -12,8 +12,12 @@ igk.system.createClass(LY, {name:"snippets", parent: ELEM.drawing2DContainer}, f
 	var startPos = 0;
 	var self = this;
 	var snippets = [];
-	function updateSnippetLocation(mecanism, element){
-		var points = mecanism.tool.getPoints(element);
+	function updateSnippetLocation(mecanism, element, peek){
+		// peek: a redraw only moves the snippets (the tool state is not touched, nothing happens while dragging one)
+		var points = peek ? mecanism.tool.peekPoints(element) : mecanism.tool.getPoints(element);
+		if (peek && (!points || points.length == 0)){
+			return;
+		}
 		if (!points){
 			p.setHtml('');
 			return;
@@ -47,6 +51,14 @@ igk.system.createClass(LY, {name:"snippets", parent: ELEM.drawing2DContainer}, f
 			}
 		}
 	};
+	// the snippets follow the element on every redraw (an action may have transformed it)
+	// (an own overlay object: the render of this container class is not the one the editor calls)
+	a.overlayLayer.push({ render: function(editor){
+		var t = editor.tool;
+		if (snippets.length > 0 && t && t.elem && (typeof(t.peekPoints) == 'function')){
+			updateSnippetLocation(t, t.elem, true);
+		}
+	}});
 	a.on("itemStartEdition", function(evt){
 		// console.debug('start edition');
 		updateSnippetLocation(evt.mecanism, evt.element);

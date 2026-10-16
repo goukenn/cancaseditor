@@ -2,11 +2,8 @@
 // file: igkdev telerik utility namespace for graphical interface
 // author: C.A.D BONDJE DOUE
 // creation : 08/07/2019
-
 "use strict";
-
 (function(){
-    
     var telerik = window.Telerik || (window.Telerik = {});
     if (telerik._initialize){
         return;
@@ -28,7 +25,6 @@
         if (! (t instanceof Array)){
             t = Array(t);
         }
-
         for(var i = 0; i < t.length ; i++){
             c.apply(t[i]);
         }
@@ -38,7 +34,6 @@
     telerik.Dialog = function(){
         if (!_bindcss){
             var s = document.createElement('style');
-
             var _t = [
             ":root{ --telerik-dialogbox-background-color: indigo; }",
             ".telerik-dialogbox{ display:table; z-index: 100; top:0px; left:0px; position:fixed; width:100%; height: 100%;}",
@@ -52,12 +47,9 @@
             ".telerik-dialogbox > div:before{content:' ';z-index:-10; top:0px; left:0px;background-color:aqua; background-color:var(--telerik-dialogbox-background-color, indigo); opacity:0.3; position:fixed; width:100%; height:100%; }",
             ".telerik-dialogbox .dialog .h-content > div:not(.action){padding:10px 0px;}"
             ];
-            
-            
             s.innerText = _t.join(' ');
             document.head.appendChild(s);
             _bindcss = 1;
-
             if ($igk){ 
                 $igk(document).on("keyup", function(e){
                     if (_dialogs && (_dialogs.length> 0) && _listener){
@@ -73,22 +65,16 @@
         var _cbar = document.createElement("div");
         var _listener = null;
         var q = this;
-
         _dialogs.push(q);
         _box .setAttribute('class', 'telerik-dialogbox');
         //_box.style.display ="none"; 
-    
         dial.setAttribute('class', 'dialog');
         _hbar.setAttribute('class', 'h-bar');
         _cbar.setAttribute('class', 'h-content');
-
         dial.appendChild(_hbar);
         dial.appendChild(_cbar);
-
         _cell.appendChild(dial);
         _box.appendChild(_cell);
-
-       
         //stop background scrolling
         _box.addEventListener("wheel", function(e){                
             e.preventDefault();
@@ -136,8 +122,6 @@
             return _box.querySelector(f);
         };
     };
-
-
     telerik.confirm=function(n, p){
         // n : id for the dialog
         // p : properties
@@ -149,15 +133,11 @@
         _c+= "<input type='button' class='confirm' />";
         _c+= "<input type='button' class='cancel' />";
         _c+= "</div>";
-        
-        
         _dialog.appendClass("confirm");
         _dialog.setTitle(p.title || " ");
         _dialog.setContent(_c);
         _dialog.setListener(p.listener || null);
-
         // console.debug(_dialog.querySelector("input.confirm"));
-
         each(_dialog.querySelector("input.confirm"), function(){
             this.value = telerik.R.__("Confirm");
             this.focus();
@@ -166,10 +146,8 @@
         each(_dialog.querySelector("input.cancel"), function(){
             this.value = telerik.R.__("Cancel");
         });
-
         _dialog.show();
     };
-
     telerik.showDialog = function(n, m){
         var _dialog = new telerik.Dialog();
         _dialog.id = n;
@@ -177,7 +155,6 @@
         _dialog.setListener(null);
         _dialog.show();
     };
-
     // for loading resources 
     telerik.R = {
         __: function(n){
@@ -188,8 +165,6 @@
         }
     };
 })();
-
-
 function DialogListener(){ 
     // this.click = function(t, e){
     //     t.close();
@@ -199,10 +174,7 @@ function DialogListener(){
             t.close();
         }
     };
-   
-
 }
-
 // Telerik.confirm("baseic", {
 //     title: "demonstration",
 //     content:'Welcome to IGKDEV\'s - Balafon CancasEditorg',

@@ -1,20 +1,16 @@
 "use strict";
-
 (function(){
-
 var _NS = igk.winui.cancasEditor;
 var AC = _NS.Actions;
 var R = _NS.R; //.Actions;
 var Key = AC.Key;
 var CT = igk.system.convert;
-
 function tabButton(){
 	var _btns = [];
 	var _q = igk.createNode("div");
 	var _active = 0;
 	//exposed event
 	_q.addEvent("clickButton", {});
-	
 	_q.addClass("igk-tab-button");
 	this.addBtn = function(id, text){
 		var r = _q.add("div");
@@ -48,27 +44,20 @@ function tabButton(){
 		}
 	});
 };
-
-
 function colorValueLabel(){
 	var _q = igk.createNode("div").addClass("posr dispib igk-color-value-label");
 	var _i = _q.add("input").setAttributes({type:'text'}).on("change", function(){
-		
 	});
 	igk.defineProperty(this, "o", {
 		get:function(){
 			return _q.o;
 		}
 	});	
-	
 	this.setValue = function(v){
 		_i.o.value = v; //setHtml(v);
 	};
-	
 	this.setValue("#000");
 }
-
-
 function tabColorPicker(){
 	var _q = igk.createNode("div");
 	igk.defineProperty(this, "o", {
@@ -84,8 +73,6 @@ function tabColorPicker(){
 		}
 	});
 };
-
-
 function rgbColorPicker(engine){
 	tabColorPicker.apply(this);
 	var MS_BTN = igk.winui.mouseButton;
@@ -153,7 +140,6 @@ function rgbColorPicker(engine){
 					left: Math.ceil(nloc.x)+"px",
 					top: Math.ceil(nloc.y)+"px"
 				});
-				
 				var v_angle = CoreMathOperation.GetAngle(center, nloc);
 				// console.debug("angle : "+v_angle);
 				m_defcl = igk.system.hsl2rgb(v_angle * CoreMathOperation.ConvRdToDEGREE, 100, 50 + (Math.round(((-D+d)/d) * 50)));
@@ -162,7 +148,6 @@ function rgbColorPicker(engine){
 				m_update = 0;
 				break;
 		}
-		
 	}).on('mousedown', function(e){
 		m_capture = 1;
 		e.preventDefault();
@@ -176,17 +161,13 @@ function rgbColorPicker(engine){
 		e.stopPropagation();
 		// console.debug("ex");
 	});
-	
 	_cur =_s.add("div").addClass("btn-cur no-selection");//, func
 	_cur.on("mousedown", function(e){
 		e.preventDefault();
 		e.stopPropagation();
 	});
-	
-	
 	function __update_circle_loc(){
 		if (m_update)return;
-		
 		 var hsl, dist, angle, loc, c, cl=m_defcl; 
 		 hsl  = igk.system.rgb2hsl(cl.r, cl.g, cl.b);
 		 //update cursor location
@@ -239,9 +220,6 @@ function rgbColorPicker(engine){
 		 }else 
 			_self.color = m_defcl.toHtml();//[e.target.id];
 	};
-	
-	
-	
 	 _s = _q.add('div');
 	 var _rx = /a|l/, _d = ['r', 'g', 'b', 'a', 'l'];
 	 _d.data = {};
@@ -256,14 +234,12 @@ function rgbColorPicker(engine){
 				 width: '1.5em'
 			 })
 			 .setHtml(_d[i].toUpperCase());
-			 
 			 var _max = _rx.test(_d[i])?100: 255;
 			 var _val = 0;
 			 if (_rx.test(_d[i])){
 				_val =  m_defcl ? m_defcl[_d[i]] * 100 : 100
 			 }else 
 				 _val =  m_defcl ? m_defcl[_d[i]]: 0;
-			 
 			 var _trackinput = b.add('input')
 			  .addClass("igk-winui-trackbar").setAttributes(
 			 {
@@ -277,7 +253,6 @@ function rgbColorPicker(engine){
 				 }
 				 var id = e.target.id;
 				 var v = parseInt(e.target.value);
-				 
 				 if(!m_defcl)
 					 m_defcl = igk.system.colorFromString('');//.from.empty(); //{r:0, g:0, b:0, a:0, l: 0};
 				 _d.data.update = 1;
@@ -290,27 +265,21 @@ function rgbColorPicker(engine){
 						var l = Math.round(Math.ceil(v * 100)/100);
 						m_defcl[id] = l;
 						_d.data[id].input.val(v);
-						
 						var _s, _sl, _g;
-						
 						if(!m_defcl.basecl)
 						{m_defcl.basecl = {
 							r: m_defcl.r,
 							g: m_defcl.g,
 							b: m_defcl.b,
 							l: Math.round(m_defcl.getLuminance()*100)
-							
 						};
 						}
 						_sl = m_defcl.basecl.l;
 						// calculate lumiance difference
 						_s = Math.round((-_sl+ l) *(255/100));
-					
-						
 						m_defcl.r = Math.round(Math.max(0, Math.min(255, m_defcl.basecl.r + (_s / 0.299))));
 						m_defcl.g = Math.round(Math.max(0, Math.min(255, m_defcl.basecl.g + (_s / 0.587))));
 						m_defcl.b = Math.round(Math.max(0, Math.min(255, m_defcl.basecl.b + (_s / 0.114))));
-						
 						//update track value
 						__update_track_def(_d, m_defcl, /a|l/);
 						break;
@@ -330,11 +299,7 @@ function rgbColorPicker(engine){
 				 __update_def_cl();		
 				  _d.data.update = 0;
 			 });//.init();
-			 
-			 
 			 var bhost = engine.host;
-			 
-			 
 			 var _txtinput = b.add('span').addClass("igk-round-input").add('input').setAttributes({
 				type:'text',
 				maxLength:'3',
@@ -344,8 +309,6 @@ function rgbColorPicker(engine){
 			 }).on('input', function(e){
 				 if (_d.data.update)
 					 return;
-				 
-				 
 				 var id =  $igk(e.target).getAttribute('for');
 				 var t = $igk(e.target).val(); 
 				 var v = parseInt(t);
@@ -371,8 +334,6 @@ function rgbColorPicker(engine){
 							};							 
 						}
 						// base data
-						
-					 
 					 break;
 					 default:
 						if ((v >=0)&&(v<=255)){
@@ -385,81 +346,55 @@ function rgbColorPicker(engine){
 				 __update_circle_loc();
 				 _d.data.update = 0;
 				 // console.debug(id+ " = "+v);
-				 
 			 });
-			 
-			 
-			 
 			 _d.data[_d[i]] = {
 				 track: _trackinput,
 				 input : _txtinput
 			 };
 	 }
-	 
 	 _q.on("colorchanged", function(){
 		 if (_d.data.update)return;
-		 
 		 _d.data.update = 1;
 		 var k, hsl, angle, dist,loc, center, cl = igk.system.colorFromString(_self.color);
-		 
 		 // console.debug("color changed "+cl);
 		 m_defcl = cl;
 		 __update_circle_loc();		 
 		 __update_track_def(_d, cl);
-		   
-		 
-		
-		 
 		 _d.data.update = 0;
 	 });
 	 engine.host = bhost;
 	 // engine.add(b);
 };
-
-
 // function rgbTrackList(){
 	// var q = igk.createNode('div').addClass("igk-winui-track");
 	// var r = q.add('div').addClass('track r');
 	// var g = q.add('div').addClass('track g');
 	// var b = q.add('div').addClass('track b');
 	// var a = q.add('div').addClass('track a');
-	
-	
 	// igk.defineProperty(this, 'o', {get: function(){return q.o; }});
-	
-	
-	
 // };
-
 var m_tool=0;
+var m_dialog=null; // the color dialog (open while its control is in the document)
+var isShown = function(){ return !!(m_dialog && m_dialog.control && m_dialog.control.o && m_dialog.control.o.isConnected); };
 var m_mode = 'f';// select "f|s" fill or stroke
 var _ENGINE = igk.winui.engine;
-
 function __showdialog(a){
 	var d = m_tool;
 	var GUI = _NS.gui;
 	if (!d){
-		
-	 
 	d = igk.createNode("div");
 	var frm = d.add("form");
 	var engine = _ENGINE.getEngine("bmc", frm, R);
 	var mode = 'rgb';
-	
-	
 	var c = frm.add("div");
 	c.addClass("igk-panel");
 	engine.host = c;
-	
 	var btn = new tabButton();
-	
 	btn.addBtn("rgb", "RGB");
 	btn.addBtn("ycm", "YCM");
 	btn.addBtn("hvs", "HVS");
 	btn.addBtn("gray", "GRAY");
-	
 	btn.select(mode);
-	
 	btn.on("clickButton", function(e){
 		// console.debug(e.id);
 		if (e.id == mode)
@@ -469,16 +404,11 @@ function __showdialog(a){
 	});
 	//tabengine
 	engine.add(btn);
-	
-	
 	c = frm.add("div");
 	c.addClass("igk-panel");
 	engine.host = c;
-	
-	
 	var clPicker = new rgbColorPicker(engine);
 	var clVlab = new colorValueLabel(engine);
-	
 	var dv = igk.createNode("div").addClass("igk-row");
 	dv.add(clPicker);
 	// dv.add(new rgbTrackList());
@@ -486,10 +416,7 @@ function __showdialog(a){
 	c = frm.add("div");
 	c.addClass("igk-panel");
 	engine.host = c;
-	
 	engine.add(clVlab);
-	
-	
 	clPicker.on("colorchanged", function(e){
 		clVlab.setValue(e.color);
 		var el = a && a.element ? a.element:null;
@@ -507,18 +434,15 @@ function __showdialog(a){
 			}
 		}
 	});
-	
 	m_tool = d;
 	}
-	
-	var dialog = GUI.dialog.showDialog(R.color_title || "Colors", d,
+	var dialog = m_dialog = GUI.dialog.showDialog(R.color_title || "Colors", d,
 		{id:'color', 
 		settingKey:'dialog/color',
 		settings: _NS.settings.getSetting('dialog/color') 
 		});
 	var loc_change = function(){
 		var timeout = 0;
-		
 		return function(e){ 
 			if (timeout)
 				clearTimeout(timeout);
@@ -527,14 +451,11 @@ function __showdialog(a){
 				prop.location = e.data; 
 				_NS.settings.storeSetting('dialog/color', prop);
 			}, 500);
-			
 		};
 	};
 		dialog.control.addClass("color");
 		dialog.on("locationChanged", loc_change());
 };
-
-
 AC.regMenuAction("view.colors", { 
 initialize: function(a, key, menuHost){
 	menuHost.initialize = function(){
@@ -543,9 +464,12 @@ initialize: function(a, key, menuHost){
 	};
 	return !0;
 },
+checked: isShown,
 callback: function(a){
+	if (isShown()){ // the menu item toggles the dialog
+		m_dialog.close();
+		return;
+	}
 	__showdialog(a); 
-	
 }});
-
 })();

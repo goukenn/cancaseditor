@@ -195,6 +195,7 @@
 				// a single edited element is replaced by the selection of all elements
 				v_host.Edit(null, this);
 				m_toedit = multiSelection(items, v_host);
+				v_host.raiseEvent('selectChanged', { items: Array.prototype.slice.call(m_toedit.items) }); // the property inspector shows the common properties
 			}
 			v_host.refresh();
 		};
@@ -250,14 +251,32 @@
 					m_toedit = items[0];
 					// this.host.Reload(m_toedit, this);
 					// this.reaload(m_toedit, this
-				} else
+				} else {
 					m_toedit = multiSelection(items, this.host);
+					this.host.raiseEvent('selectChanged', { items: Array.prototype.slice.call(m_toedit.items) }); // the property inspector shows the common properties
+				}
 			} else {
 				m_toedit = null;
 			}
 			this.host.refresh();
 		};
+		/** select the given elements (one: edited, several: multi selection) */
+		this.selectItems = function (items) {
+			this.host.Edit(null, this);
+			if (items.length == 1) {
+				this.host.Edit(items[0], this);
+				m_toedit = items[0];
+			} else if (items.length > 1) {
+				m_toedit = multiSelection(items, this.host);
+				this.host.raiseEvent('selectChanged', { items: Array.prototype.slice.call(m_toedit.items) });
+			} else {
+				m_toedit = null;
+			}
+			this.host.refresh();
+		};
+		var m_dup = false; // Ctrl + drag pending: duplicate on the first move
 		this.handleMouseUp = function (e) {
+			m_dup = false;
 			// console.debug("selection mouse up "+ mode);
 			switch (mode) {
 				case 'ms':
@@ -312,6 +331,10 @@
 				case MS_BTN.Left:
 					this.startPos = e.loc;
 					this.endPos = e.loc;
+					m_dup = false;
+					if (e.ctrlKey && !(m_toedit && m_toedit.contains(e.loc.x, e.loc.y, this.host))) {
+						this.selectPoint(e.loc); // Ctrl + drag on an element that is not selected yet
+					}
 					if (m_toedit && m_toedit.contains(e.loc.x, e.loc.y, this.host)) {
 						if (!_tempMatrix)
 							_tempMatrix = new Matrix();
@@ -321,6 +344,11 @@
 							_tempMatrix.copytransform(v.element);
 						}
 						mode = 't';
+						m_dup = !!e.ctrlKey; // Ctrl + drag: the copies are made on the first move
+						m_snapBase = null;
+						try {
+							if (_NS.columnGrid && this.host.document && _NS.columnGrid.snapLines(this.host.document)) { m_snapBase = _NS.CoreMathOperation.GetElemBound(m_toedit); }
+						} catch (err) { }
 					}
 					else {
 						mode = 'ms';
@@ -349,6 +377,23 @@
 						this.endPos = e.loc;
 						dx = (-this.startPos.x + this.endPos.x);
 						dy = (-this.startPos.y + this.endPos.y);
+						if (m_dup && ((dx != 0) || (dy != 0))) {
+							// Ctrl + drag: the dragged elements are copies, the sources stay in place
+							m_dup = false;
+							var src = m_toedit.type === 2 ? Array.prototype.slice.call(m_toedit.items) : [m_toedit];
+							var copies = _NS.duplicateElements ? _NS.duplicateElements(this.host, src) : [];
+							if (copies.length) {
+								this.selectItems(copies);
+								// editing the copies reset the move (getPoints): start it again from the copies
+								v = m_toedit.matrix;
+								_tempMatrix = new Matrix();
+								_tempMatrix.copytransform(v.element);
+								mode = 't';
+								m_snapBase = null;
+								this.startCapture();
+							}
+						}
+						if (m_snapBase) { dx += snapX(m_snapBase.x + dx, m_snapBase.x + m_snapBase.width + dx); }
 						if ((dx != 0) || (dy != 0)) {
 							//translate
 							var g = _tempMatrix.element.concat();
@@ -371,6 +416,19 @@
 		// about the opposite edge / the center.
 		// ------------------------------------------------------------------------------------------
 		var m_skew = false; // false: resize mode, true: skew mode
+		// magnetism on the column guides of the document (see tools/ColumnGrid.js): the x adjustment that puts one of
+		// the given x positions on a column edge, 0 when no guide is shown or none is close
+		var snapX = function (x0, x1) {
+			var G = _NS.columnGrid, d = self.host && self.host.document;
+			var lines = G && d ? G.snapLines(d) : null;
+			if (!lines) { return 0; }
+			var thr = 6 / (self.host.zoomX || 1), best = null;
+			[x0, x1].forEach(function (v) {
+				lines.forEach(function (l) { var a = l - v; if (Math.abs(a) <= thr && (best === null || Math.abs(a) < Math.abs(best))) { best = a; } });
+			});
+			return best || 0;
+		};
+		var m_snapBase = null; // bound of the dragged element when the guides snap
 		var m_snip = null; // the snippet being dragged: {index, moved, M, H, Q, C, n, u}
 		var mulM = function (m2, m1) {
 			return [
@@ -423,6 +481,15 @@
 			mode = null;
 			_tempMatrix = null;
 			this.freeCapture();
+			return this.peekPoints(elem);
+		};
+		/**
+		 * the transform snippets of an element, without any change of the tool state (the snippets layer calls it on
+		 * every redraw so that they follow the element when it is transformed by an action: flip, fit, matrix reset,
+		 * inspector fields...). null while a snippet is being dragged.
+		 */
+		this.peekPoints = function (elem) {
+			if (m_snip) { return null; }
 			if (elem && ('bound' in elem)) {
 				var hb = handleBox(elem);
 				var pts = [];
@@ -431,8 +498,8 @@
 					pts.push({ x: p.x, y: p.y, type: m_skew ? 'losange' : 'square' });
 				}
 				var r = apply(hb.M, hb.b.x, hb.b.y);
-				// the rotation handle is placed 18 screen pixels outside the corner (the offset ignores the zoom)
-				pts.push({ x: r.x, y: r.y, sx: -18, sy: -18, type: 'round rotate' });
+				// the rotation handle sits exactly on the top-left corner of the box
+				pts.push({ x: r.x, y: r.y, type: 'round rotate' });
 				return pts;
 			}
 			return [];
@@ -495,6 +562,22 @@
 			this.host.refresh();
 			return true;
 		};
+		/** center of the bounding box of every element of the current layer (document space), null when it is empty */
+		this.layerCenter = function () {
+			var ly = this.host && this.host.layer;
+			var list = ly && ly.Elements;
+			if (!list || !list.length) { return null; }
+			var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+			for (var i = 0; i < list.length; i++) {
+				try {
+					var b = handleBox(list[i]).b;
+					if (!b || !isFinite(b.x + b.y + b.width + b.height)) { continue; }
+					x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y);
+					x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height);
+				} catch (e) { }
+			}
+			return x0 <= x1 ? { x: (x0 + x1) / 2, y: (y0 + y1) / 2 } : null;
+		};
 		this.startUpdateIndex = function (elem, index, inf) {
 			if (!elem || !elem.matrix) { return; }
 			var hb = handleBox(elem);
@@ -502,7 +585,7 @@
 			var H = apply(hb.M, handleLocal(hb.b, index).x, handleLocal(hb.b, index).y);
 			var st = { index: index, moved: false, M: M0, H: H };
 			var cb = apply(hb.M, hb.b.x + hb.b.width / 2, hb.b.y + hb.b.height / 2);
-			st.C = cb;
+			st.C = index == 4 ? (this.layerCenter() || cb) : cb; // the rotation pivots about the center of the current layer
 			if (index < 4) {
 				var Q = apply(hb.M, handleLocal(hb.b, (index + 2) % 4).x, handleLocal(hb.b, (index + 2) % 4).y); // opposite edge
 				var dx = H.x - Q.x, dy = H.y - Q.y, len = Math.sqrt(dx * dx + dy * dy);
@@ -529,8 +612,9 @@
 			var st = m_snip;
 			if (!elem || !elem.matrix || !st || st.index != index) { return; }
 			var P = endPos;
+			if ((index == 1 || index == 3) && !m_skew) { P = { x: P.x + snapX(P.x, P.x), y: P.y }; } // the edge goes on a column edge
 			var W = null;
-			if (index == 4) { // rotation about the center
+			if (index == 4) { // rotation about the center of the current layer
 				var R0 = st.P0 || st.H; // the handle sits outside the corner: the angle starts where the pointer was pressed
 				var a0 = Math.atan2(R0.y - st.C.y, R0.x - st.C.x);
 				var a1 = Math.atan2(P.y - st.C.y, P.x - st.C.x);

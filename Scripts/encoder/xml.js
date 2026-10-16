@@ -47,7 +47,7 @@ G.xml.decodeString = function(xml, a){
 			var _doc = a.createElement("document");
 			_doc.setSize(Number(W), Number(H));
 			// other document properties
-			["id", "fill", "stroke", "title", "x", "y"].forEach((n) => {
+			["id", "fill", "stroke", "title", "x", "y", "columns", "columnGap", "columnColor", "showColumns", "kind", "target", "page"].forEach((n) => {
 				var v = this.getAttribute(n);
 				if (v !== null && v !== undefined) {
 					_doc[n] = v;
@@ -296,4 +296,5 @@ function _loadItems(o, src, a, exports){
 		}
 	}
 };
+G.xml.loadItems = _loadItems;
 })();

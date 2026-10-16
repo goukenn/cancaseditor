@@ -81,7 +81,7 @@
 		editor.refresh();
 	}
 	_NS.rulers = { draw, visible, SIZE };
-	AC.regMenuAction('view.rulers', { index: 15, callback: (a) => toggle(a) });
+	AC.regMenuAction('view.rulers', { index: 15, checked: () => visible(), callback: (a) => toggle(a) });
 	_NS.whenEditor((editor) => {
 		_NS.prefs && _NS.prefs.onChange((what, name) => { if (what == 'server' || name == 'rulers') { editor.refresh(); } });
 	});

@@ -1,16 +1,11 @@
 "use strict";
-
-
 (function(){
 //dialog control
 var AC = igk.winui.cancasEditor.Actions;
 var Key = AC.Key;
 var initc = 0;
 var MS_BTN = igk.winui.mouseButton;
-
 //filter expression 
-
-
 var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 	dialog: function(){
 		var _loctimeout=0;
@@ -21,10 +16,8 @@ var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 			}
 			_loctimeout = setTimeout(function(){
 				// console.debug("location ize");
-				
 				if (box.getComputedStyle("position")=="absolute"){
 					__updatepos(box.getLocation());
-				
 				}
 			}, 500);
 		};
@@ -33,42 +26,33 @@ var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 			var dx = Math.max(0, Math.min(window.innerWidth-s.w, l.x ));
 			var dy = Math.max(0, Math.min(window.innerHeight-s.h, l.y ));
 			var border = igk.getNumber(box.getComputedStyle("borderWidth"));
-							
 			box.setCss({left:(dx-border)+'px', top:(dy-border)+'px','position':'absolute'});
-			 
 			d.raiseEvent('locationChanged', {data:{
 				x: (dx-border),
 				y:(dy-border)
 			}
 			});
 		};
-		
 		var q  = this;		
 		var d = igk.createNode("div");
 		d.addClass("canvas-editor-gui_dialog dialog igk-hide").setAttributes({
 			draggable: false
 		});
-		
 		var box = d.add("div").addClass("box");
 		box.setAttributes({
 			draggable: false
 		});
-		
 		var b = box.add("div").addClass("title-bar svg-16");
-		
 		var title = b.add('div').addClass("title dispib");
 		var btn = b.add('a').addClass("floatr close").add("div").on("click", function(){
 			q.close();
 		});
 		btn.add("div").addClass("igk-svg-lst-i") .setAttribute("igk:svg-name", "drop");
-		
-		
 		// var title = b.addClass("title");
-		var content = box.add("div").addClass("content igk-panel-box");
+		var content = box.add("div").addClass("content igk-winui-panel-box");
 		// event
 		d.addEvent("close", {});
 		d.addEvent("locationChanged", {});
-		
 		igk.dom.body().add(d);
 		igk.defineProperty(this, "control", {get: function(){ return d; }});
 		igk.defineProperty(this, "title", {get: function(){ return title.getHtml(); }, set: function(v){ title.setHtml(v); }});
@@ -76,7 +60,6 @@ var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 			content.setHtml('');
 			content.add(o);
 		};
-		 
 		//move box according to title bar
 		var mv = {b:0};
 		b.on("mousedown", function(e){
@@ -106,7 +89,6 @@ var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 					__updatepos({x: mv.location.x + dx,y: mv.location.y + dy});
 					// dx = Math.max(0, Math.min(window.innerWidth-mv.boxsize.w, mv.location.x + dx));
 					// dy = Math.max(0, Math.min(window.innerHeight-mv.boxsize.h, mv.location.y + dy));
-					
 					// box.setCss({left:dx+'px', top:dy+'px','position':'absolute'});
 				break;
 			}
@@ -124,7 +106,6 @@ var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 			e.stopPropagation();
 			igk.winui.mouseCapture.releaseCapture(b);
 		});
-		
 		igk.winui.reg_event(window, 'resize', __updatelocation);
 		function __close(){
 			if (_loctimeout){
@@ -135,15 +116,12 @@ var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 			d.unreg_event('close', __close);
 		};
 		d.on("close",__close);
-		
 		//
 		this.setLocation=function(p){
 			__updatepos(p);
 		};
 	}
 });
-
-
 igk.appendProperties(GUI.dialog.prototype , {
 	show: function(){
 		this.control.init();
@@ -160,8 +138,6 @@ igk.appendProperties(GUI.dialog.prototype , {
 		this.control.unreg_event(n, p);
 	}
 });
-
-
 GUI.dialog.showDialog = function(title, content, options){
 	var d = new GUI.dialog();
 	if (options && options.settings && ('location' in options.settings)){
@@ -172,11 +148,5 @@ GUI.dialog.showDialog = function(title, content, options){
 	d.show();
 	igk.winui.dialogs.register(d);
 	return d;
-	
 };
-
-
-
-
-
 })();

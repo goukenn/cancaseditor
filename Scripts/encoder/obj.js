@@ -1,19 +1,12 @@
 "use strict";
-
 (function(){
 //obj decoder : from blender
-
 var G = igk.system.createNS("igk.winui.cancasEditor.encoder", {
 "obj":function(){
-
 }
 });
-
-
 var _P = igk.system.promiseCall; 
-
 G.obj.decode = function(file, a){
-	
 	var P = new _P();
 	if (typeof(FileReader) != 'function')
 		return P;
@@ -31,19 +24,14 @@ G.obj.decode = function(file, a){
 				if (a.tool.loadObjFile)
 					a.tool.loadObjFile(o);
 				else{
-					
 				}
 				a.refresh();
-				
 			}
 			P.resolve();
 		}
 	});
 	return P;
-	
 };
-
-
 function loadObjFile(s){
 	// var s = `# Blender v2.79 (sub 0) OBJ File: 'def.blend'
 // # www.blender.org
@@ -100,7 +88,6 @@ function loadObjFile(s){
 		materials: [],
 		objects: []
 	};
-	
 	var lines  = s.split("\n");
 	var line ='';
 	var p = null;
@@ -112,7 +99,6 @@ function loadObjFile(s){
 		line = lines[i].trim();
 		if (line.startsWith('#')) // comment line
 			continue;
-			
 		var cmd  = readCommand(line);
 		// console.debug(cmd);
 		switch(cmd){
@@ -124,7 +110,6 @@ function loadObjFile(s){
 					normals: [],
 					indices: [],
 					id: line.split(' ').slice(1).join(' ').trim()
-					
 				};
 				offsetface = facecount;
 				offsetindice = indicecount;
@@ -134,13 +119,11 @@ function loadObjFile(s){
 				break;
 			case 'f':
 				var indices = [];
-				
 				line.split(' ').slice(1).join(' ').trim().replace(/([0-9]+)\/\/([0-9]+)/g, function(v, o, t){
 					// console.debug("index : "+ o);
 					// console.debug("face : "+ o);
 					indices.push(o - offsetindice-1);
 				}) ;
-				
 				p.indices.push(indices);
 				facecount++;
 				break;
@@ -177,14 +160,9 @@ function loadObjFile(s){
 					o.materials.push(line.split(' ').slice(1).join(' ').trim());
 				break;
 		}
-		
 	}
-	
-	
 	return o;
-	
 };
-
 function readCommand(l){
 	var s = '';
 	l.replace(/^[^ ]+/, function(m){
@@ -192,8 +170,6 @@ function readCommand(l){
 	});
 	return s;
 }
-
-
 // console.debug("sss: ");
 // console.debug(loadObjFile(
 // `# Blender v2.79 (sub 0) OBJ File: 'def.blend'
@@ -245,15 +221,8 @@ function readCommand(l){
 // f 10//10 14//10 15//10 11//10
 // f 11//11 15//11 16//11 12//11
 // f 13//12 9//12 12//12 16//12
-// `
-// ));
-
-
-
+// `// ));
 igk.system.createNS("igk.blender.utils", {
-	
 	openObjFile : loadObjFile
-	
 });
-
 })();

@@ -1,13 +1,8 @@
 "use strict";
 (function(){
-
 //zoom menu
-
 var ACTIONS = igk.winui.cancasEditor.Actions;
-
 ACTIONS.regMenuAction("view.anchor", {index:20, callback:function(){
-	 
-	 
 }, initialize: function(a, key, menuHost){ 
 	a.on("itemStartEdition", function(e){		
 		menuHost.enable = (a.element != null);
@@ -19,7 +14,4 @@ ACTIONS.regMenuAction("view.anchor", {index:20, callback:function(){
 	};
 	return true;
 }});
-
-
-
 })();

@@ -1,6 +1,5 @@
 "use strict";
 (function(){
-
 //drawing2d mecanism actions base
 var CoreMathOperation = igk.winui.cancasEditor.CoreMathOperation;
 var ELEM = igk.system.createNS("igk.winui.cancasEditor.DrawingElements", {});
@@ -10,7 +9,6 @@ var UTILS = igk.winui.cancasEditor.Utils;
 var PATH  = igk.winui.cancasEditor.Utils.Path;
 var ACTIONS = igk.winui.cancasEditor.Actions;
 var Key = ACTIONS.Key;
-
 //definine mecanism action 
 var M_ACT = igk.system.createNS("igk.winui.cancasEditor.mecanismActions.drawin2D",{
 	countPropertyUp : function(e){
@@ -36,14 +34,5 @@ var M_ACT = igk.system.createNS("igk.winui.cancasEditor.mecanismActions.drawin2D
 			e.handle = 0;
 		}
 	}
-
 });
-
-
-
-
-
-
-
-
 })();

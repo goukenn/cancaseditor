@@ -1,7 +1,5 @@
 "use strict";
-
 (function(){
-
 var ACTIONS = igk.winui.cancasEditor.Actions;
 	ACTIONS.regMenuAction("file.test", {index:3, 
 		initialize: function(a, k, host){
@@ -11,6 +9,4 @@ var ACTIONS = igk.winui.cancasEditor.Actions;
 	// ACTIONS.invoke("editor.selectool.rectangle");
 	console.debug(a.canvas.o.toDataURL());
 }});
-
-
 })();

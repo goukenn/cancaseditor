@@ -1,6 +1,4 @@
 "use strict";
-
-
 (function(){
 //filter Editor Tool
 var _NS = igk.winui.cancasEditor;
@@ -8,8 +6,6 @@ var AC = _NS.Actions;
 var R = _NS.R; //.Actions;
 var Key = AC.Key;
 var CT = igk.system.convert;
- 
-
 var GUI = igk.system.createNS(_NS.getType().getFullName()+".tools",{});
 var liveprop = null;
 function reset(frm, a, e){
@@ -19,10 +15,8 @@ function reset(frm, a, e){
 	}
 	update(frm, a, e);
 };
-
 function update(frm, a, e, id){
 	// console.debug("upadate value");
-	
 	if (id){
 		e[id] = frm.engine.getItem(id).val();
 		// console.debug(frm.engine.getItem(id).val());
@@ -37,9 +31,6 @@ function update(frm, a, e, id){
 	e.initialize();
 	a.refresh();
 };
-
-
-
 GUI.EditElementSettingDialog = function(a, e, R){
 	var d = igk.createNode("div");
 	var frm = d.add("form");
@@ -51,8 +42,6 @@ GUI.EditElementSettingDialog = function(a, e, R){
 			update(frm, a, e, evt.target.id);
 		});
 	};
-	
-	
 	var bar = frm.add("div").addClass("igk-action-bar");
 	bar.add("input").setAttributes({
 		"type":"button",
@@ -61,33 +50,19 @@ GUI.EditElementSettingDialog = function(a, e, R){
 	}).on("click", function(){
 		reset(frm, a, e);
 	});
-	
-	
 	var t = frm.engine.getFields();
 	liveprop = {};
 	for(var h in t){
 		liveprop[h] = t[h].val();
 	};
-	
-	
 	this.control  = d;
 };
-
-
-
-
 var AC = igk.winui.cancasEditor.Actions;
 var Key = AC.Key;
-
-
 AC.regMenuAction("edit.properties", { separatorBefore:1, callback: function(a){
 	//show about dialog
 	if (a.tool.elem){
 		a.editElement(a.tool.elem);
 	}
 }, index:500});
-
-
-
-
 })();

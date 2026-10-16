@@ -1,32 +1,16 @@
 <?php
+use IGK\System\Modules;
 
-igk_wln("the view not changed....");
-include(dirname(__FILE__)."/.header.pinc");
-
-$bootstrap = igk_require_module("bootstrap", false);
-
+include(__DIR__."/.header.pinc");
+$bootstrap = igk_require_module(Modules::bootstrap(),null, 0, 0);
 $doc->Title = "WIKI - cancaseditor";
-
 $t->clearChilds();
 $t->setClass("google-Roboto");
+$t->a()->Content = "for";
 $t->addDiv();
-
 $t->addJumbotron();
- 
-
 $d = $t->addDiv();
 $c = $d->addContainer();
-
-
-
-
-
-
-
-//+ Footer
 $d = $t->addDiv();
 $c = $d->addContainer();
-$c->addSingleRowCol()->addDiv()->addIGKCopyRight();
-
-
-
+$c->addSingleRowCol()->addDiv()->addIGKCopyRight();

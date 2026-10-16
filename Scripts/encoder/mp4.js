@@ -1,15 +1,12 @@
 "use strict";
-
 (function(){
 //mp4 decoder
 // console.debug("encoder....");
 var G = igk.system.createNS("igk.winui.cancasEditor.encoder", {
 "mp4":function(){
-
 }
 });
 var _P = igk.system.promiseCall; 
-
 G.mp4.decode = function(file, a){
 	var P = new _P();
 	var vid = igk.createNode('video');
@@ -40,26 +37,17 @@ G.mp4.decode = function(file, a){
 		P.resolv();
 	}).
 	on("load", function(){
-		
 		// console.debug("try to open a video file");
-			
 			a.refresh();
-			
 	}).on("error", function(){
 		console.error("[ce] - faile to decode video file");
 		P.error();
 	});
-	
 	if (URL && typeof(URL.createObjectURL)=='function')
 	{
 		a.addAsset(vid.o);
 		vid.o.src = URL.createObjectURL(file);
-	
 	}
-
 	return P;
 };
-
-
-
 })();

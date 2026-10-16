@@ -67,6 +67,7 @@
 		middle: svg('<path d="M3 12h18"/><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="7" width="4" height="10" rx="1"/>'),
 		bottom: svg('<path d="M3 20h18"/><rect x="6" y="5" width="4" height="12" rx="1"/><rect x="14" y="9" width="4" height="8" rx="1"/>'),
 		flipH: svg('<path d="M12 3v18" stroke-dasharray="2 2"/><path d="M9 7 3 17h6zM15 7l6 10h-6z"/>'),
+		resetMatrix: svg('<path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v5h5"/>'),
 		flipV: svg('<path d="M3 12h18" stroke-dasharray="2 2"/><path d="M7 9 17 9 12 3zM7 15h10l-5 6z"/>'),
 		lockOn: svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
 		lockOff: svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/>'),
@@ -495,7 +496,16 @@
 			};
 			// fit actions only make sense for an element placed on a layer attached to a document
 			const fits = (_NS.fit && _NS.fit.canFit(el)) ? [fitBtn('width'), fitBtn('height'), fitBtn('both')] : [];
-			root.append(_el('div', { className: 'ci-pair', style: 'justify-content:flex-end;margin:-4px 0 6px' }, [...fits, lockBtn, flip(true), flip(false)]));
+			// back to the identity matrix: rotation, scale, skew and translation made by the handles / flips are dropped
+			const resetBtn = _el('button', { className: 'ci-ico', type: 'button', title: T('ins.matrix.reset') });
+			resetBtn.innerHTML = ICONS.resetMatrix;
+			resetBtn.onclick = () => {
+				if (!el.matrix) { return; }
+				apply(() => { el.matrix.reset(); });
+				// the handles and the fields of the inspector follow the new position
+				if (editor.tool && editor.tool.selectElement) { editor.tool.selectElement(el); }
+			};
+			root.append(_el('div', { className: 'ci-pair', style: 'justify-content:flex-end;margin:-4px 0 6px' }, [...fits, lockBtn, flip(true), flip(false), resetBtn]));
 		}
 		if (cornerRadius0(el)) {
 			const b = hasBound(el) ? el.bound : { width: 200, height: 200 };
@@ -613,6 +623,66 @@
 		}
 		return root;
 	}
+	// ---------------------------------------------------------------- several elements
+	const COMMON = ['fill', 'fillOpacity', 'stroke', 'strokeOpacity', 'strokeWidth', 'opacity', 'blendingMode'];
+	/**
+	 * the inspector of a multi selection: only the properties every element has are shown; a change is applied to all
+	 * of them. A proxy object reads the first element and writes to every one, so the single element controls
+	 * (color rows, sliders...) are reused as they are.
+	 */
+	function multiPanel(editor, items) {
+		const root = _el('div', { className: 'ci-root' });
+		const names = COMMON.filter((n) => items.every((i) => n in i));
+		const proxy = {};
+		names.forEach((n) => Object.defineProperty(proxy, n, {
+			get: () => items[0][n],
+			set: (v) => items.forEach((i) => { i[n] = v; }),
+			enumerable: true
+		}));
+		const apply = (fn) => { fn(); items.forEach((i) => i.initialize && i.initialize()); editor.refresh(); };
+		root.append(_el('div', { className: 'ci-title', textContent: items.length + ' ' + T('ins.selection', 'elements') }));
+		if (names.length == 0) {
+			root.append(_el('div', { className: 'ci-sub', textContent: T('ins.nocommon', 'No common property') }));
+			return root;
+		}
+		if (names.some((n) => items.some((i) => String(i[n]) != String(items[0][n])))) {
+			root.append(_el('div', { className: 'ci-sub', textContent: T('ins.mixed', 'Different values: the first element is shown') }));
+		}
+		if ('opacity' in proxy) {
+			root.append(section('appearance', T('ins.appearance'), (body) => {
+				body.append(sliderRow(T('ins.opacity'), Math.round(proxy.opacity * 100), 0, 100, (v) => apply(() => { proxy.opacity = v / 100; })));
+				if ('blendingMode' in proxy) {
+					const blends = Object.keys(_NS.DrawingElements.BLENDING || {});
+					const sel = _el('select', {}, blends.map((n) => _el('option', { value: n, textContent: n, selected: n == proxy.blendingMode })));
+					sel.onchange = () => apply(() => { proxy.blendingMode = sel.value; });
+					body.append(_el('div', { className: 'ci-sub', textContent: T('ins.blending') }), sel);
+				}
+			}));
+		}
+		if (('fill' in proxy) || ('stroke' in proxy)) {
+			root.append(section('style', T('ins.style'), (body) => {
+				if ('fill' in proxy) {
+					body.append(_el('div', { className: 'ci-sub', textContent: T('ins.fills') }), colorRow({
+						get: () => proxy.fill, set: (v) => { proxy.fill = v; }, apply,
+						getOpacity: ('fillOpacity' in proxy) ? () => (typeof proxy.fillOpacity == 'number' ? proxy.fillOpacity : 1) : null,
+						setOpacity: ('fillOpacity' in proxy) ? (v) => { proxy.fillOpacity = v; } : null
+					}));
+				}
+				if ('stroke' in proxy) {
+					body.append(_el('div', { className: 'ci-sub', textContent: T('ins.borders') }), colorRow({
+						get: () => proxy.stroke, set: (v) => { proxy.stroke = v; }, apply,
+						getOpacity: ('strokeOpacity' in proxy) ? () => (typeof proxy.strokeOpacity == 'number' ? proxy.strokeOpacity : 1) : null,
+						setOpacity: ('strokeOpacity' in proxy) ? (v) => { proxy.strokeOpacity = v; } : null
+					}));
+					if ('strokeWidth' in proxy) {
+						body.append(_el('div', { className: 'ci-row' }, [_el('label', { textContent: T('ins.width') }),
+							_el('div', { className: 'ci-field', style: 'width:90px' }, [numInput(proxy.strokeWidth, (v) => apply(() => { proxy.strokeWidth = v; }), { min: 0, step: 0.5 }), _el('span', { textContent: 'px' })])]));
+					}
+				}
+			}));
+		}
+		return root;
+	}
 	/** a document identifier: a name not used by another document of the scene */
 	function validDocumentId(editor, doc, id) {
 		return /^[A-Za-z_][\w.\-]*$/.test(id) && !editor.documents.some((d) => d !== doc && d.id == id);
@@ -645,20 +715,34 @@
 		wi.addEventListener('change', () => { wi.value = doc.width; });
 		hi.addEventListener('change', () => { hi.value = doc.height; });
 		root.append(_el('div', { className: 'ci-grid' }, [field('W', wi), field('H', hi)]));
-		root.append(section('docstyle', T('ins.style'), (body) => {
-			body.append(_el('div', { className: 'ci-sub', textContent: T('doc.background.color') }), colorRow({
-				get: () => doc.fill, set: (v) => { doc.fill = v; }, apply: (fn) => { fn(); editor.refresh(); }
-			}));
+		// background color of the document (the first color row), then the column guides with their own color row
+		root.append(_el('div', { style: 'height:6px' }), _el('div', { className: 'ci-sub', textContent: T('doc.background.color') }), colorRow({
+			get: () => doc.fill, set: (v) => { doc.fill = v; }, apply: (fn) => { fn(); editor.refresh(); }
 		}));
+		// column guides (1 - 12 equal columns, like igk-col-12-N)
+		const ci = numInput(doc.columns, (v) => { doc.columns = v; editor.refresh(); }, { min: 1, max: 12 });
+		ci.addEventListener('change', () => { ci.value = doc.columns; });
+		const cs = _el('input', { type: 'checkbox', checked: doc.showColumns, title: T('doc.columns.show') });
+		cs.onchange = () => { doc.showColumns = cs.checked; editor.refresh(); };
+		const gi = numInput(doc.columnGap, (v) => { doc.columnGap = v; editor.refresh(); }, { min: 0, max: 200 });
+		gi.addEventListener('change', () => { gi.value = doc.columnGap; });
+		root.append(_el('div', { style: 'height:6px' }), _el('div', { className: 'ci-grid' }, [field(T('ins.columns'), ci), field(T('ins.gap'), gi)]),
+			_el('div', { className: 'ci-sub', textContent: T('doc.columns.color') }),
+			// same color row as the fills and the borders: toggle, swatch picker, hex, opacity
+			colorRow({ get: () => doc.columnColor, set: (v) => { doc.columnColor = v; }, defaultColor: 'rgba(161, 79, 208, 0.15)', apply: (fn) => { fn(); editor.refresh(); } }),
+			_el('label', { style: 'display:flex;align-items:center;gap:6px;margin:6px 0' }, [cs, _el('span', { textContent: T('doc.columns.show') })]));
+		if (doc.kind == 'page' && _NS.pageDesigner) { root.append(_NS.pageDesigner.build(editor, doc)); } // web page design mode
 		return root;
 	}
 	/** build the inspector content for the current selection */
 	function build(editor) {
 		_css();
 		const el = editor.element || (editor.tool && editor.tool.elem) || null;
+		// several elements selected (selection tool): the properties they have in common
+		if (el && el.type === 2 && el.items && el.items.length > 1) { return multiPanel(editor, Array.prototype.slice.call(el.items)); }
 		if (el && el['@container']) { return elementPanel(editor, el); }
 		if (editor.document) { return documentPanel(editor, editor.document); }
 		return _el('div', { className: 'ci-root' }, [_el('div', { className: 'ci-title', textContent: T('prop.nodoc') })]);
 	}
-	_NS.inspector = { build, openPicker, closePicker, parseColor, toHex, toCss, validDocumentId, numInput, field };
+	_NS.inspector = { colorRow, build, openPicker, closePicker, parseColor, toHex, toCss, validDocumentId, numInput, field };
 })();

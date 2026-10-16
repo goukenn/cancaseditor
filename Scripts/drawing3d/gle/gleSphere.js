@@ -4,7 +4,6 @@
 	var _NS = igk.winui.cancasEditor;
 	var ACTIONS = _NS.Actions;
 	igk.system.createNS(_NS.fullname+".drawing3d.gle",{});
-	
 	//sphere
 	ACTIONS.regMenuAction("tools.drawing3d.gleSphere", {index:8, callback:function(){
 		ACTIONS.invoke("editor.selectool.gleSphere");
@@ -19,9 +18,6 @@
 		menuHost.initialize = function(){
 			_g.menuHostInitial(a, key, menuHost);
 		};
-		
 		return true;
 	}});
-	
-})();
-
+})();

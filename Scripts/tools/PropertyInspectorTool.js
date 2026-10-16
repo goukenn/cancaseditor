@@ -77,6 +77,7 @@
 		return root;
 	}
 	let m_toggle = null;
+	let m_isOpen = () => false; // the property panel is shown (docked, or in the modal on small screens)
 	let m_showLayers = null;
 	let m_tab = 'properties'; // 'properties' | 'layers'
 	const TAB_CSS = '.ci-tabs{display:flex;gap:4px;margin:0 0 10px;border-bottom:1px solid var(--ci-line,#4a4a4a)}' +
@@ -98,7 +99,7 @@
 		return root;
 	}
 	// the menu is built when the editor initializes: register at load time
-	AC.regMenuAction("view.propertybox", { index: 0, callback: () => m_toggle && m_toggle() });
+	AC.regMenuAction("view.propertybox", { index: 0, checked: () => m_isOpen(), callback: () => m_toggle && m_toggle() });
 	AC.regMenuAction("window.layers", { index: 5, callback: () => m_showLayers && m_showLayers() });
 	function init(editor) {
 		const host = editor.host.o;
@@ -156,6 +157,7 @@
 		});
 		_NS.lang && _NS.lang.listeners.push(schedule);
 		prefs && prefs.onChange((what, name) => { if (what == 'server' || name == 'panelOpen') { layout(what == 'server'); } });
+		m_isOpen = () => (mq.matches ? !!modalOpen : isOpen());
 		m_toggle = () => { mq.matches ? showModal() : setOpen(!isOpen()); };
 		m_showLayers = () => {
 			m_tab = 'layers';

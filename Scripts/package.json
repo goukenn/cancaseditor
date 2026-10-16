@@ -1,0 +1,8 @@
+{
+  "name": "igkdev-cancaseditor",
+  "version": "1.0.0",
+  "main": ".cancaseditor.js",
+  "author": "<bondje.doue@gmail.com>",
+  "license": "MIT",
+  "private": true
+}

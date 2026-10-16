@@ -1,6 +1,5 @@
 (function(){
 //define blending modes
-
 var BLENDING = {
 	"source-over":1,
 	"source-in":1,
@@ -29,13 +28,8 @@ var BLENDING = {
 	"color":1,
 	"luminosity":1
 };
-
 var L = igk.system.createNS("igk.winui.cancasEditor.enums", {
 	blendings: null
 } );
-
-
-L.blendings = igk.defineEnum(null, BLENDING);
-
-
+L.blendings = igk.defineEnum(null, BLENDING);  
 })();

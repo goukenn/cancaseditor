@@ -54,6 +54,7 @@ $def["{$editor} div.tool.t .menu .submenu > li:last-child > a"]= "{sys:no-overfl
 $def["{$editor} div.tool.t .menu .submenu .sub_2"]= "left: 100%; top:0px;"; 
 $def["{$editor} div.tool.t .menu .submenu > li"]= "{sys:dispb, posr} "; 
 $def["{$editor} div.tool.t .menu .submenu > li a"]= "padding-left: 48px; padding-right:64px;"; 
+$def["{$editor} div.tool.t .menu .submenu > li.checked > a::before"]= "content: '\\2713'; position: absolute; left: 18px; font-weight: bold;";
 $xsm_screen[$editor] =
 $sm_screen[$editor] = 'padding: 0;';
 $def["{$editor} div.tool.t .logo"] = "{sys:no-overflow} cursor: pointer; [trans:.2s background-color ease-in] background-color:var(--cc-editor-logo-bg); width: 32px; height:100%; text-indent: -9999px;";
@@ -121,7 +122,7 @@ $def["{$editor} .snippet:hover"]= "opacity:1.0; ";
 $def["{$editor} .snippet.igk-hide"] = "opacity: 0.0;";
 $def["{$editor} .snippet.round"] = "border-radius: 50%";
 // transform snippets (selection): square = scale, diamond = skew, round + orange = rotation; they grow on hover
-$def["{$editor} .snippet.rotate"] = "background-color: orange; cursor: grab;";
+$def["{$editor} .snippet.rotate"] = "background-color: orange; cursor: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22><path d=%22M5 15a8 8 0 0 1 3-8.5M19 15a8 8 0 0 0-3-8.5%22 fill=%22none%22 stroke=%22white%22 stroke-width=%225%22 stroke-linecap=%22round%22/><path d=%22M2.5 11l3.5 6 4-5zM21.5 11l-3.5 6-4-5z%22 fill=%22white%22 stroke=%22white%22 stroke-width=%223%22 stroke-linejoin=%22round%22/><path d=%22M5 15a8 8 0 0 1 3-8.5M19 15a8 8 0 0 0-3-8.5%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22/><path d=%22M2.5 11l3.5 6 4-5zM21.5 11l-3.5 6-4-5z%22 fill=%22black%22/></svg>') 12 12, grab;";
 $def["{$editor} .snippet.square, {$editor} .snippet.round"] = "[trans: opacity 0.2s ease-out, transform 0.15s ease-out]";
 $def["{$editor}:not(.touchable-device) .snippet.square:hover, {$editor}:not(.touchable-device) .snippet.round:hover"] = "[transform: scale(13,13)]";
 $def["{$editor} .snippet.losange"] = "[transform: rotate(45deg) scale(8)] width:1px; height:1px;";

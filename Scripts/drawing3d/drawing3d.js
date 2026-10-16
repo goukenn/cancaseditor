@@ -11,13 +11,5 @@
             };
             return true;
         }
-    });
-
-    //,
-    // initialize:  function(a, key, menuHost){  	
-    //         menuHost.enable = false;
-    //     return true;
-    // }});
-
-
+    }); 
 })();

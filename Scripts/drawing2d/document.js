@@ -25,6 +25,15 @@ igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer },
 	var m_title = "";
 	var m_x = 0; // location of the document on the surface (scene coordinates)
 	var m_y = 0;
+	var m_columns = 12; // column guides (1 - 12 equal columns, like igk-col-12-N)
+	var m_showColumns = false;
+	var m_columnColor = 'rgba(161, 79, 208, 0.15)'; // color of the column guides (the opacity is the alpha of the color)
+	var m_columnGap = 10; // px between two columns (gutter), default 10
+	var m_target = 'web'; // page documents: 'web' | 'email' (newsletter)
+	var m_kind = 'canvas'; // 'canvas' (free drawing) | 'page' (web page: a tree of html nodes, see pagenode.js)
+	var m_page = null;
+	var m_pimg = null; // raster of the page
+	var m_pkey = null;
 	this.setSize = function(x,y){
 		m_width = x>0 ? x : m_width;
 		m_height = y>0 ? y: m_height;
@@ -55,6 +64,56 @@ igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer },
 		v = Number(v);
 		if (!isNaN(v)) m_y = v;
 	}});
+	igk.defineProperty(this, "columns", {get:function(){return m_columns; }, set: function(v){
+		v = Math.floor(Number(v));
+		if (!isNaN(v)) m_columns = Math.max(1, Math.min(12, v));
+	}});
+	igk.defineProperty(this, "columnGap", {get:function(){return m_columnGap; }, set: function(v){
+		v = Number(v);
+		if (!isNaN(v)) m_columnGap = Math.max(0, Math.min(200, v));
+	}});
+	igk.defineProperty(this, "columnColor", {get:function(){return m_columnColor; }, set: function(v){
+		if (typeof(v)=='string' && /^(#[0-9a-f]{6}|rgba?\([^)]+\)|transparent)$/i.test(v.trim())) m_columnColor = v.trim();
+	}});
+	igk.defineProperty(this, "target", {get:function(){return m_target; }, set: function(v){
+		if (v == 'web' || v == 'email'){ m_target = v; m_pkey = null; }
+	}});
+	igk.defineProperty(this, "showColumns", {get:function(){return m_showColumns; }, set: function(v){
+		m_showColumns = (v === true) || (v === 'true') || (v === 1);
+	}});
+	igk.defineProperty(this, "kind", {get:function(){return m_kind; }, set: function(v){
+		if (v == 'canvas' || v == 'page'){
+			m_kind = v;
+			if (v == 'page' && !m_page && ELEM.page) m_page = ELEM.page.defaultPage();
+		}
+	}});
+	// the tree of a web page (array of nodes) or its json; null for a free drawing document
+	igk.defineProperty(this, "page", {get:function(){return m_page; }, set: function(v){
+		if (typeof(v) == 'string'){
+			try { v = JSON.parse(v); } catch(e){ v = null; }
+		}
+		m_page = (Array.isArray(v) && ELEM.page) ? ELEM.page.normalize(v) : null;
+		m_pkey = null;
+	}});
+	// the page rasterized (svg foreignObject, like htmlnode) and drawn over the background of the document
+	function drawPage(a){
+		if (!ELEM.page || !ELEM.htmlnode) return;
+		var html = ELEM.htmlnode.sanitize('<div style="font:16px sans-serif;color:#222;width:100%;height:100%;box-sizing:border-box">' + ELEM.page.toHtml(m_page) + '</div>').html;
+		var key = html + '|' + m_width + 'x' + m_height;
+		if (m_pkey != key){
+			m_pkey = key;
+			m_pimg = new Image();
+			var img = m_pimg;
+			img.onload = function(){
+				if (img == m_pimg && ELEM.htmlnode.editor) ELEM.htmlnode.editor.refresh();
+			};
+			img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+				'<svg xmlns="http://www.w3.org/2000/svg" width="' + m_width + '" height="' + m_height + '">' +
+				'<foreignObject x="0" y="0" width="100%" height="100%">' + ELEM.htmlnode.toXhtml(html) + '</foreignObject></svg>');
+		}
+		if (m_pimg && m_pimg.complete && m_pimg.naturalWidth > 0)
+			a.drawImage(m_pimg, 0, 0, m_width, m_height);
+	};
 	igk.defineProperty(this, "title", {get:function(){return m_title; } , set: function(v){
 		if((v==null) || (typeof(v)=='string'))
 		m_title = v;
@@ -73,6 +132,9 @@ igk.system.createClass(ELEM, {name:"document", parent:ELEM.drawing2DContainer },
 			a.stroke = m_stroke;
 			a.fillRect(0,0, m_width, m_height);
 		} 
+		if (m_kind == 'page' && m_page){
+			drawPage(a);
+		}
 		if (_elements){
 			var q = _elements.root;
 			while(q){
@@ -124,6 +186,13 @@ var EXPORTS = igk.winui.cancasEditor.Exports;
 	{name:"title", "default": ""},
 	{name:"x", "default": 0},
 	{name:"y", "default": 0},
+	{name:"columns", "default": 12},
+	{name:"showColumns", "default": false},
+	{name:"columnGap", "default": 10},
+	{name:"columnColor", "default": "rgba(161, 79, 208, 0.15)"},
+	{name:"target", "default": "web"},
+	{name:"kind", "default": "canvas"},
+	{name:"page", "default": null, serializer: function(v){ return v ? JSON.stringify(v, function(k, x){ return k == 'u' ? undefined : x; }) : null; }},
 	]);			
 	return c;
 });

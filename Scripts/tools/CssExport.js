@@ -65,7 +65,11 @@
 			else if (t != 'rectangle' && t != 'image' && t != 'text') { notes.push(t + ': only the box is exported'); }
 			if (!isTransparent(fill)) {
 				const p = paint(fill, b, notes);
-				if (p) { d.push([/gradient|url\(/.test(p) ? 'background' : 'background-color', p]); }
+				if (p) {
+					d.push([/gradient|url\(/.test(p) ?
+						'background' : 'background-color', p]
+					);
+				}
 			}
 			if (!isTransparent(stroke) && sw > 0) { d.push(['border', px(sw) + ' solid ' + stroke]); }
 			if (shadows.length) { d.push(['box-shadow', shadows.map((s) => px(s.x) + ' ' + px(s.y) + ' ' + px(s.blur) + ' ' + s.color).join(', ')]); }
@@ -142,8 +146,10 @@
 			selector: target.id, target: 'html',
 			transition: { on: false, props: ['opacity', 'transform'], duration: 0.3, easing: 'ease', delay: 0 },
 			hover: { on: false, opacity: '', scale: '1.1', rotate: '', tx: '', ty: '', filter: '' },
-			anim: { on: false, name: 'anim-' + ident(target.id), duration: 1, easing: 'ease-in-out', delay: 0, iterations: 'infinite', direction: 'alternate',
-				from: { opacity: '', scale: '', rotate: '', tx: '', ty: '', filter: '' }, to: { opacity: '0.4', scale: '1.2', rotate: '', tx: '', ty: '', filter: '' } }
+			anim: {
+				on: false, name: 'anim-' + ident(target.id), duration: 1, easing: 'ease-in-out', delay: 0, iterations: 'infinite', direction: 'alternate',
+				from: { opacity: '', scale: '', rotate: '', tx: '', ty: '', filter: '' }, to: { opacity: '0.4', scale: '1.2', rotate: '', tx: '', ty: '', filter: '' }
+			}
 		};
 		const out = el('textarea', { readOnly: true, spellcheck: false });
 		const refresh = () => { out.value = buildCss(target, o); };

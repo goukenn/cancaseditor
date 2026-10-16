@@ -46,6 +46,7 @@ var Tools = igk.winui.cancasEditor.Tools;
 //selection mecanism : used for selections
 igk.system.createClass(Tools, {name:'linearBrushMecanism', parent: Tools.RectangleMecanism }, function(){
 	var overlay = -1; //overlay index
+	var m_rot = null; // rotation of the gradient axis in progress: {c, s, e, a0}
 	igk.appendChain(this, "registerEvents",  function(){		
 		this.host.overlayLayer.push(this);
 		overlay = this.host.overlayLayer.length-1;
@@ -62,7 +63,8 @@ this.getPoints=function(e){
 		{x:e.bound.x, y:e.bound.y},
 		{x:e.startPoint.x, y:e.startPoint.y, type:'losange start', color:'black'},
 		{x:e.endPoint.x, y:e.endPoint.y, type:'losange end', color:'black'},
-		{x:e.bound.x+ e.bound.width, y:e.bound.y+e.bound.height}
+		{x:e.bound.x+ e.bound.width, y:e.bound.y+e.bound.height},
+		{x:e.bound.x, y:e.bound.y+e.bound.height, type:'round rotate'} // 4: rotates the gradient axis about the center of the bound
 	];
 };
 	this.update = function(e, endP){
@@ -85,10 +87,30 @@ this.getPoints=function(e){
 			case 3:
 			elem.bound = CoreMathOperation.GetBound( {x: elem.bound.x, y: elem.bound.y}, endPos);
 			break;			
+			case 4: // rotation of the gradient axis: the start and end points turn about the center of the bound
+			if (!m_rot){ return; }
+			var t = Math.atan2(endPos.y - m_rot.c.y, endPos.x - m_rot.c.x) - m_rot.a0;
+			if (this.isShift && this.isShift()){ var step = Math.PI / 12; t = Math.round(t / step) * step; } // 15 degrees
+			var cs = Math.cos(t), sn = Math.sin(t);
+			var turn = function(p){
+				var dx = p.x - m_rot.c.x, dy = p.y - m_rot.c.y;
+				return {x: m_rot.c.x + dx * cs - dy * sn, y: m_rot.c.y + dx * sn + dy * cs};
+			};
+			elem.startPoint = turn(m_rot.s);
+			elem.endPoint = turn(m_rot.e);
+			break;
 		}
 		elem.initialize();
 	};
 	this.startUpdateIndex = function(elem, index, inf){
+		m_rot = null;
+		if (index == 4){
+			var bd = elem.bound;
+			var c = {x: bd.x + bd.width / 2, y: bd.y + bd.height / 2};
+			// the angle starts where the pointer was pressed (the handle is on the bottom-left corner of the bound)
+			var p0 = (inf && typeof inf.clientX == 'number') ? this.host.getDeviceLocation(inf.clientX, inf.clientY) : {x: bd.x, y: bd.y + bd.height};
+			m_rot = {c: c, s: {x: elem.startPoint.x, y: elem.startPoint.y}, e: {x: elem.endPoint.x, y: elem.endPoint.y}, a0: Math.atan2(p0.y - c.y, p0.x - c.x)};
+		}
 	};
 	 this.render = function(a){
 		 var e = this.elem;

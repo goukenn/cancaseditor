@@ -1,11 +1,6 @@
 "use strict";
-
 (function(){
-
-
-
 var visitor ={
-	
 	'document': function(name, e){
 		var W = this.width;
 		var H = this.height;
@@ -14,25 +9,17 @@ var visitor ={
 		e.setAttribute("height", H);
 		e.setAttribute("id", this.id);
 	}
-	
-	
 };
-
 function storeView(inf, list, t){
 	// add it offscreen for chrome in other to render.
 	var canvas = igk.createNode("canvas");
 	var ctx = canvas.o.getContext("2d");
 	var W = inf.width || 420;
 	var H = inf.height || 320;
-	
 	// console.debug(inf);
 	// return;
-
 	canvas.o.width = W;
 	canvas.o.height = H;
-	
-	
-	
 	canvas.setCss({
 		display:"block", 
 		lineHeight:0,
@@ -44,16 +31,13 @@ function storeView(inf, list, t){
 		//must add to document
 		igk.dom.body().appendChild(canvas.o);
 	//}
-	
 	var o = new igk.winui.cancasEditor.primitive(ctx);
-	
 	o.getDocumentSize = function(){
 		return {
 			w: W,
 			h: H
 		};
 	};
-	
 	o.clearScene();
 	o.transparentBg = (t=='image/png');
 	for(var i= 0; i < list.length; i++){
@@ -68,25 +52,17 @@ function storeView(inf, list, t){
 		 return null;
 	}
 	var data = canvas.o.toDataURL(t);
-	// window.open(data);
-	canvas.remove();
-	
-	inf.mimetype= t;//"image/png";
-	
-	
+	canvas.remove();	
+	inf.mimetype= t;	
 	var a = igk.createNode("a");
 	igk.dom.body().appendChild(a.o); // not require in IE 
-	// console.debug(n);
 	a.o.download = inf.name+ext;// "project.png";
 	a.o.href = data;
-	a.o.type = t;
-	// console.debug(a.o.href);
-	//alert(data);
+	a.o.type = t; 
 	a.o.click();
-	a.remove(); //click to download
+	a.remove();
 	return null;
 };
-
 igk.system.createNS("igk.winui.cancasEditor.visitors", {
 	png: function(list, inf){
 		return storeView(inf, list, 'image/png');		
@@ -95,17 +71,11 @@ igk.system.createNS("igk.winui.cancasEditor.visitors", {
 		return storeView(inf, list, 'image/jpeg');		
 	}
 });
-
-
-	
 var AC =  igk.winui.cancasEditor.Actions;
 AC.regMenuAction("file.export.toPng", {callback: function(a){
 	a.exportTo("png");
 }, index:20});	
-
 AC.regMenuAction("file.export.toJPeg", {callback: function(a){
 	a.exportTo("jpeg");
 }, index:21});
-
-})();
-
+})();

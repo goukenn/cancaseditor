@@ -1,7 +1,6 @@
 <?php
+
 $t->clearChilds();
-
-
 $t->addScript()->Content = <<<EOF
 igk.ready(function(){
     var q = \$igk("#result").first();
@@ -26,9 +25,6 @@ igk.ready(function(){
 EOF;
 $def = $doc->Theme;
 $def[".man"] = "[resolv: overflow-scrolling: touch !important]; background-color:indigo !important;";
-
 $doc->body->setClass("man");
-
 $t->addDiv()->setId("result");
-$t->setClass("-man");
-// $t->setStyle("[resolv:overflow-scrolling: touch]");//]
+$t->setClass("-man");

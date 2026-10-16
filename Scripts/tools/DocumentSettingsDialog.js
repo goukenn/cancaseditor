@@ -47,6 +47,10 @@
 			height: doc.height,
 			background: !transparent,
 			color: transparent ? '#ffffff' : toHex(doc.fill),
+			columns: doc.columns,
+			columnGap: doc.columnGap,
+			columnColor: doc.columnColor,
+			showColumns: doc.showColumns,
 			layers: doc.getLayers().map((l) => ({
 				layer: l, visible: l.visible, blendingMode: l.blendingMode, opacity: l.opacity
 			}))
@@ -83,6 +87,16 @@
 				const color = _el('input', { type: 'color', value: draft.color, disabled: !draft.background });
 				bg.onchange = () => { draft.background = bg.checked; color.disabled = !bg.checked; };
 				color.oninput = () => { draft.color = color.value; };
+				const cols = _el('input', { type: 'number', min: 1, max: 12, value: draft.columns });
+				cols.style.width = '6em';
+				cols.onchange = () => { draft.columns = Math.max(1, Math.min(12, Math.floor(Number(cols.value)) || draft.columns)); cols.value = draft.columns; };
+				const gap = _el('input', { type: 'number', min: 0, max: 200, value: draft.columnGap });
+				gap.style.width = '6em';
+				gap.onchange = () => { const v = Number(gap.value); draft.columnGap = Math.max(0, Math.min(200, isNaN(v) ? draft.columnGap : v)); gap.value = draft.columnGap; };
+				// same color row as the fills and the borders of the inspector
+				const gcolor = _NS.inspector.colorRow({ get: () => draft.columnColor, set: (v) => { draft.columnColor = v; }, defaultColor: 'rgba(161, 79, 208, 0.15)', apply: (fn) => fn() });
+				const showCols = _el('input', { type: 'checkbox', checked: draft.showColumns });
+				showCols.onchange = () => { draft.showColumns = showCols.checked; };
 				p.append(
 					row(T['doc.id'], id),
 					row(T['doc.name'], title),
@@ -90,7 +104,11 @@
 					row(T['doc.width'], w),
 					row(T['doc.height'], h),
 					row(T['doc.background.enable'], bg),
-					row(T['doc.background.color'], color));
+					row(T['doc.background.color'], color),
+					row(T['doc.columns'], cols),
+					row(T['doc.columns.gap'], gap),
+					row(T['doc.columns.color'], gcolor),
+					row(T['doc.columns.show'], showCols));
 				return p;
 			},
 			layers() {
@@ -143,6 +161,10 @@
 				}
 				doc.title = draft.title;
 				doc.fill = draft.background ? draft.color : 'transparent';
+				doc.columns = draft.columns;
+				doc.columnGap = draft.columnGap;
+				doc.columnColor = draft.columnColor;
+				doc.showColumns = draft.showColumns;
 				if (draft.width != doc.width || draft.height != doc.height) { doc.setSize(draft.width, draft.height); }
 				draft.layers.forEach((d) => {
 					d.layer.visible = d.visible;

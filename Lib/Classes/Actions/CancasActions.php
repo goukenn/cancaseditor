@@ -1,8 +1,9 @@
 <?php
-
 namespace Com\IGKDEV\App\CancasEditor\Actions;
 
-
-class CancasActions extends \IGKActionBase{
-
+/**
+* auto generate doc.
+* @package Com\IGKDEV\App\CancasEditor\Actions
+*/
+class CancasActions extends \IGKActions{
 }

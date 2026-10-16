@@ -349,7 +349,7 @@
 			};
 			this.addColorStop = function (o, cl) {
 				g.addColorStop(o, cl);
-			}
+			};
 			this.attachTo = function (e) {
 				if (m_attached.indexOf(e) == -1) {
 					m_attached.push(e);
@@ -362,7 +362,7 @@
 				if (index != -1) {
 					m_attached = m_attached.splice(index, 1);
 				}
-			}
+			};
 			/**
 			 * @property {*} brush
 			 */
@@ -1809,6 +1809,10 @@
 					// + | render overlay layers
 					for (var i = 0; i < a.overlayLayer.length; i++) {
 						a.overlayLayer[i].render(a);
+					}
+					// + | column guides of the documents
+					if (_NS.columnGrid) {
+						_NS.columnGrid.draw(m_ctx, a.documentAreas);
 					}
 					// + | rulers attached to the current document
 					if (_NS.rulers) {
@@ -5225,6 +5229,21 @@
 			if (init_callback.length > 0) {
 				setTimeout(__loadingComplete(init_callback), 500);
 			}
+			// a menu action with a "checked(editor)" function shows a check mark while it returns true (visible tools)
+			var checks = items.filter(function (k) { return menuActions[k] && typeof (menuActions[k].checked) == 'function' && nodes[k]; });
+			if (checks.length > 0) {
+				var updateChecks = function () {
+					checks.forEach(function (k) {
+						var on = false;
+						try { on = !!menuActions[k].checked(editor); } catch (e) { }
+						nodes[k].li.o.classList.toggle('checked', on);
+					});
+				};
+				ul.o.addEventListener('mouseover', updateChecks);
+				ul.o.addEventListener('touchstart', updateChecks);
+				ul.o.addEventListener('click', function () { setTimeout(updateChecks, 0); });
+				setTimeout(updateChecks, 600);
+			}
 		};
 		function __loadingComplete(init_callback) {
 			return function () {
@@ -5667,10 +5686,10 @@
 				p.file('meta.json', '{}');
 				p.file('user.json', '{}');
 				p.file('document.json', '{}');
-				p.folder('Content')
-				p.folder('pages')
-				p.folder('previews')
-				let blob = await p.generateAsync({ type: "blob" })
+				p.folder('Content');
+				p.folder('pages');
+				p.folder('previews');
+				let blob = await p.generateAsync({ type: "blob" });
 				const link = document.createElement('a');
 				link.download = 'project.sketch';
 				link.href = URL.createObjectURL(blob);
