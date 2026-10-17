@@ -25,13 +25,15 @@
 		const cs = getComputedStyle(el);
 		return cs.display !== 'none' && cs.visibility !== 'hidden' && el.offsetParent !== null;
 	}
-	/** the deepest visible .submenu (the one nested inside the most other visible ones): where arrow keys act */
+	/** the deepest visible .submenu (the one nested inside the most other visible ones, portaled to <body> by
+	 * tools/MenuViewportFit.js or not): where arrow keys act. Depth is logical (menuFit.depthOf), not the live
+	 * DOM chain, since a portaled submenu's DOM parent is temporarily <body>, not its real menu ancestor. */
 	function deepestOpenSubmenu() {
+		const fit = igk.winui.cancasEditor.menuFit;
 		let best = null, depth = -1;
 		document.querySelectorAll('.menu .submenu').forEach((sub) => {
 			if (!visible(sub)) { return; }
-			let d = 0, p = sub.parentElement;
-			while (p) { if (p.matches && p.matches('.submenu')) { d++; } p = p.parentElement; }
+			const d = fit ? fit.depthOf(sub) : 0;
 			if (d > depth) { depth = d; best = sub; }
 		});
 		return best;
@@ -43,6 +45,7 @@
 	function closeAll() {
 		clearHighlight();
 		document.querySelectorAll('.menu .kbd-open').forEach((li) => li.classList.remove('kbd-open'));
+		if (igk.winui.cancasEditor.menuFit) { igk.winui.cancasEditor.menuFit.closeAllPortals(); }
 	}
 	function highlight(li) {
 		clearHighlight();
@@ -71,16 +74,20 @@
 				const child = current && current.querySelector(':scope > .submenu > li');
 				if (child) {
 					current.classList.add('kbd-open');
+					if (igk.winui.cancasEditor.menuFit) { igk.winui.cancasEditor.menuFit.openPortal(current); }
 					highlight(child);
+					if (igk.winui.cancasEditor.menuFit) { requestAnimationFrame(() => igk.winui.cancasEditor.menuFit.clamp(current.querySelector(':scope > .submenu'))); }
 					e.preventDefault(); e.stopPropagation();
 				}
 				break;
 			}
 			case 'ArrowLeft': {
-				const parentLi = sub.parentElement && sub.parentElement.closest('li');
-				const parentSub = parentLi && parentLi.parentElement && parentLi.parentElement.closest('.submenu');
-				if (parentSub) {
+				const fit = igk.winui.cancasEditor.menuFit;
+				if ((fit ? fit.depthOf(sub) : 0) === 0) { break; } // already at the top level, nothing to back out of
+				const parentLi = sub._homeParent || (sub.parentElement && sub.parentElement.closest('li'));
+				if (parentLi) {
 					parentLi.classList.remove('kbd-open');
+					if (fit) { fit.closePortal(sub); }
 					highlight(parentLi);
 					e.preventDefault(); e.stopPropagation();
 				}

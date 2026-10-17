@@ -24,6 +24,7 @@ import '@/lib/cancalib/tools/ZipWriter.js';
 import '@/lib/cancalib/tools/PptxExport.js';
 import '@/lib/cancalib/tools/ExportDialog.js';
 import '@/lib/cancalib/tools/MenuKeyboardNav.js';
+import '@/lib/cancalib/tools/MenuViewportFit.js';
 import '@/lib/cancalib/services/publisher.js';
 import '@/lib/cancalib/math/vector2.js';
 import '@/lib/cancalib/history/history.js';
