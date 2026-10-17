@@ -58,6 +58,11 @@
 	function onKey(e) {
 		const sub = deepestOpenSubmenu();
 		if (!sub) { clearHighlight(); return; }
+		const fit0 = igk.winui.cancasEditor.menuFit;
+		if (fit0) {
+			fit0.cancelClose(); // a stale mouse-triggered close must not fire mid keyboard navigation
+			fit0.pinChain(sub._homeParent || sub.parentElement); // the whole chain above whatever arrow keys are acting on stays open
+		}
 		const list = items(sub);
 		if (!list.length) { return; }
 		const idx = current ? list.indexOf(current) : -1;

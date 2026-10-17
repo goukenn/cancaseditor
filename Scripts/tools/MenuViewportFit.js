@@ -10,13 +10,26 @@
 //     descendant of .menu, not a direct child - so its look is unchanged) with position:fixed, which escapes
 //     the clipping ancestor (.menu itself has no overflow set). It's moved back to its exact original place
 //     when it closes, so :hover / .igk-show / .kbd-open keep working exactly as before the rest of the time.
+//     Side effect of the portal: a portaled submenu is no longer a DOM descendant of its trigger <li>, so
+//     hovering it no longer keeps that <li> (and the chain above it) in :hover state - the parent would close
+//     while the child it owns is still open and in use. Fixed by "pinning" the whole logical ancestor chain
+//     (forced visible, independent of :hover) whenever any part of it - portaled or not - is interacted with,
+//     by mouse or by keyboard (tools/MenuKeyboardNav.js calls pinChain/cancelClose too).
 //  2. whatever is on screen can still open partly off the edge of the window (bottom or right): nudged back
 //     on screen with a transform (layout untouched) whenever that happens, for every submenu, portaled or not.
 "use strict";
 (function () {
 	const _NS = igk.winui.cancasEditor;
 	const MARGIN = 6;
-	const CLOSE_DELAY = 200; // ms grace period: moving the pointer from the trigger item to its flyout
+	const CLOSE_DELAY = 300; // ms grace period: moving the pointer from a trigger item to its flyout
+
+	const CSS = '.menu li.menu-pinned > .submenu{display:block !important;opacity:1 !important}';
+	if (!document.getElementById('cancas-menu-fit-css')) {
+		const st = document.createElement('style');
+		st.id = 'cancas-menu-fit-css';
+		st.textContent = CSS;
+		document.head.append(st);
+	}
 
 	function menuRoot() { return document.querySelector('div.tool.t .menu'); }
 
@@ -47,6 +60,29 @@
 		}
 		return +sub.dataset.menuDepth;
 	}
+	/** the <li> that triggers this submenu (its structural parent, portaled or not) */
+	function triggerLi(sub) { return sub._homeParent || sub.parentElement; }
+
+	// ---- pin: every logical ancestor of whatever is being used (hovered, clicked or keyboard-navigated),
+	// portaled or not, is forced visible - so a parent never closes while its child is still in use
+	const pinned = new Set();
+	function pinChain(li) {
+		let node = li;
+		while (node) {
+			const sub = node.closest('.submenu');
+			if (!sub) { break; }
+			const parentLi = triggerLi(sub);
+			if (!parentLi || parentLi.tagName != 'LI') { break; }
+			parentLi.classList.add('menu-pinned');
+			pinned.add(parentLi);
+			node = parentLi;
+		}
+	}
+	function unpinAll() {
+		pinned.forEach((li) => li.classList.remove('menu-pinned'));
+		pinned.clear();
+	}
+
 	// ---- portal: a submenu nested inside another submenu is moved to be a direct child of .menu while open,
 	// so the ancestor's own overflow:auto (needed for ITS scrolling) cannot clip it
 	let closeTimer = 0;
@@ -82,6 +118,7 @@
 	}
 	function closeAllPortals() {
 		document.querySelectorAll('.menu .submenu').forEach((sub) => { if (sub._portaled) { closePortal(sub); } });
+		unpinAll();
 	}
 	function scheduleClose() {
 		clearTimeout(closeTimer);
@@ -90,13 +127,17 @@
 	function cancelClose() { clearTimeout(closeTimer); }
 
 	function onPointerMove(e) {
-		const onMenuChrome = e.target.closest && e.target.closest('.menu li, .menu .submenu');
+		const li = e.target.closest && e.target.closest('.menu li');
+		const onMenuChrome = li || e.target.closest('.menu .submenu');
 		if (onMenuChrome) { cancelClose(); } else { scheduleClose(); return; }
-		const li = e.target.closest('.menu li');
-		if (li) { openPortal(li); requestAnimationFrame(() => clamp(li.querySelector(':scope > .submenu'))); }
+		if (li) {
+			pinChain(li);
+			openPortal(li);
+			requestAnimationFrame(() => clamp(li.querySelector(':scope > .submenu')));
+		}
 	}
 	document.addEventListener('mouseover', onPointerMove, true);
 	document.addEventListener('click', onPointerMove, true); // touch / keyboard-triggered opens (igk-show, kbd-open)
 	window.addEventListener('resize', closeAllPortals);
-	_NS.menuFit = { clamp, openPortal, closePortal, closeAllPortals, depthOf };
+	_NS.menuFit = { clamp, openPortal, closePortal, closeAllPortals, depthOf, pinChain, unpinAll, cancelClose, scheduleClose };
 })();
