@@ -2946,7 +2946,12 @@
 						actions[Key.Escape] = function (a) {
 							// console.debug("cancel edition");
 							if (a.type == "keyup") {
-								if (a.elem) {
+								if (this.host.element) {
+									// an element is selected (the surface has focus, see Actions.hasFocus /
+									// __handleKey above): Escape unselects it, it does not switch tool
+									this.host.Edit(null, null);
+									this.host.refresh();
+								} else if (a.elem) {
 									this.cancelEdition();
 								} else {
 									this.goToDefaultMecanism();
