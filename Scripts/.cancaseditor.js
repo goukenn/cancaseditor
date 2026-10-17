@@ -2054,15 +2054,21 @@
 						return e["@container"].remove(e);
 					}
 				},
+				/** the project name (this.title) when set, else the current document id: used to name exports */
+				getProjectName: function () {
+					var t = this.title;
+					return (t && String(t).trim()) ? String(t).trim() : this.getDocumentName();
+				},
 				saveToXML: function () {
-					igk.io.file.download("application/xml", "project.xml",
+					igk.io.file.download("application/xml", this.getProjectName() + ".xml",
 						igk.winui.cancasEditor.visitors.xml(this.list));
 				},
 				exportTo: function (type) {
 					if (type in _NS.visitors) {
 						var e = {
 							mimetype: 'text/plain',
-							name: this.getDocumentName() // 'project.txt'
+							name: this.getProjectName(), // 'project.txt'
+							title: this.getProjectName()
 						};
 						var gs = this.getDocumentSize();
 						e.width = gs.w;

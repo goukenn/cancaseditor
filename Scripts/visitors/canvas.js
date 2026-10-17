@@ -82,7 +82,7 @@ igk.system.createNS("igk.winui.cancasEditor.visitors", {
 			} 
 			inf.mimetype = "text/javascript";
 			inf.ext = ".js";
-			inf.name = "export.js";
+			inf.name = (inf.name || "export") + ".js";
 			return e.render();
 	}
 });

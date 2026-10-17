@@ -213,7 +213,7 @@
 		const files = [
 			{ name: '[Content_Types].xml', data: ct },
 			{ name: '_rels/.rels', data: ROOT_RELS },
-			{ name: 'docProps/core.xml', data: coreXml(editor.getDocumentName ? editor.getDocumentName() : 'Presentation') },
+			{ name: 'docProps/core.xml', data: coreXml(editor.getProjectName ? editor.getProjectName() : 'Presentation') },
 			{ name: 'docProps/app.xml', data: appXml(docs.length) },
 			{ name: 'ppt/presentation.xml', data: presentationXml(docs.length) },
 			{ name: 'ppt/_rels/presentation.xml.rels', data: presentationRels(docs.length) },
@@ -233,7 +233,7 @@
 
 		const blob = buildZip(files);
 		const a = document.createElement('a');
-		a.download = (editor.getDocumentName ? editor.getDocumentName() : 'project') + '.pptx';
+		a.download = (editor.getProjectName ? editor.getProjectName() : 'project') + '.pptx';
 		a.href = URL.createObjectURL(blob);
 		a.click();
 		setTimeout(() => URL.revokeObjectURL(a.href), 10000);

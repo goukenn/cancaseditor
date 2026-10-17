@@ -20,6 +20,7 @@ import '@/lib/cancalib/tools/bottomZoomTypeEditorTool.js';
 import '@/lib/cancalib/tools/DocumentLinks.js';
 import '@/lib/cancalib/tools/PresentMode.js';
 import '@/lib/cancalib/tools/PptxExport.js';
+import '@/lib/cancalib/tools/ExportDialog.js';
 import '@/lib/cancalib/services/publisher.js';
 import '@/lib/cancalib/math/vector2.js';
 import '@/lib/cancalib/history/history.js';

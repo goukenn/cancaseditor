@@ -43,9 +43,9 @@
 
 		const root = document.createElement('div');
 		root.className = 'cancas-present';
-		root.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#111;display:flex;align-items:center;justify-content:center;touch-action:none';
+		root.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none';
 		const canvas = document.createElement('canvas');
-		canvas.style.cssText = 'display:block;max-width:calc(100vw - 40px);max-height:calc(100vh - 40px);width:auto;height:auto;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.6)';
+		canvas.style.cssText = 'display:block;max-width:calc(100vw - 40px);max-height:calc(100vh - 96px);width:auto;height:auto;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.6)';
 		const stage = document.createElement('div');
 		stage.style.cssText = 'position:relative;line-height:0';
 		const hotlayer = document.createElement('div');
@@ -53,17 +53,40 @@
 		stage.append(canvas, hotlayer);
 		root.append(stage);
 
+		// header bar: back (left) | project name, click to rename (center) | close (right)
+		const header = document.createElement('div');
+		header.style.cssText = 'position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;box-sizing:border-box;z-index:1;background:linear-gradient(rgba(0,0,0,.55),transparent)';
+		const btnCss = 'width:36px;height:36px;flex:none;border-radius:18px;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:16px;cursor:pointer';
 		const closeBtn = document.createElement('button');
 		closeBtn.type = 'button'; closeBtn.textContent = '✕';
 		closeBtn.title = T('present.close', 'Close (Esc)');
-		closeBtn.style.cssText = 'position:fixed;top:16px;right:16px;width:36px;height:36px;border-radius:18px;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:16px;cursor:pointer;z-index:1';
+		closeBtn.style.cssText = btnCss;
 		const backBtn = document.createElement('button');
 		backBtn.type = 'button'; backBtn.textContent = '←';
 		backBtn.title = T('present.back', 'Back');
-		backBtn.style.cssText = 'position:fixed;top:16px;left:16px;width:36px;height:36px;border-radius:18px;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:16px;cursor:pointer;z-index:1;display:none';
-		root.append(closeBtn, backBtn);
+		backBtn.style.cssText = btnCss + ';visibility:hidden';
+		const title = document.createElement('span');
+		title.textContent = editor.getProjectName ? editor.getProjectName() : (editor.title || '');
+		title.title = T('present.rename', 'Click to rename');
+		title.style.cssText = 'color:#fff;font:14px sans-serif;opacity:.9;cursor:pointer;padding:6px 10px;border-radius:14px;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
+		title.addEventListener('pointerup', (e) => { e.stopPropagation(); renameProject(); });
+		header.append(backBtn, title, closeBtn);
+		root.append(header);
 
-		function updateBack() { backBtn.style.display = history.length > 1 ? '' : 'none'; }
+		function renameProject() {
+			const inp = document.createElement('input');
+			inp.type = 'text';
+			inp.value = editor.title || '';
+			inp.placeholder = T('export.placeholder', 'Untitled project');
+			inp.style.cssText = 'font:14px sans-serif;padding:5px 10px;border-radius:14px;border:0;max-width:60%;text-align:center';
+			title.replaceWith(inp);
+			// deferred: a native 'click' still follows this 'pointerup' and would otherwise collapse the selection
+			setTimeout(() => { inp.focus(); inp.select(); }, 0);
+			const commit = () => { editor.title = inp.value.trim(); inp.replaceWith(title); title.textContent = editor.getProjectName ? editor.getProjectName() : (editor.title || ''); };
+			inp.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key == 'Enter') { inp.blur(); } else if (e.key == 'Escape') { inp.value = editor.title || ''; inp.blur(); } });
+			inp.addEventListener('blur', commit, { once: true });
+		}
+		function updateBack() { backBtn.style.visibility = history.length > 1 ? 'visible' : 'hidden'; }
 		function go(target, push) {
 			if (!target) { return; }
 			doc = target;

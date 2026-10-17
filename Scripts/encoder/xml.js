@@ -27,6 +27,8 @@ G.xml.decodeString = function(xml, a){
 	if (!gkds || (gkds.getAttribute("app")!="cancasEditor")){
 		return false;
 	}
+	// project name (shown at the top of Present mode, used to name exports)
+	a.title = gkds.getAttribute("title") || "";
 	// brushes embedded in the document (referenced by "brush:<id>" fills)
 	if (_NS.brushes){
 		gkds.qselect("brush").each_all(function(){

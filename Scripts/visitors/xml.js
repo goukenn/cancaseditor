@@ -24,6 +24,11 @@
             var e = $igk(igk.dom.createXMLDocument("gkds").documentElement); 
 			e.setAttribute("app", "cancasEditor");
 			e.setAttribute("app-version", "1.0");
+			// project name (editor.title): shown at the top of Present mode and used to name exports
+			var _app = igk.winui.cancasEditor.app;
+			if (_app && _app.list === list && _app.title) {
+				e.setAttribute("title", _app.title);
+			}
 			e.setAttribute("xmlns:igk", "https://www.igkdev.com/schema");
 			e.setAttribute("xmlns", "https://schema.igkdev.com/cancaseditor/2018");
             e.addComment("gkds file:  generate with cancasEditor App");

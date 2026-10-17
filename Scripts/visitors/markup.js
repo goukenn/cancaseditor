@@ -154,7 +154,7 @@
 	const emitters = {
 		html(tree, inf) {
 			inf.mimetype = 'text/html';
-			inf.name = 'project.html';
+			inf.name = (inf.name || 'project') + '.html';
 			const lang = document.documentElement.getAttribute('lang') || 'en';
 			const title = escHtml(inf.title || 'project');
 			return '<!DOCTYPE html>\n<html lang="' + escAttr(lang) + '">\n<head>\n\t<meta charset="utf-8"/>\n' +
@@ -164,13 +164,13 @@
 		},
 		phtml(tree, inf) {
 			inf.mimetype = 'text/x-php';
-			inf.name = 'project.phtml';
+			inf.name = (inf.name || 'project') + '.phtml';
 			return '<?php\n' + header(inf.name, 'phtml').map((l) => '// @' + l + '\n').join('') +
 				'$t->clearChilds();\n' + toPhtml(tree, 0, '$t');
 		},
 		bview(tree, inf) {
 			inf.mimetype = 'text/plain';
-			inf.name = 'project.bview';
+			inf.name = (inf.name || 'project') + '.bview';
 			return '/* bview file */\n' + header(inf.name, 'bview').map((l) => '# @' + l + '\n').join('') +
 				toBview(tree, 0);
 		}
