@@ -782,13 +782,15 @@
 			} else {
 				s.zoomIn();
 			}
-			// e.preventDefault();
+			// not passive: without this, ctrl+wheel / a trackpad pinch over the surface also zooms the
+			// browser page itself (the mouse/trackpad "navigator zoom"), on top of the editor's own zoom
+			e.preventDefault();
 			// e.stopPropagation();
 		};
 		igk.appendChain(this, "registerEvents", function () {
 			var self = this;
-			var s = this.host; 
-			s.on("mousewheel", updateWheel, { passive: 1 });
+			var s = this.host;
+			s.on("mousewheel", updateWheel, { passive: 0 });
 			s.on("action", _updateEditAction);
 			this.host.overlayLayer.push(this);
 			overlay = this.host.overlayLayer.length - 1;

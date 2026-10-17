@@ -1,5 +1,6 @@
 'use strict';
 import '@/lib/cancalib/.cancaseditor.js';
+import '@/lib/cancalib/tools/DisableBrowserZoom.js';
 import '@/lib/cancalib/exceptions/index.js';
 import '@/lib/cancalib/color.js';
 import '@/lib/cancalib/visitors/canvas.js';
