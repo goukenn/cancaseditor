@@ -10,18 +10,16 @@
 	const AC = _NS.Actions;
 	const T = (k, d) => (_NS.R && _NS.R[k]) || d || k;
 
-	// value: either a visitors[] key for editor.exportTo(type), or a function(editor) for a custom exporter
-	const TYPES = [
-		{ value: 'xml', label: () => T('file.export.toXml', 'Xml') },
-		{ value: 'svg', label: () => T('file.export.toSvg', 'Svg') },
-		{ value: 'png', label: () => T('file.export.toPng', 'Png') },
-		{ value: 'jpeg', label: () => T('file.export.toJPeg', 'Jpeg') },
-		{ value: 'html', label: () => T('file.export.toHtml', 'Html') },
-		{ value: 'phtml', label: () => T('file.export.toPhtml', 'Balafon view (.phtml)') },
-		{ value: 'bview', label: () => T('file.export.toBview', 'Balafon view (.bview)') },
-		{ value: 'canvas', label: () => T('file.export.toCancasExpression', 'Javascript canvas expression') },
-		{ value: 'pptx', label: () => T('file.export.toPptx', 'PowerPoint (.pptx)') }
-	];
+	/** every "file.export.<suffix>" menu action with a callback (this dialog's own entry excluded): picking
+	 * one here just invokes that action's own callback, so the list can never go stale or miss a format —
+	 * whatever File > Export to... offers, this offers too, including CSS and Sketch (their own dialogs). */
+	function exportActions() {
+		const tab = AC.getMenuActions();
+		return Object.keys(tab)
+			.filter((k) => k.indexOf('file.export.') === 0 && k !== 'file.export.dialog' && typeof tab[k].callback == 'function')
+			.sort((a, b) => (tab[a].index || 0) - (tab[b].index || 0))
+			.map((k) => ({ name: k, action: tab[k] }));
+	}
 
 	function showExportDialog(editor) {
 		const row = (t, el) => {
@@ -37,9 +35,10 @@
 		name.value = editor.title || '';
 		name.placeholder = T('export.placeholder', 'Untitled project');
 		name.style.cssText = 'flex:1';
+		const entries = exportActions();
 		const type = document.createElement('select');
 		type.style.cssText = 'flex:1';
-		TYPES.forEach((t) => { const o = document.createElement('option'); o.value = t.value; o.textContent = t.label(); type.append(o); });
+		entries.forEach((en, i) => { const o = document.createElement('option'); o.value = i; o.textContent = T(en.name, en.name); type.append(o); });
 
 		const body = document.createElement('div');
 		body.append(row(T('export.projectName', 'Project name'), name), row(T('export.type', 'File type'), type));
@@ -52,13 +51,8 @@
 					text: T('export.go', 'Export'), primary: true, onclick: (close) => {
 						close();
 						editor.title = name.value.trim(); // persists the project name regardless of the chosen type
-						if (type.value == 'pptx') {
-							if (_NS.pptxExport) { _NS.pptxExport.exportPptx(editor); }
-						} else if (type.value == 'xml') {
-							editor.saveToXML(); // the xml visitor doesn't name/extension itself (see File > Export to... > Xml)
-						} else {
-							editor.exportTo(type.value);
-						}
+						const en = entries[+type.value];
+						if (en) { en.action.callback(editor); }
 					}
 				}
 			]

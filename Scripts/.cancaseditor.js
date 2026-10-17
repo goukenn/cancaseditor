@@ -5711,24 +5711,21 @@
 			});
 		});
 		AC.regMenuAction("file.export.toSketch", {
-			callback: async function (a) {
-				const { JSZip } = igk.lib;
-				if (!JSZip) {
-					throw new Error('missing jszip ');
-				}
-				console.log("export to sketch file ");
-				let p = new JSZip();
-				p.file('manifest.xml', '<manifest></manifest>');
-				p.file('index.html', '<html><head><title>Project</title></head><body></body></html>');
-				p.file('meta.json', '{}');
-				p.file('user.json', '{}');
-				p.file('document.json', '{}');
-				p.folder('Content');
-				p.folder('pages');
-				p.folder('previews');
-				let blob = await p.generateAsync({ type: "blob" });
+			callback: function (a) {
+				// igk.lib.JSZip was referenced here but is never actually loaded by this app: use the
+				// dependency-free zip writer (tools/ZipWriter.js, shared with PptxExport.js) instead
+				var blob = _NS.zipWriter.buildZip([
+					{ name: 'manifest.xml', data: '<manifest></manifest>' },
+					{ name: 'index.html', data: '<html><head><title>Project</title></head><body></body></html>' },
+					{ name: 'meta.json', data: '{}' },
+					{ name: 'user.json', data: '{}' },
+					{ name: 'document.json', data: '{}' },
+					{ name: 'Content/', data: '' },
+					{ name: 'pages/', data: '' },
+					{ name: 'previews/', data: '' }
+				], 'application/zip');
 				const link = document.createElement('a');
-				link.download = 'project.sketch';
+				link.download = a.getProjectName() + '.sketch';
 				link.href = URL.createObjectURL(blob);
 				link.click();
 			}, index: 30
