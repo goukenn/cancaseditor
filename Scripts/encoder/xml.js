@@ -84,6 +84,16 @@ G.xml.decodeString = function(xml, a){
 	finally{
 		delete(a["@loading"]);
 	}
+	// prototype links (documents are referenced by id)
+	if (doc.length > 1){
+		gkds.qselect("link").each_all(function(){
+			var f = doc.filter((d) => d.id == this.getAttribute("from"))[0];
+			var t = doc.filter((d) => d.id == this.getAttribute("to"))[0];
+			if (f && t && f !== t){
+				a.links.push({from: f, to: t, color: this.getAttribute("color") || "#e8590c", label: this.getAttribute("label") || ""});
+			}
+		});
+	}
 	a.refresh();
 	return true;
 };
@@ -215,7 +225,18 @@ function loadAttributes(o, attr, a){
 		 _tv = Unserialize(n, v, g);
 		 if( (typeof(_tv) !='undefined') || !(n in g['@_resolv'])){
 			try{
-				o[g.__attribs__(n)]  = _tv;
+				var pn = g.__attribs__(n);
+				if (typeof(_tv) == 'string'){
+					// attributes are text: restore the type of the property (number, boolean) given by its default value
+					var cur;
+					try{ cur = o[pn]; } catch(x){ cur = undefined; }
+					if ((typeof(cur) == 'number') && (_tv.trim() !== '') && isFinite(Number(_tv))){
+						_tv = Number(_tv);
+					} else if ((typeof(cur) == 'boolean') && ((_tv == 'true') || (_tv == 'false'))){
+						_tv = (_tv == 'true');
+					}
+				}
+				o[pn]  = _tv;
 			}
 			catch(e){
 				// read only or invalid property: keep the default value instead of aborting the whole load

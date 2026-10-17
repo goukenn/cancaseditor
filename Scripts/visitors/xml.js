@@ -108,6 +108,20 @@
 					});
 				}
 			}
+			// prototype links between documents (by document id)
+			var app = igk.winui.cancasEditor.app;
+			if (app && app.list === list && app.links && app.links.length > 0) {
+				var ls = e.add("links");
+				app.links.forEach(function (l) {
+					var n = ls.add("link");
+					n.setAttribute("from", l.from.id);
+					n.setAttribute("to", l.to.id);
+					n.setAttribute("color", l.color);
+					if (l.label) {
+						n.setAttribute("label", l.label);
+					}
+				});
+			}
 			var d = igk.createNode("div");
 			d.add(e);
 		   return d.o.innerHTML; //e.render();

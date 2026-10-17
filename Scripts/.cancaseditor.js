@@ -405,6 +405,25 @@
 				toString() {
 					return 'CancasPrivimitive'
 				},
+				/**
+				 * resolve the fill/stroke of the element being rendered (a gradient becomes its brush) and bind
+				 * them to this primitive; every primitive has it, not just the live editor, so a document can be
+				 * rendered standalone (PNG/JPEG export, print, PowerPoint export) without missing this method
+				 * @param {*} e element to render
+				 */
+				bindBrushStyle: function (e) {
+					const { fill, stroke } = e;
+					if (fill) {
+						let f = fill;
+						if (f instanceof linearGradient) { f = f.brush; }
+						this.fill = f;
+					}
+					if (stroke) {
+						let f = stroke;
+						if (f instanceof linearGradient) { f = f.brush; }
+						this.stroke = f;
+					}
+				},
 				getDocumentSize: function () {
 					return { w: 0, h: 0 };
 				},
@@ -1084,6 +1103,7 @@
 			var m_id_manager = {};
 			var m_document = null; // current document
 			var m_layer; // current layer
+			this.links = []; // prototype links between documents: {from, to (documents), color, label}
 			this.list = []; //store list of items 
 			this.overlayLayer = []; // overlay layers
 			var m_asset_node = 0;
@@ -1243,27 +1263,9 @@
 					return;
 				q.raiseEvent(n, e);
 			};
-			/**
-			 * 
-			 * @param {*} e element to render 
-			 */
-			this.bindBrushStyle = function (e) {
-				const { fill, stroke, strokeWidth, strokeOpacity } = e;
-				if (fill) {
-					let f = fill;
-					if (f instanceof linearGradient) {
-						f = f.brush;
-					}
-					this.fill = f;
-				}
-				if (stroke) {
-					let f = stroke;
-					if (f instanceof linearGradient) {
-						f = f.brush;
-					}
-					this.stroke = f;
-				}
-			};
+			// bindBrushStyle: now defined once, on CancasPrimitive itself (see function CancasPrimitive above),
+			// so it is available on every primitive, not just the editor's own (CancasPrimitive.apply(this, ...)
+			// in initContext() below sets it here too).
 			// ----------------------------------------------------------------------
 			// EXPOSED EDITOR EVENT Events
 			// ---------------------------------------------------------------------- 
@@ -1814,6 +1816,14 @@
 					if (_NS.columnGrid) {
 						_NS.columnGrid.draw(m_ctx, a.documentAreas);
 					}
+					// + | prototype links between the documents
+					if (_NS.documentLinks) {
+						_NS.documentLinks.draw(m_ctx, a);
+					}
+					// + | dashed arrow from the selected hotspot to its target document
+					if (_NS.hotspotLinks) {
+						_NS.hotspotLinks.draw(m_ctx, a);
+					}
 					// + | rulers attached to the current document
 					if (_NS.rulers) {
 						_NS.rulers.draw(m_ctx, m_ctx.canvas.width, m_ctx.canvas.height, dx, dy, ex, a.document);
@@ -1822,6 +1832,7 @@
 				clear: function () {
 					//reset all application items
 					this.list = [];
+					this.links = [];
 					m_id_manager = {};
 					this.Edit(null, null);
 					this.layer = null;
@@ -1873,6 +1884,25 @@
 					this.refresh();
 					return doc;
 				},
+				/** link a document to another one with a colored arrow (prototype flow) */
+				addLink: function (from, to, color, label) {
+					if (!from || !to || from === to) {
+						return null;
+					}
+					var l = { from: from, to: to, color: color || "#e8590c", label: label || "" };
+					this.links.push(l);
+					this.refresh();
+					return l;
+				},
+				removeLink: function (l) {
+					var i = this.links.indexOf(l);
+					if (i == -1) {
+						return false;
+					}
+					this.links.splice(i, 1);
+					this.refresh();
+					return true;
+				},
 				/** remove a document of the scene */
 				removeDocument: function (doc) {
 					var docs = this.documents;
@@ -1880,6 +1910,7 @@
 						return false;
 					}
 					this.Edit(null, null);
+					this.links = this.links.filter(function (l) { return l.from !== doc && l.to !== doc; });
 					this.remove(doc);
 					var next = this.documents[0] || null;
 					this.document = next;

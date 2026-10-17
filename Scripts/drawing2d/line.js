@@ -88,10 +88,10 @@ EXPORTS.register("line", function(){
 			{name:"stroke", "default": "#000"}, 
 			{name:"strokeWidth", "default":1},
 			{name:"start", 
-			serializer: SERI.vector2Serializer},
+			serializer: SERI.vector2Serializer, unserialize: SERI.vector2Unserializer},
 			{name:"end", 
-			serializer: SERI.vector2Serializer}
-			]);			
+			serializer: SERI.vector2Serializer, unserialize: SERI.vector2Unserializer}
+			]).concat(EXPORTS.matrixExport());			
 	return c;
 });
 //register actions

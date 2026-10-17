@@ -394,6 +394,9 @@
 			p.setHtml(this.getXhtml());
 			return p;
 		},
+		'hotspot': function (name, e) {
+			return null; // prototyping aid: not part of the exported artwork
+		},
 		'document': function (name, e) {
 			var W = this.width;
 			var H = this.height;

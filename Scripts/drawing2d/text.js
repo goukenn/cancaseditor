@@ -248,7 +248,7 @@
 		]).concat(EXPORTS.matrixExport());
 		c.unserialize = function (t, a) {
 			// + | unserialize text node 
-			this.text = $igk(t).getHtml();
+			this.text = $igk(t && t.src ? t.src : t).getHtml(); // t: {src: xml node, a: editor}
 		};
 		return c;
 	});

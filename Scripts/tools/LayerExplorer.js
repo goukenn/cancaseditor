@@ -443,4 +443,10 @@
 	AC.regMenuAction("view.zoom.all", { index: 30, callback: (a) => a.viewAllDocuments() });
 	AC.regMenuAction("view.zoom.center", { index: 31, callback: (a) => a.centerOnDocument() });
 	AC.regMenuAction("file.newDocument", { index: -95, callback: (a) => a.addDocument() });
+	// Document menu: new document / delete the current one (the last one asks for a confirmation)
+	AC.regMenuAction("document.new", { index: 1, callback: (a) => { a.addDocument(); if (m_ctx) { m_ctx.rerender(); } } });
+	AC.regMenuAction("document.delete", {
+		index: 2,
+		callback: (a) => { if (a.document) { requestDelete(a, a.document, () => { if (m_ctx) { m_ctx.rerender(); } }); } }
+	});
 })();

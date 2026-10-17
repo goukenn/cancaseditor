@@ -260,6 +260,8 @@ var c = EXPORTS.initExport().concat(EXPORTS.getStrokeAndFillExport()).concat([
 		{name:'center', serializer: SERI.vector2Serializer , unserialize : SERI.vector2Unserializer},	
 		{name:"angle", 'default':0,  serializer: SERI.floatSerializer }, 
 		{name:"offsetAngle", 'default':0 , serializer: SERI.floatSerializer}, 
+		{name:"sweepAngle", 'default':0 , serializer: SERI.floatSerializer}, 
+		{name:"count", 'default':5}, 
 		{name:"radius", 'default': 0, serializer: SERI.floatSerializer, unserialize: SERI.radiusUnSerializer },
 		{name:"outerRadius", 'default': 0, serializer: SERI.floatSerializer},
 		{name:"tension", 'default': 0},
