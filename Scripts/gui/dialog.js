@@ -62,50 +62,36 @@ var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 		};
 		//move box according to title bar
 		var mv = {b:0};
-		b.on("mousedown", function(e){
-			var ebtn = MS_BTN(e);
-			switch(ebtn){
-				case MS_BTN.Left:
-					mv.b =1;
-					mv.start = {x:e.clientX, y:e.clientY};
-					//save size and location
-					mv.boxsize = box.getSize();
-					mv.location = box.getLocation();
-					e.preventDefault();
-					e.stopPropagation();
-					igk.winui.mouseCapture.setCapture(b);
-				break;
-			}
-		}).on("mousemove", function(e){
-			if (!mv.b) return;
-			var ebtn = MS_BTN(e);
-			switch(ebtn){
-				case MS_BTN.Left:
-					e.preventDefault();
-					e.stopPropagation();
-					mv.end = {x:e.clientX, y:e.clientY};
-					var dx = mv.end.x - mv.start.x;
-					var dy = mv.end.y - mv.start.y;
-					__updatepos({x: mv.location.x + dx,y: mv.location.y + dy});
-					// dx = Math.max(0, Math.min(window.innerWidth-mv.boxsize.w, mv.location.x + dx));
-					// dy = Math.max(0, Math.min(window.innerHeight-mv.boxsize.h, mv.location.y + dy));
-					// box.setCss({left:dx+'px', top:dy+'px','position':'absolute'});
-				break;
-			}
-		})
-		.on("mouseup", function(e){
-			mv.b = 0;
-			var ebtn = MS_BTN(e);
-			switch(ebtn){
-				case MS_BTN.Left:
-					mv.end = {x:e.clientX, y:e.clientY}; 
-				break;
-			}
-			// console.debug("mouseup");
+		// pointer events cover mouse, touch and pen; touch-action:none stops the browser panning during the drag
+		var tb = b.o;
+		tb.style.touchAction = 'none';
+		tb.addEventListener('pointerdown', function(e){
+			if (e.button !== 0 || (e.target.closest && e.target.closest('.close'))) return;
+			mv.b = 1;
+			mv.id = e.pointerId;
+			mv.start = {x:e.clientX, y:e.clientY};
+			//save size and location
+			mv.boxsize = box.getSize();
+			mv.location = box.getLocation();
 			e.preventDefault();
 			e.stopPropagation();
-			igk.winui.mouseCapture.releaseCapture(b);
+			try { tb.setPointerCapture(e.pointerId); } catch (x) { }
 		});
+		tb.addEventListener('pointermove', function(e){
+			if (!mv.b || e.pointerId !== mv.id) return;
+			e.preventDefault();
+			e.stopPropagation();
+			__updatepos({x: mv.location.x + e.clientX - mv.start.x, y: mv.location.y + e.clientY - mv.start.y});
+		});
+		function endMove(e){
+			if (!mv.b || e.pointerId !== mv.id) return;
+			mv.b = 0;
+			e.preventDefault();
+			e.stopPropagation();
+			try { tb.releasePointerCapture(e.pointerId); } catch (x) { }
+		}
+		tb.addEventListener('pointerup', endMove);
+		tb.addEventListener('pointercancel', endMove);
 		igk.winui.reg_event(window, 'resize', __updatelocation);
 		function __close(){
 			if (_loctimeout){

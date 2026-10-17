@@ -32,20 +32,34 @@ var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 		};
 		// s["lineHeight"] = "15pt"; 
 		q.add("div").setCss(s).setHtml(msg || "Balafon Cancas editor edition notify node demonstration. New package  available <a href='#'>version 1.0</a>");
+		// tap (touch/pen) or click closes the tip; touch-action:none keeps the tap from being taken as a pan
+		q.o.style.touchAction = "none";
+		q.o.addEventListener("pointerup", function(e){
+			e.stopPropagation();
+			_self.close();
+		});
 		q.on("click", function(){
 			_self.close();
 		});
 		this.show = function(){};
+		var _closed = false;
 		this.close = function(){
+			if (_closed) return;
+			_closed = true;
+			var done = function(){
+				if (!q.o.parentNode) return;
+				q.remove();
+				_notifylist.splice(_index,1);
+				for(var i = _index; i < _notifylist.length; i++){
+					_notifylist[i].setIndex(i);
+				}
+			};
 			q.addClass("igk-hide").on("transitionend", function(e){
 				if (e.target == q.o){
-					q.remove();
-					_notifylist.splice(_index,1);
-					for(var i = _index; i < _notifylist.length; i++){
-						_notifylist[i].setIndex(i);
-					}
+					done();
 				}
 			});
+			setTimeout(done, 500); // transitionend may not fire
 		};
 		this.setIndex = function(v){//update index list
 			//change the index attache to node list
