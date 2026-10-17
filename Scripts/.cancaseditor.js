@@ -4969,7 +4969,13 @@
 				}
 				var p = li.select("^.submenu").first();
 				if (p) {
-					p.select("^li").first().addClass("igk-show");
+					// a submenu temporarily moved out from under its trigger <li> (tools/MenuViewportFit.js,
+					// so a nested flyout isn't clipped by a scrollable ancestor) has no ancestor <li> to find
+					// here while it is out there; its own pin mechanism keeps it (and its ancestors) shown
+					var pli = p.select("^li").first();
+					if (pli) {
+						pli.addClass("igk-show");
+					}
 				}
 				if (e.type == "touchend") {
 					if (li.select(".submenu").first()) {
