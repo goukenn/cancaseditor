@@ -1,14 +1,13 @@
 // author: C.A.D. BONDJE DOUE
 // file: MenuKeyboardNav.js
-// @desc: a submenu too tall for the screen now scrolls (Styles/default.pcss, max-height + overflow-y). This
-// adds arrow-key navigation inside whichever submenu is currently visible (opened by hover or a click/tap,
+// @desc: adds arrow-key navigation inside whichever submenu is currently visible (opened by hover or a click/tap,
 // see .cancaseditor.js's menuItem): Down/Up move a highlight (scrolled into view as needed), Right opens the
 // highlighted item's own submenu, Left closes back to the parent level, Enter/Space activates the highlighted
 // item, Escape clears the highlight.
 "use strict";
 (function () {
 	const CSS = '.menu .kbd-sel > a{background-color:#4c448f;color:#eee}' +
-		'[data-ce-theme="light"] .menu .kbd-sel > a{color:#fff}' +
+		'[data-theme="light"] .menu .kbd-sel > a{color:#fff}' +
 		// a submenu opened by ArrowRight (desktop only shows .submenu on :hover / .touchable-device li.igk-show)
 		'.menu li.kbd-open > .submenu{display:block !important;opacity:1 !important}';
 	if (!document.getElementById('cancas-menu-kbd-css')) {
@@ -25,15 +24,17 @@
 		const cs = getComputedStyle(el);
 		return cs.display !== 'none' && cs.visibility !== 'hidden' && el.offsetParent !== null;
 	}
-	/** the deepest visible .submenu (the one nested inside the most other visible ones, portaled to <body> by
-	 * tools/MenuViewportFit.js or not): where arrow keys act. Depth is logical (menuFit.depthOf), not the live
-	 * DOM chain, since a portaled submenu's DOM parent is temporarily <body>, not its real menu ancestor. */
+	function depthOf(sub) {
+		let d = 0;
+		for (let p = sub.parentElement; p; p = p.parentElement) { if (p.matches('.submenu')) { d++; } }
+		return d;
+	}
+	/** the deepest visible .submenu (nested inside the most other submenus): where arrow keys act */
 	function deepestOpenSubmenu() {
-		const fit = igk.winui.cancasEditor.menuFit;
 		let best = null, depth = -1;
 		document.querySelectorAll('.menu .submenu').forEach((sub) => {
 			if (!visible(sub)) { return; }
-			const d = fit ? fit.depthOf(sub) : 0;
+			const d = depthOf(sub);
 			if (d > depth) { depth = d; best = sub; }
 		});
 		return best;
@@ -45,7 +46,6 @@
 	function closeAll() {
 		clearHighlight();
 		document.querySelectorAll('.menu .kbd-open').forEach((li) => li.classList.remove('kbd-open'));
-		if (igk.winui.cancasEditor.menuFit) { igk.winui.cancasEditor.menuFit.closeAllPortals(); }
 	}
 	function highlight(li) {
 		clearHighlight();
@@ -58,11 +58,6 @@
 	function onKey(e) {
 		const sub = deepestOpenSubmenu();
 		if (!sub) { clearHighlight(); return; }
-		const fit0 = igk.winui.cancasEditor.menuFit;
-		if (fit0) {
-			fit0.cancelClose(); // a stale mouse-triggered close must not fire mid keyboard navigation
-			fit0.pinChain(sub._homeParent || sub.parentElement); // the whole chain above whatever arrow keys are acting on stays open
-		}
 		const list = items(sub);
 		if (!list.length) { return; }
 		const idx = current ? list.indexOf(current) : -1;
@@ -79,20 +74,16 @@
 				const child = current && current.querySelector(':scope > .submenu > li');
 				if (child) {
 					current.classList.add('kbd-open');
-					if (igk.winui.cancasEditor.menuFit) { igk.winui.cancasEditor.menuFit.openPortal(current); }
 					highlight(child);
-					if (igk.winui.cancasEditor.menuFit) { requestAnimationFrame(() => igk.winui.cancasEditor.menuFit.clamp(current.querySelector(':scope > .submenu'))); }
 					e.preventDefault(); e.stopPropagation();
 				}
 				break;
 			}
 			case 'ArrowLeft': {
-				const fit = igk.winui.cancasEditor.menuFit;
-				if ((fit ? fit.depthOf(sub) : 0) === 0) { break; } // already at the top level, nothing to back out of
-				const parentLi = sub._homeParent || (sub.parentElement && sub.parentElement.closest('li'));
+				if (depthOf(sub) === 0) { break; } // already at the top level, nothing to back out of
+				const parentLi = sub.parentElement && sub.parentElement.closest('li');
 				if (parentLi) {
 					parentLi.classList.remove('kbd-open');
-					if (fit) { fit.closePortal(sub); }
 					highlight(parentLi);
 					e.preventDefault(); e.stopPropagation();
 				}

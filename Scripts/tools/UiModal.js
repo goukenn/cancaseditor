@@ -4,9 +4,9 @@
 "use strict";
 (function () {
 	const _NS = igk.winui.cancasEditor;
-	// colors come from variables: dark by default, light with [data-ce-theme=light] on <html>
+	// colors come from variables: dark by default, light with [data-theme=light] on <html>
 	const CSS = ':root{--cm-bg:#2b2b2b;--cm-head:#1e1e1e;--cm-side:#232323;--cm-panel:#333;--cm-fg:#eee;--cm-btn:#444;--cm-input:#111;--cm-line:#444;--cm-accent:#5b4bd6}' +
-		'[data-ce-theme="light"]{--cm-bg:#dbe3df;--cm-head:#cfd8d4;--cm-side:#d9d9d9;--cm-panel:#d9d9d9;--cm-fg:#111;--cm-btn:#c4c9c7;--cm-input:#fff;--cm-line:#9aa5a0;--cm-accent:#4f2f8f}' +
+		'[data-theme="light"]{--cm-bg:#dbe3df;--cm-head:#cfd8d4;--cm-side:#d9d9d9;--cm-panel:#d9d9d9;--cm-fg:#111;--cm-btn:#c4c9c7;--cm-input:#fff;--cm-line:#9aa5a0;--cm-accent:#4f2f8f}' +
 		'.cancas-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);font:14px sans-serif}' +
 		'.cancas-modal>div{background:var(--cm-bg);color:var(--cm-fg);width:min(560px,94vw);max-height:90vh;display:flex;flex-direction:column;border-radius:6px;overflow:hidden}' +
 		'.cancas-modal .hd{display:flex;align-items:center;padding:8px 12px;background:var(--cm-head);font-weight:bold}.cancas-modal .hd .sp{flex:1}' +

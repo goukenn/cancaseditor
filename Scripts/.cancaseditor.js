@@ -1157,6 +1157,16 @@
 			function getNewItemId(i) {
 				var n = i.getType();
 				var idx = getItemIndex(i);
+				if (n == 'document') {
+					// document_N: N is the highest number of the project (documents loaded, renamed or created
+					// then deleted included) + 1, so a new document never reuses or collides with an id
+					var re = /^document_(\d+)$/;
+					for (var k = 0; k < self.list.length; k++) {
+						var m = re.exec(self.list[k].id || '');
+						if (m && (+m[1] >= idx)) { idx = +m[1] + 1; }
+					}
+					m_id_manager[n] = idx;
+				}
 				m_id_manager[n]++;
 				return n + "_" + idx;
 			}
@@ -1815,6 +1825,10 @@
 					// + | column guides of the documents
 					if (_NS.columnGrid) {
 						_NS.columnGrid.draw(m_ctx, a.documentAreas);
+					}
+					// + | shadow-box of the hovered document
+					if (_NS.documentHover) {
+						_NS.documentHover.draw(m_ctx, a);
 					}
 					// + | prototype links between the documents
 					if (_NS.documentLinks) {
@@ -4969,9 +4983,6 @@
 				}
 				var p = li.select("^.submenu").first();
 				if (p) {
-					// a submenu temporarily moved out from under its trigger <li> (tools/MenuViewportFit.js,
-					// so a nested flyout isn't clipped by a scrollable ancestor) has no ancestor <li> to find
-					// here while it is out there; its own pin mechanism keeps it (and its ancestors) shown
 					var pli = p.select("^li").first();
 					if (pli) {
 						pli.addClass("igk-show");

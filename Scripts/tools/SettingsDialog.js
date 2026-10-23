@@ -13,7 +13,7 @@
 	const mqLight = window.matchMedia('(prefers-color-scheme: light)');
 	function applyTheme(mode) {
 		const t = mode == 'system' ? (mqLight.matches ? 'light' : 'dark') : (mode == 'light' ? 'light' : 'dark');
-		document.documentElement.setAttribute('data-ce-theme', t);
+		document.documentElement.setAttribute('data-theme', t);
 		return t;
 	}
 	// apply the stored theme right now (before the editor and the server settings are known)

@@ -10,7 +10,7 @@
 	const T = (k, d) => R()[k] || d || k;
 	// ---------------------------------------------------------------- styles
 	const CSS = ':root{--ci-fg:#ddd;--ci-dim:#9a9a9a;--ci-input:#222;--ci-line:#4a4a4a;--ci-pop:#2e2e2e;--ci-accent:#a14fd0}' +
-		'[data-ce-theme="light"]{--ci-fg:#222;--ci-dim:#6b6b6b;--ci-input:#fff;--ci-line:#b9bfbc;--ci-pop:#f4f4f4;--ci-accent:#7d3cc2}' +
+		'[data-theme="light"]{--ci-fg:#222;--ci-dim:#6b6b6b;--ci-input:#fff;--ci-line:#b9bfbc;--ci-pop:#f4f4f4;--ci-accent:#7d3cc2}' +
 		'.ci-root{color:var(--ci-fg);font-size:12px}' +
 		'.ci-root input[type=number],.ci-root input[type=text],.ci-root select{width:100%;box-sizing:border-box;background:var(--ci-input);color:var(--ci-fg);border:1px solid transparent;border-radius:5px;padding:6px 8px;font:inherit;min-width:0}' +
 		'.ci-root input:focus,.ci-root select:focus{outline:none;border-color:var(--ci-accent)}' +

@@ -48,9 +48,7 @@ $def["{$editor} div.tool.t .menu li.igk-disable a:hover"] = "color:#555; backgro
 $def["{$editor} div.tool.t .menu > li:not(:first-child)"] = "margin-left: 4px";
 $def["{$editor} div.tool.t .menu li > a"] = "{sys:dispb} color:#ddd; cursor:pointer; min-width:32px; padding: 0px 4px; font-size: 0.9em; ";
 $def["{$editor}:not(.touchable-device) div.tool.t .menu li > a:hover"] = "color:#eee; background-color: #4c448f";
-$def["{$editor} div.tool.t .menu .submenu"]= "{sys:posab, dispn} backdrop-filter: blur(40px); opacity:0; box-shadow: 0 0 6px black; border-radius:4px; background-color: [cl:--ce-menu-bg-color, transparent]; max-height: calc(100vh - 16px); overflow-y: auto; overscroll-behavior: contain;";
-$def["{$editor} div.tool.t .menu .submenu::-webkit-scrollbar"]= "width: 8px;";
-$def["{$editor} div.tool.t .menu .submenu::-webkit-scrollbar-thumb"]= "background-color: rgba(255,255,255,.25); border-radius: 4px;";
+$def["{$editor} div.tool.t .menu .submenu"]= "{sys:posab, dispn} backdrop-filter: blur(40px); opacity:0; box-shadow: 0 0 6px black; border-radius:4px; background-color: [cl:--ce-menu-bg-color, transparent]; ";
 $def["{$editor} div.tool.t .menu .submenu > li:first-child > a"]= "{sys:no-overflow} border-radius: 4px 4px 0px 0px;"; 
 $def["{$editor} div.tool.t .menu .submenu > li:last-child > a"]= "{sys:no-overflow} border-radius: 0px  0px 4px 4px;"; 
 $def["{$editor} div.tool.t .menu .submenu .sub_2"]= "left: 100%; top:0px;"; 
@@ -187,14 +185,16 @@ $def["{$editor}.touchable-device div.tool.b"] = "display: flex;";
 // + | ---------------------------------------------------------------------------
 // + | light theme (the dark one is the default). Attribute set on <html> by tools/SettingsDialog.js
 // + |
-$def["[data-ce-theme=\"light\"] {$editor}"] = "--igk-cancas-editor-app_background: #e9ecea; --cc-editor-bar: #d3d8d5; --ce-surface-bg-color: #f5f5f5; color: #222;";
-$def["[data-ce-theme=\"light\"] {$editor} div.tool.t"] = "background-color: #d3d8d5;";
-$def["[data-ce-theme=\"light\"] {$editor} div.tool.t .menu li > a"] = "color: #222;";
-$def["[data-ce-theme=\"light\"] {$editor}:not(.touchable-device) div.tool.t .menu li > a:hover"] = "color: #fff;";
-$def["[data-ce-theme=\"light\"] {$editor} div.b"] = "color: #222;";
-$def["[data-ce-theme=\"light\"] {$editor} div.tool.r"] = "color: #222;";
-$def["[data-ce-theme=\"light\"] {$editor} .ci-head"] = "background-color: #c4cac7;";
-$def["[data-ce-theme=\"light\"] {$editor} .ci-close"] = "color: #222;";
+$def["[data-theme=\"light\"] {$editor}"] = "--igk-cancas-editor-app_background: #e9ecea; --cc-editor-bar: #d3d8d5; --ce-surface-bg-color: #f5f5f5; color: #222;";
+$def["[data-theme=\"light\"] {$editor} div.tool.t"] = "background-color: #d3d8d5;";
+$def["[data-theme=\"light\"] {$editor} div.tool.t .menu li > a"] = "color: #222;";
+$def["[data-theme=\"light\"] {$editor}:not(.touchable-device) div.tool.t .menu li > a:hover"] = "color: #fff;";
+$def["[data-theme=\"light\"] {$editor} div.tool.t .menu .submenu"] = "background-color: rgba(245,247,246,.98) !important; border: 1px solid rgba(0,0,0,.2); box-shadow: 0 6px 18px rgba(0,0,0,.25);";
+$def["[data-theme=\"light\"] {$editor} div.tool.t .menu li.igk-disable a"] = "color: #888; background-color: transparent;";
+$def["[data-theme=\"light\"] {$editor} div.b"] = "color: #222;";
+$def["[data-theme=\"light\"] {$editor} div.tool.r"] = "color: #222;";
+$def["[data-theme=\"light\"] {$editor} .ci-head"] = "background-color: #c4cac7;";
+$def["[data-theme=\"light\"] {$editor} .ci-close"] = "color: #222;";
 
 
 $def[$editor.' .ce-drawer .ce-panel'] = '{sys:no-selection}';

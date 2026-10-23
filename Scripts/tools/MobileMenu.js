@@ -27,8 +27,8 @@
 		'.ce-drawer .ce-item{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid #383838;cursor:pointer}' +
 		'.ce-drawer .ce-item .ce-label{flex:1}.ce-drawer .ce-item .ce-more{opacity:.6}' +
 		'.ce-drawer .ce-item.ce-off{opacity:.35;pointer-events:none}.ce-drawer .ce-item:active{background:#4c448f}' +
-		'[data-ce-theme="light"] .ce-drawer .ce-panel,[data-ce-theme="light"] .ce-drawer .ce-page{background:#e4e8e6;color:#111}' +
-		'[data-ce-theme="light"] .ce-drawer .ce-head{background:#cfd8d4}[data-ce-theme="light"] .ce-drawer .ce-item{border-color:#c3c9c6}';
+		'[data-theme="light"] .ce-drawer .ce-panel,[data-theme="light"] .ce-drawer .ce-page{background:#e4e8e6;color:#111}' +
+		'[data-theme="light"] .ce-drawer .ce-head{background:#cfd8d4}[data-theme="light"] .ce-drawer .ce-item{border-color:#c3c9c6}';
 	const BURGER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
 	const el = (tag, props, children) => { const e = document.createElement(tag); Object.assign(e, props || {}); (children || []).forEach((c) => e.append(c)); return e; };
 	/** the entries of a ul (menu bar or sub menu): [{label, a, sub:[...]|null, off}] */

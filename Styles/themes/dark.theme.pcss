@@ -1,4 +1,11 @@
 <?php
 
 $cl['--ce-surface-bg-color'] = '#040816'; 
-$cl['--ce-menu-bg-color'] = 'rgba(10 16 33 / 80%)'; 
+$cl['--ce-menu-bg-color'] = 'rgba(34 40 62 / 96%)';
+
+// + | main menu: bar items, open submenu and disabled entries must stand out from the dark surface
+$def["[data-theme=\"dark\"] {$editor} div.tool.t"] = "background-color: #2b2f45; border-bottom: 1px solid #4c448f;";
+$def["[data-theme=\"dark\"] {$editor} div.tool.t .menu li > a"] = "color: #f2f3f8; font-weight: 500;";
+$def["[data-theme=\"dark\"] {$editor} div.tool.t .menu .submenu"] = "background-color: rgba(34,40,62,.96) !important; border: 1px solid rgba(255,255,255,.18); box-shadow: 0 6px 18px rgba(0,0,0,.6);";
+$def["[data-theme=\"dark\"] {$editor} div.tool.t .menu li.igk-disable a"] = "color: #8d92a6; background-color: transparent;";
+$def["[data-theme=\"dark\"] {$editor}:not(.touchable-device) div.tool.t .menu > li:hover > a"] = "color: #fff; background-color: #4c448f;";
