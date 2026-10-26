@@ -1,3 +1,30 @@
 <?php
+// @file: wiki/default.phtml
+// @desc: CancasEditor user guide, served at <cancaseditor>/wiki. Content: .content.php (fr / en, nl falls back to en).
 
-$doc->title = 'Wiki Page';
+use IGK\Helper\ViewHelper;
+
+$doc->title = 'Wiki - CancasEditor';
+$doc->setHeaderColor("#444");
+$content = include(__DIR__ . "/.content.php");
+// dutch: same section ids, merged as a third language
+$nl = include(__DIR__ . "/.content.nl.php");
+$content["title"]["nl"] = $nl["title"];
+$content["intro"]["nl"] = $nl["intro"];
+foreach ($content["sections"] as &$s) {
+	$s["nl"] = $nl["sections"][$s["id"]];
+}
+unset($s);
+$buri = igk_io_root_entryuri();
+$home = $buri . dirname($fname) . "/"; // dirname($fname) is the cancaseditor entry (the view is wiki/)
+$home = rtrim(preg_replace('#/wiki/?$#', '/', $home), '/') . '/';
+$h = function ($s) { return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); };
+
+$t->clearChilds();
+$t["class"] = "cew";
+ob_start();
+include(__DIR__ . "/.page.php");
+$html = ob_get_clean();
+$t->addObData(function () use ($html) {
+	echo $html;
+}, 'notagnode');

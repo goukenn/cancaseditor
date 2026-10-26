@@ -456,20 +456,20 @@ function __showdialog(a){
 		dialog.control.addClass("color");
 		dialog.on("locationChanged", loc_change());
 };
-AC.regMenuAction("view.colors", { 
-initialize: function(a, key, menuHost){
-	menuHost.initialize = function(){
-		// if (a.settings.isDebug)
-			// __showdialog(a);
-	};
-	return !0;
-},
-checked: isShown,
-callback: function(a){
-	if (isShown()){ // the menu item toggles the dialog
-		m_dialog.close();
-		return;
-	}
-	__showdialog(a); 
-}});
+// AC.regMenuAction("view.colors", { 
+// initialize: function(a, key, menuHost){
+// 	menuHost.initialize = function(){
+// 		// if (a.settings.isDebug)
+// 			// __showdialog(a);
+// 	};
+// 	return !0;
+// },
+// checked: isShown,
+// callback: function(a){
+// 	if (isShown()){ // the menu item toggles the dialog
+// 		m_dialog.close();
+// 		return;
+// 	}
+// 	__showdialog(a); 
+// }});
 })();

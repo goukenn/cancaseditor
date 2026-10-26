@@ -28,7 +28,7 @@ $bge = isset($bge) ? $bge : [];
 
 
 define("CE_SCRIPT_NAME", "cancas-editor");
-define("CE_CACHE_VERSION", "1.0");
+define("CE_CACHE_VERSION", "1.2");
 define("CE_CACHE_NAME", "cancaseditor-" . CE_CACHE_VERSION . "");
 define("CE_APP_NAME", "com.igkdev.cancaseditor");
 define("CE_APP_LABEL", "CancasEditor");
@@ -198,7 +198,9 @@ EFO
 		$d->add("div")->addA($entry_uri . "/wiki")
 			->setAttributes(["target" => "__blank"])
 			->setContent(__("cancas.about.wiki"));
-		igk_ajx_panel_dialog(__("cancas.about.title"), $d);
+		// the html content only: the client (help.about) presents it in a dialog box
+		header("Content-Type: text/html; charset=utf-8");
+		igk_wl($d->render());
 		igk_exit();
 	},
 	"share" => function () {

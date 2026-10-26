@@ -67,26 +67,32 @@
 	function drawLink(ctx, editor) {
 		if (!m_active || !m_active.target) { return; }
 		const src = (editor.documentAreas || []).find((a) => a.doc === editor.document);
-		const dst = (editor.documentAreas || []).find((a) => a.doc.id == m_active.target);
-		if (!src || !dst || src === dst) { return; }
+		const dst = (editor.documentLabels || []).find((l) => l.doc.id == m_active.target); // the arrow points at the label of the target document
+		if (!src || !dst || dst.doc === editor.document) { return; }
 		const view = editor.matrix.element; // [zoom,0,0,zoom,tx,ty] of the current document
 		const mat = (m_active.matrix && m_active.matrix.element) ? m_active.matrix.element : [1, 0, 0, 1, 0, 0];
 		const b = m_active.bound;
 		const cx = b.x + b.width / 2, cy = b.y + b.height / 2;
 		const wx = mat[0] * cx + mat[2] * cy + mat[4], wy = mat[1] * cx + mat[3] * cy + mat[5];
 		const p0 = { x: wx * view[0] + view[4], y: wy * view[3] + view[5] };
-		const p1 = { x: dst.x + dst.w / 2, y: dst.y + dst.h / 2 };
+		const p1 = { x: Math.max(dst.x, Math.min(p0.x, dst.x + dst.w)), y: Math.max(dst.y, Math.min(p0.y, dst.y + dst.h)) }; // nearest point of the label box
 		ctx.save();
 		ctx.strokeStyle = '#1c7ed6'; ctx.fillStyle = '#1c7ed6'; ctx.lineWidth = 2; ctx.lineCap = 'round';
 		ctx.setLineDash([7, 5]);
-		ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(p1.x, p1.y); ctx.stroke();
+		// bezier: leaves the hotspot and enters the label along the dominant axis (horizontal or vertical tangents)
+		const dx = p1.x - p0.x, dy = p1.y - p0.y, horiz = Math.abs(dx) >= Math.abs(dy);
+		const k = Math.max(40, (horiz ? Math.abs(dx) : Math.abs(dy)) / 2), sx = dx >= 0 ? 1 : -1, sy = dy >= 0 ? 1 : -1;
+		const c1 = horiz ? { x: p0.x + sx * k, y: p0.y } : { x: p0.x, y: p0.y + sy * k };
+		const c2 = horiz ? { x: p1.x - sx * k, y: p1.y } : { x: p1.x, y: p1.y - sy * k };
+		ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, p1.x, p1.y); ctx.stroke();
 		ctx.setLineDash([]);
-		const an = Math.atan2(p1.y - p0.y, p1.x - p0.x), L = 14;
+		const an = Math.atan2(p1.y - c2.y, p1.x - c2.x), L = 14; // head along the end tangent
 		ctx.beginPath(); ctx.moveTo(p1.x, p1.y);
 		ctx.lineTo(p1.x - L * Math.cos(an - 0.4), p1.y - L * Math.sin(an - 0.4));
 		ctx.lineTo(p1.x - L * Math.cos(an + 0.4), p1.y - L * Math.sin(an + 0.4));
 		ctx.closePath(); ctx.fill();
 		ctx.restore();
+		if (_NS.documentLinks) { _NS.documentLinks.pulse(ctx, { p0, c1, c2, p3: p1 }, '#1c7ed6', editor); } // circle travelling along the arrow
 	}
 	function openChip(editor, el) {
 		closeChip();
@@ -107,7 +113,7 @@
 		none.value = ''; none.textContent = T('hotspot.none', '(none)');
 		sel.append(none);
 		(editor.documents || []).forEach((d) => {
-			if (d === editor.document && !el.target) { /* allow self only if already set, nothing special needed */ }
+			if (d === editor.document) { return; } // no link to the document being edited
 			const o = document.createElement('option');
 			o.value = d.id; o.textContent = d.id;
 			if (d.id == el.target) { o.selected = true; }

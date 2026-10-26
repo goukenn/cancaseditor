@@ -46,6 +46,8 @@
 		'.ci-pop input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid #333}' +
 		'.ci-hue{background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}' +
 		'.ci-vals{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr 1fr;gap:6px}.ci-vals div{text-align:center;color:var(--ci-dim);font-size:10px}' +
+		// Firefox always draws the number spinners: hide them (Chrome ignores -moz-appearance and keeps its hover / focus spinners)
+		'@supports (-moz-appearance:none){input[type=number]{-moz-appearance:textfield!important;appearance:textfield!important}}' +
 		'.ci-vals input{text-align:center;padding:6px 2px!important}.ci-vals input[type=number]{-moz-appearance:textfield;appearance:textfield}.ci-vals input::-webkit-inner-spin-button,.ci-vals input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}';
 	function _el(tag, props, children) {
 		const e = document.createElement(tag);

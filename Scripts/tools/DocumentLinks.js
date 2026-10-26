@@ -65,6 +65,28 @@
 		ctx.closePath(); ctx.fill();
 		ctx.restore();
 	}
+	// ---- travelling circle: loops along a visible arrow; the rAF loop only lives while an arrow keeps being drawn
+	const PULSE_MS = 2000;
+	const m_still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+	let m_raf = 0, m_last = 0;
+	/** draw the circle on bezier c ({p0,c1,c2,p3}) and keep the animation going */
+	function pulse(ctx, c, color, editor) {
+		if (m_still || (_NS.prefs && _NS.prefs.get('arrowAnimation', true) === false)) { return; }
+		m_last = performance.now();
+		const t = (m_last % PULSE_MS) / PULSE_MS, p = at(c, t);
+		ctx.save();
+		ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+		ctx.fillStyle = color; ctx.fill();
+		ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+		ctx.restore();
+		if (!m_raf) {
+			m_raf = requestAnimationFrame(function () {
+				m_raf = 0;
+				if (document.hidden || performance.now() - m_last > 100) { return; } // no arrow drawn lately: stop
+				editor.refresh(); // redraws the arrows, which re-arms the loop through pulse()
+			});
+		}
+	}
 	function draw(ctx, editor) {
 		m_shapes = [];
 		if (editor.documents.length < 2) { positionChip(editor); return; }
@@ -73,6 +95,7 @@
 			if (!a || !b) { return; }
 			const c = curve(a, b), sel = l === m_sel;
 			arrow(ctx, c, l.color, sel ? 4 : 2.5, false);
+			pulse(ctx, c, l.color, editor);
 			const pts = [];
 			for (let i = 0; i <= 24; i++) { pts.push(at(c, i / 24)); }
 			m_shapes.push({ link: l, pts, mid: at(c, 0.5) });
@@ -253,6 +276,6 @@
 			a.refresh();
 		}
 	});
-	_NS.documentLinks = { draw };
+	_NS.documentLinks = { draw, pulse };
 	_NS.whenEditor((editor) => setTimeout(() => init(editor), 0));
 })();

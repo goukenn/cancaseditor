@@ -22,6 +22,8 @@
 	}); // global _NS definition
 	if (_NS.initialize)
 		return;
+	// named window: the wiki page ("Open the editor") reuses this tab instead of opening another editor
+	try { window.name = 'cancaseditor'; } catch (e) { }
 	if (_safari_version && (_safari_version < 600)) {
 		igk.defineProperty(_NS, "NotAvailable", { get: function () { return 1; } });
 		igk.winui.initClassControl(_APP_CLASS, function () {
@@ -6033,24 +6035,31 @@
 			}
 			AC.regMenuAction("help.about", {
 				callback: function (a) {
-					//show about dialog
-					igk.ajx.get(igk.system.io.baseUri() + "/about");
+					// the server returns the html of the about page, shown in a dialog box
+					fetch(igk.system.io.baseUri() + "/about", { credentials: 'same-origin' }).then(function (r) {
+						return r.text();
+					}).then(function (html) {
+						var c = document.createElement("div");
+						c.innerHTML = html;
+						c.querySelectorAll("a").forEach(function (l) { l.style.color = "inherit"; l.style.textDecoration = "underline"; });
+						_NS.ui.modal({ title: (_NS.R && _NS.R['help.about']) || 'About', content: c });
+					});
 				}, index: 0
 			});
-			AC.regMenuAction("settings.language", { index: 100 });
-			_NS.lang.supported.forEach((lg, i) => {
-				AC.regMenuAction("settings.language." + lg, {
-					index: i,
-					callback: function (a) {
-						_NS.lang.set(lg, a);
-					}
-				});
-			});
-			AC.regMenuAction("settings.packages", {
-				callback: function (a) {
-					alert("search for php package extensions and install it on you canvas editor environment ");
-				}
-			});
+			// AC.regMenuAction("settings.language", { index: 100 });
+			// _NS.lang.supported.forEach((lg, i) => {
+			// 	AC.regMenuAction("settings.language." + lg, {
+			// 		index: i,
+			// 		callback: function (a) {
+			// 			_NS.lang.set(lg, a);
+			// 		}
+			// 	});
+			// });
+			// AC.regMenuAction("settings.packages", {
+			// 	callback: function (a) {
+			// 		alert("search for php package extensions and install it on you canvas editor environment ");
+			// 	}
+			// });
 			AC.regMenuAction("settings.plugins", {
 				callback: function (a) {
 					alert("search for plugins JS plugins and install it on your environment canvas editor ");

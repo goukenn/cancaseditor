@@ -72,7 +72,7 @@ ACTIONS.regActions(Key.None, "editor.showwiki", (function(){
 	return function(a){
 		if (!helpwnd || (helpwnd.parent==null)){
 			// console.debug("show wikie");
-			helpwnd = window.open( a.settings.appUri+'/wiki', '_blank');
+			helpwnd = window.open( a.settings.appUri+'/wiki', 'cancaseditor-wiki'); // named: the wiki tab is reused
 			helpwnd.onclose =  function(){
 				helpwnd = 0;
 			};

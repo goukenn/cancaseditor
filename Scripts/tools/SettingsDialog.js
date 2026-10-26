@@ -69,6 +69,7 @@
 			undoLimit: Number(prefs.get('undoLimit', 100)) || 100,
 			avatar: prefs.get('avatar', ''),
 			rulers: prefs.get('rulers', false) === true,
+			arrowAnimation: prefs.get('arrowAnimation', true) !== false,
 			surfaceTexture: prefs.get('surfaceTexture', 'none'),
 			surfaceGridSize: Number(prefs.get('surfaceGridSize', 20)) || 20,
 			surfaceTextureColor: prefs.get('surfaceTextureColor', '#7f7f7f')
@@ -103,6 +104,7 @@
 				// background texture of the editor surface, rulers
 				p.append(
 					row(T['settings.rulers'], checkbox(draft.rulers, (v) => { draft.rulers = v; })),
+					row(T['settings.arrowAnimation'], checkbox(draft.arrowAnimation, (v) => { draft.arrowAnimation = v; })),
 					row(T['settings.surfaceTexture'], select(_NS.surfaceTexture.TEXTURES, draft.surfaceTexture, (v) => T['settings.surfaceTexture.' + v], (v) => { draft.surfaceTexture = v; })),
 					row(T['settings.surfaceGridSize'], (() => {
 						const n = _el('input', { type: 'number', min: 2, max: 1000, value: draft.surfaceGridSize });
@@ -159,6 +161,8 @@
 				prefs.set('undoLimit', draft.undoLimit);
 				prefs.set('avatar', draft.avatar);
 				prefs.set('rulers', draft.rulers);
+				prefs.set('arrowAnimation', draft.arrowAnimation);
+				editor.refresh();
 				prefs.set('surfaceTexture', draft.surfaceTexture);
 				prefs.set('surfaceGridSize', draft.surfaceGridSize);
 				prefs.set('surfaceTextureColor', draft.surfaceTextureColor);
