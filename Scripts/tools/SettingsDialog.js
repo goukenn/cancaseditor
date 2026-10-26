@@ -97,7 +97,7 @@
 					row(T['settings.autosave'], checkbox(draft.autosave, (v) => { draft.autosave = v; })),
 					row(T['settings.undoLimit'], (() => {
 						const n = _el('input', { type: 'number', min: 1, max: 1000, value: draft.undoLimit });
-						n.style.width = '6em';
+						n.className = 'ce-num';
 						n.onchange = () => { draft.undoLimit = Math.max(1, Math.min(1000, Math.floor(Number(n.value)) || 100)); n.value = draft.undoLimit; };
 						return n;
 					})()));
@@ -108,7 +108,7 @@
 					row(T['settings.surfaceTexture'], select(_NS.surfaceTexture.TEXTURES, draft.surfaceTexture, (v) => T['settings.surfaceTexture.' + v], (v) => { draft.surfaceTexture = v; })),
 					row(T['settings.surfaceGridSize'], (() => {
 						const n = _el('input', { type: 'number', min: 2, max: 1000, value: draft.surfaceGridSize });
-						n.style.width = '6em';
+						n.className = 'ce-num';
 						n.onchange = () => { draft.surfaceGridSize = Math.max(2, Math.min(1000, Math.floor(Number(n.value)) || 20)); n.value = draft.surfaceGridSize; };
 						return n;
 					})()),
@@ -131,7 +131,7 @@
 				const showAvatar = () => { cam.innerHTML = draft.avatar ? '' : CAMERA; draft.avatar && cam.append(_el('img', { src: draft.avatar, alt: '' })); };
 				showAvatar();
 				const file = _el('input', { type: 'file', accept: 'image/*' });
-				file.style.display = 'none';
+				file.className = 'ce-hide';
 				file.onchange = async () => {
 					if (!file.files[0]) { return; }
 					try { draft.avatar = await toAvatar(file.files[0]); showAvatar(); } catch (e) { console.error(e); }
@@ -144,7 +144,7 @@
 					p.append(_el('p', { textContent: T['settings.account.guest'] }));
 					const uri = editor.settings && editor.settings.signinUri;
 					if (uri) {
-						p.append(_el('a', { href: uri, target: '_blank', rel: 'noopener', textContent: T['settings.account.signin'], style: 'color:inherit;font-weight:bold' }));
+						p.append(_el('a', { href: uri, target: '_blank', rel: 'noopener', textContent: T['settings.account.signin'], className: 'ce-link' }));
 					}
 				}
 				return p;

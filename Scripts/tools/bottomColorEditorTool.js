@@ -8,11 +8,7 @@ function bottomColorEditorTool(){
 	// console.debug("init "+initc);
 	initc++;
 	igk.winui.cancasEditor.Editor.Tool.apply(this);
-	var lb = igk.createNode("span").addClass("colortool").setCss({
-		paddingLeft: "4px",
-		paddingRight: "4px",
-		cursor: 'pointer'
-	});
+	var lb = igk.createNode("span").addClass("colortool");
 	lb.setHtml("");
 	var self = this;
 	var fill = lb.add("span").addClass("btn fill").setHtml(" ");

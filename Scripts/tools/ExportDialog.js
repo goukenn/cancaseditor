@@ -24,9 +24,9 @@
 	function showExportDialog(editor) {
 		const row = (t, el) => {
 			const r = document.createElement('label');
-			r.style.cssText = 'display:flex;gap:8px;align-items:center;margin:8px 0';
+			r.className = 'ce-form-row';
 			const s = document.createElement('span');
-			s.textContent = t; s.style.cssText = 'min-width:110px';
+			s.textContent = t; s.className = 'ce-form-lbl ce-wide';
 			r.append(s, el);
 			return r;
 		};
@@ -34,10 +34,10 @@
 		name.type = 'text';
 		name.value = editor.title || '';
 		name.placeholder = T('export.placeholder', 'Untitled project');
-		name.style.cssText = 'flex:1';
+		name.className = 'ce-flex1';
 		const entries = exportActions();
 		const type = document.createElement('select');
-		type.style.cssText = 'flex:1';
+		type.className = 'ce-flex1';
 		entries.forEach((en, i) => { const o = document.createElement('option'); o.value = i; o.textContent = T(en.name, en.name); type.append(o); });
 
 		const body = document.createElement('div');

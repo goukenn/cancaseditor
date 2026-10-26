@@ -65,15 +65,7 @@ igk.system.createClass(LY, {name:"pageLayer", parent: ELEM.drawing2DContainer}, 
 		return cibling;
 	}});
 	var MS_BTN = igk.winui.mouseButton;
-	var p = $igk(a.canvas.o.parentNode).add("div").setCss(
-	{
-	"pointerEvents":"none", 
-	"top":"0px", 
-	"left":"0px", 
-	"bottom":"0px", 
-	"right":"0px",
-	"overflow":"hidden",
-	"zIindex":"20"})
+	var p = $igk(a.canvas.o.parentNode).add("div")
 	.addClass("page-host posab")
 	.on("contextmenu", function(e){
 		e.preventDefault();
@@ -116,10 +108,7 @@ igk.system.createClass(LY, {name:"pageLayer", parent: ELEM.drawing2DContainer}, 
 	// .editable('true')
 	.selectable(false)
 	.autocorrect(false)
-	.setHtml(" ").setCss({
-		"fontSize": "8em",
-		"pointerEvents":"none"
-	});
+	.setHtml(" ").addClass("page-text");
 	var m_cibling = cibling;
 	this.startEdition= function(){
 	cibling = m_cibling;

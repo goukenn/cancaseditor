@@ -145,12 +145,12 @@
 	function openChip(editor, l) {
 		const host = editor.canvas.o.parentNode;
 		const chip = document.createElement('div');
-		chip.style.cssText = 'position:absolute;z-index:30;display:flex;gap:6px;align-items:center;padding:6px;border-radius:6px;background:#2b2b2b;color:#eee;box-shadow:0 2px 8px rgba(0,0,0,.5);touch-action:manipulation';
+		chip.className = 'ce-chip';
 		const col = document.createElement('input');
 		col.type = 'color'; col.value = l.color; col.title = T('link.color', 'Color');
 		col.oninput = () => { l.color = col.value; editor.refresh(); };
 		const lab = document.createElement('input');
-		lab.type = 'text'; lab.value = l.label; lab.placeholder = T('link.label', 'Label'); lab.style.cssText = 'width:110px';
+		lab.type = 'text'; lab.value = l.label; lab.placeholder = T('link.label', 'Label'); lab.className = 'ce-chip-label';
 		lab.oninput = () => { l.label = lab.value; editor.refresh(); };
 		const del = document.createElement('button');
 		del.textContent = T('link.delete', 'Delete'); del.type = 'button';
@@ -250,7 +250,7 @@
 	function linkDialog(editor) {
 		const cur = editor.document, others = editor.documents.filter((d) => d !== cur);
 		if (!cur || others.length == 0) { return; }
-		const row = (t, el) => { const r = document.createElement('label'); r.style.cssText = 'display:flex;gap:8px;align-items:center;margin:8px 0'; const s = document.createElement('span'); s.textContent = t; s.style.minWidth = '70px'; r.append(s, el); return r; };
+		const row = (t, el) => { const r = document.createElement('label'); r.className = 'ce-form-row'; const s = document.createElement('span'); s.textContent = t; s.className = 'ce-form-lbl'; r.append(s, el); return r; };
 		const sel = document.createElement('select');
 		others.forEach((d, i) => { const o = document.createElement('option'); o.value = i; o.textContent = d.id; sel.append(o); });
 		const col = document.createElement('input'); col.type = 'color'; col.value = PALETTE[editor.links.length % PALETTE.length];

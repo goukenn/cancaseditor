@@ -57,7 +57,7 @@ $def["{$editor} div.tool.t .menu .submenu > li a"]= "padding-left: 48px; padding
 $def["{$editor} div.tool.t .menu .submenu > li.checked > a::before"]= "content: '\\2713'; position: absolute; left: 18px; font-weight: bold;";
 $xsm_screen[$editor] =
 $sm_screen[$editor] = 'padding: 0;';
-$def["{$editor} div.tool.t .logo"] = "{sys:no-overflow} cursor: pointer; [trans:.2s background-color ease-in] background-color:var(--cc-editor-logo-bg); width: 32px; height:100%; text-indent: -9999px;";
+$def["{$editor} div.tool.t .logo"] = "{sys:no-overflow} left:0; top:0; cursor: pointer; [trans:.2s background-color ease-in] background-color:var(--cc-editor-logo-bg); width: 32px; height:100%; text-indent: -9999px;";
 $def["{$editor} div.tool.t .logo:hover"] = "background-color:indigo;";
 // + | --------------------------------------------------------------------
 // + | ce - left tool bar
@@ -85,7 +85,10 @@ $def["{$editor} .layerview > li:hover:before"] =
 "background-color:indigo;";
 $def["{$editor} .layerview > li:before"] = "z-index:-1; left:-16px; top:0px; width:16px; height:100%; position:absolute; content:' ';";
 $def["{$editor} hr"]= "margin:0px 4px; border:0px; border-bottom: 1px #555 solid;";
-$def["{$editor} .colortool"] = "display:inline-block; vertical-align:middle; line-height:0; position:relative; ";
+$def["{$editor} .colortool"] = "display:inline-block; vertical-align:middle; line-height:0; position:relative; padding-left:4px; padding-right:4px; cursor:pointer;";
+$def["{$editor} .layertool"] = "padding-left:4px; padding-right:4px; cursor:pointer;";
+$def["{$editor} .layertool-layer"] = "position:relative;";
+$def["{$editor} .layertool .layerview"] = "bottom:100%; width:auto; left:0px; z-index:10; background-color:#444;";
 $def["{$editor} .colortool > .btn:first-child"] = "position:relative; margin-left:4px;";
 $def["{$editor} .colortool .btn"] = "display:inline-block; width:16px; height:16px; border:1px solid black; background-color:white; ";
 $def["{$editor} .colortool .btn.stroke"] = "{sys: posr} left: -4px; top: 4px; background-color:red;";
@@ -103,20 +106,21 @@ $def[".canvas-editor-gui_dialog:before"] = "{sys:posab, fit, loc-t, loc-l} conte
 $def[".canvas-editor-gui_dialog > div.box"] =  "{sys:dispib, loc-t} background-color: #fcfcfc; border:1px solid #dedede; ".
 " box-shadow: 0 0 10px black;".
 " padding:10px; border-radius: 10px; ";
-$def[".canvas-editor-gui_dialog .title-bar"] = "font-family: [var: --igk-winui-bmc-typo]; {sys:no-selection}";
+$def[".canvas-editor-gui_dialog .title-bar"] = "font-family: [var: --igk-winui-bmc-typo]; {sys:no-selection} touch-action:none;";
 $def[".canvas-editor-gui_dialog .title-bar .close"] = "cursor: pointer;";
 $def[".canvas-editor-gui_dialog .box .content"] = "min-width:300px; line-height:1;";
 $def["body > .dialog .igk-winui-bmc-group > div"] = "margin:4px 0px;";
 $theme->registerKeyFrame($def, "igk-cancas-editor_notify-anim", " from { left: 50%; } to {left: 0px; }");
-$def[".igk-cancas-editor_notifyhost"]="{sys:posab} right:0px; top:0px;";
+$def[".igk-cancas-editor_notifyhost"]="{sys:posab} right:8px; top:0px; max-width:min(300px, calc(100% - 16px));";
+$def[".igk-cancas-editor_notify > .msg"] = "font-size:12pt; max-width:280px; line-height:15pt;";
 $def[".igk-cancas-editor_notify"] = "(:.no-selection) [trans:opacity 0.2s ease-in, box-shadow 0.5s] [anim:igk-cancas-editor_notify-anim 0.2s linear]".
-"opacity: 0.7; right:0; top: 0px; background-color:#444; line-height: 4em; color:#eee; padding:10px; padding-left:48px; margin-right: 10px; margin-top:10px; border-radius: 4px; ";
+"opacity: 0.7; right:0; top: 0px; background-color:#444; line-height: 4em; color:#eee; padding:10px; padding-left:48px; margin-right: 10px; margin-top:10px; border-radius: 4px; touch-action:none; ";
 $def[".igk-cancas-editor_notify:hover"] = "opacity : 1.0; box-shadow: 0 0 6px black;";
 $def[".igk-cancas-editor_notify.igk-hide"] = "opacity : 0.0;";
 $PTR["{$editor}"] = "display:none !important;";
 $PTR[".igk-cancas-editor-options"] = "display:none !important;";
 $def["{$editor}.touchable-device .snippet"] = "[transform:scale({$snippets['touch_size']},{$snippets['touch_size']})]";
-$def["{$editor} .snippet"] = "{sys:posab}; cursor:pointer; z-index:{$snippetZIndex}; opacity: 0.5; [trans: opacity 0.2s ease-out];  width:1px; height:1px; transform-origin:center;".
+$def["{$editor} .snippet"] = "{sys:posab}; pointer-events:all; cursor:pointer; z-index:{$snippetZIndex}; opacity: 0.5; [trans: opacity 0.2s ease-out];  width:1px; height:1px; transform-origin:center;".
 " [transform: scale(10,10)]; background-color:skyblue; ";
 $def["{$editor} .snippet:hover"]= "opacity:1.0; ";
 $def["{$editor} .snippet.igk-hide"] = "opacity: 0.0;";
@@ -142,7 +146,8 @@ $def[".igk-tab-button .igk-btn:last-child"] = "border-radius: 0 4px 4px 0;";
 $def[".igk-color-value-label"] = "border-radius:4px; background-color:{$var('ce-input_background-color')}; padding:4px; width:auto;";
 $def[".igk-color-value-label > input"] = "{sys:alignc, no-border, dispb, fitw}  background-color:transparent;";
 $def[".rgb-color-picker"] = "{sys: dispib} line-height: 0; border-radius: 50%; border:none;";
-$def[".rgb-color-picker > img"] = "{sys:dispib} border-radius: 50%; border:none;";
+$def[".rgb-color-picker > img"] = "{sys:dispib} border-radius: 50%; width:100px; height:100px; border:1px solid black; background-color:#444; user-select:none;";
+$def[".ce-color-name"] = "display:inline-block; width:1.5em;";
 $def[".rgb-color-picker .btn-cur"] = "{sys:posab} left:50%;top:50%; width:4px; height:4px; padding:1px; border:none; background-color:transparent; [transform:translate(-2px, -2px)]";
 $def[".rgb-color-picker .btn-cur:before"] = "{sys:posab, dispb, fit } content:' '; background-color:black;";
 $def[".ce-color-track"] = "{sys:no-wrap} margin-bottom:4px; ";
@@ -198,4 +203,328 @@ $def["[data-theme=\"light\"] {$editor} .ci-close"] = "color: #222;";
 
 
 $def[$editor.' .ce-drawer .ce-panel'] = '{sys:no-selection}';
-$def['.ce-drawer .ce-panel'] = '{sys:no-selection}';
+
+// + | ---------------------------------------------------------------------------
+// + | modal dialogs (moved from tools/UiModal.js); dark colors by default, [data-theme=light] overrides
+// + |
+$root['--cm-bg'] = '#2b2b2b';
+$root['--cm-head'] = '#1e1e1e';
+$root['--cm-side'] = '#232323';
+$root['--cm-panel'] = '#333';
+$root['--cm-fg'] = '#eee';
+$root['--cm-btn'] = '#444';
+$root['--cm-input'] = '#111';
+$root['--cm-line'] = '#444';
+$root['--cm-accent'] = '#5b4bd6';
+$def['[data-theme="light"]'] = '--cm-bg:#dbe3df;--cm-head:#cfd8d4;--cm-side:#d9d9d9;--cm-panel:#d9d9d9;--cm-fg:#111;--cm-btn:#c4c9c7;--cm-input:#fff;--cm-line:#9aa5a0;--cm-accent:#4f2f8f;';
+$def['.cancas-modal'] = 'position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);font:14px sans-serif;';
+$def['.cancas-modal>div'] = 'background:var(--cm-bg);color:var(--cm-fg);width:min(560px,94vw);max-height:90vh;display:flex;flex-direction:column;border-radius:6px;overflow:hidden;';
+$def['.cancas-modal .hd'] = 'display:flex;align-items:center;padding:8px 12px;background:var(--cm-head);font-weight:bold;';
+$def['.cancas-modal .hd .sp'] = 'flex:1;';
+$def['.cancas-modal .bd'] = 'padding:12px;overflow:auto;flex:1;';
+$def['.cancas-modal button'] = 'background:var(--cm-btn);color:var(--cm-fg);border:0;padding:6px 12px;border-radius:4px;cursor:pointer;';
+$def['.cancas-modal button.primary'] = 'background:var(--cm-accent);color:#fff;';
+$def['.cancas-modal input[type=text], .cancas-modal input[type=url], .cancas-modal input[type=number], .cancas-modal select'] = 'background:var(--cm-input);color:var(--cm-fg);border:1px solid var(--cm-line);padding:4px 6px;border-radius:3px;min-width:0;';
+$def['.cancas-modal.ce-settings>div'] = 'width:min(860px,96vw);height:min(520px,92vh);max-height:none;flex-direction:row;border-radius:0;border:1px solid var(--cm-line);';
+$def['.ce-settings .ce-side'] = 'width:200px;flex:none;background:var(--cm-side);border-right:1px solid var(--cm-line);padding:8px 0;overflow:auto;';
+$def['.ce-settings .ce-frame'] = 'display:flex;flex-direction:column;flex:1;min-width:0;';
+$def['.ce-settings .ce-topbar'] = 'display:grid;grid-template-columns:1fr auto 1fr;align-items:center;flex:none;height:46px;padding:0 10px;background:var(--cm-head);border-bottom:1px solid var(--cm-line);';
+$def['.ce-settings .ce-topbar .ce-title'] = 'grid-column:2;font-size:17px;font-weight:bold;text-align:center;white-space:nowrap;';
+$def['.ce-settings .ce-topbar .ce-close'] = 'grid-column:3;justify-self:end;';
+$def['.ce-settings .ce-wrap'] = 'display:flex;flex:1;min-width:0;min-height:0;';
+$def['.ce-settings .ce-side h2'] = 'font:400 18px sans-serif;margin:0;padding:4px 12px 12px;';
+$def['.ce-settings .ce-close'] = 'background:transparent;color:inherit;border:0;padding:0;width:30px;height:30px;line-height:0;cursor:pointer;border-radius:50%;opacity:.8;';
+$def['.ce-settings .ce-close:hover'] = 'opacity:1;color:var(--cm-accent);';
+$def['.ce-settings .ce-close svg'] = 'width:100%;height:100%;';
+$def['.ce-settings .ce-side a'] = 'color:inherit;display:block;padding:10px 12px 10px 28px;font-size:18px;cursor:pointer;';
+$def['.ce-settings .ce-side a.on'] = 'font-weight:bold;box-shadow:inset 3px 0 var(--cm-accent);';
+$def['.ce-settings .ce-main'] = 'flex:1;display:flex;flex-direction:column;padding:10px;min-width:0;';
+$def['.ce-settings .ce-page'] = 'flex:1;position:relative;background:var(--cm-panel);padding:16px;overflow:auto;';
+$def['.ce-settings .ce-row'] = 'display:flex;align-items:center;gap:12px;margin:12px 0;';
+$def['.ce-settings .ce-row>label'] = 'width:170px;flex:none;';
+$def['.ce-settings .ce-cam'] = 'position:absolute;top:8px;right:8px;width:50px;height:50px;border-radius:50%;padding:0;background:#9a9a9a;display:flex;align-items:center;justify-content:center;overflow:hidden;';
+$def['.ce-settings .ce-cam img'] = 'width:100%;height:100%;object-fit:cover;';
+$def['.ce-settings .ce-foot'] = 'display:flex;justify-content:flex-end;padding-top:12px;';
+$def['.ce-settings .ce-save'] = 'min-width:220px;padding:8px 24px;font-size:22px;border:3px solid var(--cm-accent);border-radius:22px;background:var(--cm-panel);color:var(--cm-fg);box-shadow:3px 3px 6px rgba(0,0,0,.35);';
+$xsm_screen['.cancas-modal.ce-settings>div'] = $sm_screen['.cancas-modal.ce-settings>div'] = 'flex-direction:column;';
+$xsm_screen['.ce-settings .ce-wrap'] = $sm_screen['.ce-settings .ce-wrap'] = 'flex-direction:column;';
+$xsm_screen['.ce-settings .ce-side'] = $sm_screen['.ce-settings .ce-side'] = 'width:auto;display:flex;align-items:center;border-right:0;border-bottom:1px solid var(--cm-line);padding:0;';
+$xsm_screen['.ce-settings .ce-side a.on'] = $sm_screen['.ce-settings .ce-side a.on'] = 'box-shadow:inset 0 -3px var(--cm-accent);';
+$xsm_screen['.ce-settings .ce-side h2'] = $sm_screen['.ce-settings .ce-side h2'] = 'display:none;';
+$xsm_screen['.ce-settings .ce-side a'] = $sm_screen['.ce-settings .ce-side a'] = 'padding:10px 16px;font-size:16px;';
+$xsm_screen['.ce-settings .ce-row'] = $sm_screen['.ce-settings .ce-row'] = 'flex-wrap:wrap;';
+$xsm_screen['.ce-settings .ce-save'] = $sm_screen['.ce-settings .ce-save'] = 'min-width:0;flex:1;';
+
+// + | ---------------------------------------------------------------------------
+// + | keyboard navigation of the menus (moved from tools/MenuKeyboardNav.js)
+// + |
+$def['.menu .kbd-sel > a'] = 'background-color:#4c448f;color:#eee;';
+$def['[data-theme="light"] .menu .kbd-sel > a'] = 'color:#fff;';
+$def['.menu li.kbd-open > .submenu'] = 'display:block !important;opacity:1 !important;';
+
+// + | ---------------------------------------------------------------------------
+// + | layer explorer (moved from tools/LayerExplorer.js)
+// + |
+$def['.le-root'] = 'font-size:12px;color:var(--ci-fg,#ddd);';
+$def['.le-bar'] = 'display:flex;gap:6px;padding:2px 0 8px;border-bottom:1px solid var(--ci-line,#4a4a4a);margin-bottom:6px;';
+$def['.le-bar button'] = 'background:transparent;border:1px solid var(--ci-line,#4a4a4a);color:inherit;border-radius:5px;padding:3px 8px;cursor:pointer;font:inherit;';
+$def['.le-bar button:hover'] = 'background:rgba(127,127,127,.2);';
+$def['.le-row'] = 'display:flex;align-items:center;gap:4px;padding:3px 4px;border-radius:4px;cursor:pointer;white-space:nowrap;';
+$def['.le-row:hover'] = 'background:rgba(127,127,127,.18);';
+$def['.le-row.active'] = 'background:rgba(161,79,208,.28);';
+$def['.le-row.sel'] = 'outline:1px solid var(--ci-accent,#a14fd0);';
+$def['.le-row .le-label'] = 'flex:1;overflow:hidden;text-overflow:ellipsis;';
+$def['.le-row .le-sub'] = 'opacity:.55;font-size:10px;';
+$def['.le-row.hidden .le-label'] = 'opacity:.45;text-decoration:line-through;';
+$def['.le-ico'] = 'background:transparent;border:0;color:inherit;width:20px;height:20px;padding:2px;line-height:0;cursor:pointer;border-radius:3px;flex:none;';
+$def['.le-ico:hover'] = 'background:rgba(127,127,127,.3);';
+$def['.le-ico svg'] = 'width:100%;height:100%;';
+$def['.le-ico.off'] = 'opacity:.45;';
+$def['.le-empty'] = 'opacity:.6;padding:4px 8px;font-style:italic;';
+$def['.le-row.drop-above'] = 'box-shadow:inset 0 2px 0 var(--ci-accent,#a14fd0);';
+$def['.le-row.drop-below'] = 'box-shadow:inset 0 -2px 0 var(--ci-accent,#a14fd0);';
+$def['.le-row.drop-into'] = 'outline:2px solid var(--ci-accent,#a14fd0);outline-offset:-2px;';
+$def['.le-row.dragging'] = 'opacity:.4;';
+$def['.le-row input.le-edit'] = 'flex:1;min-width:0;font:inherit;color:inherit;background:rgba(127,127,127,.2);border:1px solid var(--ci-accent,#a14fd0);border-radius:3px;padding:1px 4px;outline:none;';
+$def['.le-menu'] = 'position:fixed;z-index:100000;min-width:150px;background:var(--ci-bg,#333);color:var(--ci-fg,#ddd);border:1px solid var(--ci-line,#4a4a4a);border-radius:6px;padding:4px;box-shadow:0 4px 14px rgba(0,0,0,.4);font-size:12px;';
+$def['.le-menu div'] = 'padding:4px 10px;border-radius:4px;cursor:pointer;';
+$def['.le-menu div:hover'] = 'background:rgba(127,127,127,.25);';
+$def['.le-menu .le-sep'] = 'height:1px;padding:0;margin:4px 0;background:var(--ci-line,#4a4a4a);cursor:default;';
+
+// + | ---------------------------------------------------------------------------
+// + | html editor dialog (tools/HtmlEditorTool.js)
+// + |
+$def['.cancas-html-dlg'] = 'position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);font:14px sans-serif;';
+$def['.cancas-html-dlg>div'] = 'background:#2b2b2b;color:#eee;width:min(960px,94vw);height:min(720px,90vh);display:flex;flex-direction:column;border-radius:6px;overflow:hidden;';
+$def['.cancas-html-dlg .bar'] = 'display:flex;gap:6px;padding:8px;background:#1e1e1e;align-items:center;';
+$def['.cancas-html-dlg .bar button'] = 'background:#444;color:#eee;border:0;padding:6px 12px;border-radius:4px;cursor:pointer;';
+$def['.cancas-html-dlg .bar button.on'] = 'background:#5b4bd6;';
+$def['.cancas-html-dlg .bar .sp'] = 'flex:1;';
+$def['.cancas-html-dlg iframe, .cancas-html-dlg textarea'] = 'flex:1;border:0;width:100%;background:#fff;color:#000;';
+$def['.cancas-html-dlg textarea'] = 'background:#111;color:#ddd;font:13px monospace;padding:8px;resize:none;box-sizing:border-box;';
+$def['.cancas-html-dlg .props'] = 'display:flex;gap:8px;padding:6px 8px;background:#262626;font-size:12px;align-items:center;';
+$def['.cancas-html-dlg .props input'] = 'background:#111;color:#eee;border:1px solid #444;padding:3px 6px;border-radius:3px;min-width:0;flex:1;';
+
+// + | ---------------------------------------------------------------------------
+// + | mobile menu: burger, drawer, sub menu arrows (tools/MobileMenu.js)
+// + |
+$def['div.tool.t .menu .submenu li:has(> .submenu) > a'] = 'position:relative;';
+$def['div.tool.t .menu .submenu li:has(> .submenu) > a::after'] = 'content:"\\25B8";position:absolute;right:12px;top:0;font-size:1.2em;opacity:.9;';
+$def['.ce-mobile div.tool.t'] = 'display:none!important;';
+$def['.ce-burger'] = 'display:none;position:absolute;left:8px;top:8px;z-index:120;width:36px;height:36px;padding:0;border:0;border-radius:6px;background:rgba(40,40,40,.85);color:#eee;cursor:pointer;box-shadow:0 0 4px rgba(0,0,0,.5);';
+$def['.ce-mobile .ce-burger'] = 'display:block;';
+$def['.ce-burger svg'] = 'width:22px;height:22px;margin:7px;';
+$def['.ce-drawer'] = 'position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);font:16px system-ui,sans-serif;';
+$def['.ce-drawer .ce-panel'] = '{sys:no-selection} position:absolute;left:0;top:0;bottom:0;width:min(320px,86vw);background:#2b2b2b;color:#eee;overflow:hidden;touch-action:pan-y;box-shadow:0 0 12px #000;';
+$def['.ce-drawer .ce-page'] = 'position:absolute;inset:0;overflow-y:auto;background:#2b2b2b;transition:transform .22s ease;';
+$def['.ce-drawer .ce-page.ce-under'] = 'transform:translateX(-30%);';
+$def['.ce-drawer .ce-page.ce-in'] = 'transform:translateX(100%);';
+$def['.ce-drawer .ce-head'] = 'display:flex;align-items:center;gap:8px;padding:12px;background:#1e1e1e;font-weight:bold;position:sticky;top:0;';
+$def['.ce-drawer .ce-head button'] = 'background:transparent;border:0;color:inherit;font-size:20px;cursor:pointer;padding:0 6px;';
+$def['.ce-drawer .ce-item'] = 'display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid #383838;cursor:pointer;';
+$def['.ce-drawer .ce-item .ce-label'] = 'flex:1;';
+$def['.ce-drawer .ce-item .ce-more'] = 'opacity:.6;';
+$def['.ce-drawer .ce-item.ce-off'] = 'opacity:.35;pointer-events:none;';
+$def['.ce-drawer .ce-item:active'] = 'background:#4c448f;';
+$def['[data-theme="light"] .ce-drawer .ce-panel, [data-theme="light"] .ce-drawer .ce-page'] = 'background:#e4e8e6;color:#111;';
+$def['[data-theme="light"] .ce-drawer .ce-head'] = 'background:#cfd8d4;';
+$def['[data-theme="light"] .ce-drawer .ce-item'] = 'border-color:#c3c9c6;';
+
+// + | ---------------------------------------------------------------------------
+// + | property snippets (tools/PropertySnippets.js)
+// + |
+$def['.ps-host'] = 'position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none;z-index:6;overflow:hidden;';
+$def['.ps-host svg'] = 'position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;';
+$def['.ps-h'] = 'position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;box-sizing:border-box;border:2px solid #fff;border-radius:50%;background:#a14fd0;box-shadow:0 0 0 1px rgba(0,0,0,.65);cursor:move;pointer-events:all;touch-action:none;';
+$def['.ps-h.shadow'] = 'border-radius:2px;width:11px;height:11px;margin:-5px 0 0 -5px;background:#222;transform:rotate(45deg);';
+$def['.ps-h.dim'] = 'width:9px;height:9px;margin:-4px 0 0 -4px;cursor:pointer;';
+$def['.ps-dot'] = 'position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;border:1px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.6);pointer-events:none;';
+$def['.ps-chip'] = 'position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:2px;padding:2px;border-radius:14px;background:rgba(0,0,0,.6);pointer-events:all;';
+$def['.ps-chip button'] = 'border:0;background:transparent;color:#ddd;padding:3px 12px;border-radius:12px;cursor:pointer;font:12px sans-serif;';
+$def['.ps-chip button.on'] = 'background:#a14fd0;color:#fff;';
+
+// + | ---------------------------------------------------------------------------
+// + | inspector tabs (tools/PropertyInspectorTool.js)
+// + |
+$def['.ci-tabs'] = 'display:flex;gap:4px;margin:0 0 10px;border-bottom:1px solid var(--ci-line,#4a4a4a);';
+$def['.ci-tabs button'] = 'flex:1;background:transparent;border:0;border-bottom:2px solid transparent;color:var(--ci-dim,#9a9a9a);padding:6px 4px;cursor:pointer;font:inherit;font-weight:bold;';
+$def['.ci-tabs button.on'] = 'color:var(--ci-fg,#ddd);border-bottom-color:var(--ci-accent,#a14fd0);';
+
+// + | ---------------------------------------------------------------------------
+// + | brush editor (tools/BrushEditor.js)
+// + |
+$def['.be-bar'] = 'position:relative;height:18px;border-radius:9px;margin:12px 6px 14px;cursor:copy;border:1px solid var(--ci-line,#4a4a4a);';
+$def['.be-stop'] = 'position:absolute;top:-4px;width:14px;height:24px;margin-left:-7px;border:2px solid #fff;border-radius:4px;padding:0;cursor:ew-resize;box-shadow:0 0 0 1px rgba(0,0,0,.6);';
+$def['.be-stop.on'] = 'border-color:var(--ci-accent,#a14fd0);box-shadow:0 0 0 2px var(--ci-accent,#a14fd0);';
+$def['.be-row'] = 'display:flex;gap:8px;align-items:center;margin:6px 0;';
+$def['.be-row>label'] = 'width:70px;flex:none;';
+$def['.be-tag'] = 'font-size:10px;opacity:.6;margin-left:6px;';
+$def['.be-note'] = 'font-size:11px;color:#f0b429;margin:4px 0;';
+$def['.be-tex'] = 'width:44px;height:44px;border:1px solid var(--ci-line,#4a4a4a);border-radius:5px;background-size:cover;flex:none;';
+
+// + | ---------------------------------------------------------------------------
+// + | CSS export dialog (tools/CssExport.js)
+// + |
+$def['.cancas-modal.cx-wide>div'] = 'width:min(1000px,96vw);';
+$def['.cx-grid'] = 'display:flex;gap:14px;flex-wrap:wrap;';
+$def['.cx-form'] = 'flex:1 1 280px;min-width:0;';
+$def['.cx-out'] = 'flex:1 1 300px;min-width:0;';
+$def['.cx-out textarea'] = 'width:100%;height:320px;box-sizing:border-box;font:12px/1.4 ui-monospace,Menlo,monospace;background:var(--cm-input,#111);color:var(--cm-fg,#eee);border:1px solid var(--cm-line,#444);border-radius:4px;padding:8px;resize:vertical;';
+$def['.cx-sec'] = 'border:1px solid var(--cm-line,#444);border-radius:4px;padding:6px 8px;margin:0 0 8px;';
+$def['.cx-sec>legend'] = 'padding:0 4px;font-weight:bold;';
+$def['.cx-row'] = 'display:flex;align-items:center;gap:6px;margin:4px 0;';
+$def['.cx-row>label'] = 'width:90px;flex:none;font-size:12px;';
+$def['.cx-row input[type=number]'] = 'width:64px;';
+$def['.cx-row input[type=text]'] = 'flex:1;';
+$def['.cx-chk'] = 'display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;';
+$def['.cx-chk label'] = 'display:flex;align-items:center;gap:3px;';
+
+// + | ---------------------------------------------------------------------------
+// + | page designer (tools/PageDesigner.js)
+// + |
+$def['.pd-root'] = 'margin-top:10px;font-size:12px;';
+$def['.pd-h'] = 'font-weight:bold;margin:10px 0 4px;opacity:.85;';
+$def['.pd-pal'] = 'display:flex;flex-wrap:wrap;gap:4px;';
+$def['.pd-pal button'] = 'padding:2px 7px;border:1px solid var(--ci-line,#4a4a4a);border-radius:10px;background:transparent;color:inherit;cursor:pointer;font:11px monospace;';
+$def['.pd-pal button:hover'] = 'background:rgba(127,127,127,.25);';
+$def['.pd-tree'] = 'border:1px solid var(--ci-line,#4a4a4a);border-radius:4px;padding:2px;max-height:240px;overflow:auto;outline:none;';
+$def['.pd-tree:focus'] = 'border-color:var(--ci-accent,#a14fd0);';
+$def['.pd-row'] = 'display:flex;align-items:center;gap:2px;padding:1px 2px;border-radius:3px;cursor:pointer;white-space:nowrap;';
+$def['.pd-row:hover'] = 'background:rgba(127,127,127,.18);';
+$def['.pd-row.sel'] = 'background:rgba(161,79,208,.35);';
+$def['.pd-row .lb'] = 'flex:1;min-width:44px;overflow:hidden;text-overflow:ellipsis;';
+$def['.pd-row .tx'] = 'opacity:.6;max-width:44px;overflow:hidden;text-overflow:ellipsis;';
+$def['.pd-row button'] = 'border:0;background:transparent;color:inherit;cursor:pointer;padding:0 2px;opacity:.7;font-size:11px;';
+$def['.pd-row button:hover'] = 'opacity:1;';
+$def['.pd-ed label'] = 'display:block;margin:6px 0 2px;opacity:.7;';
+$def['.pd-ed input, .pd-ed textarea'] = 'width:100%;box-sizing:border-box;background:var(--ci-input,#111);color:inherit;border:1px solid var(--ci-line,#4a4a4a);border-radius:3px;padding:3px 5px;font:12px monospace;';
+$def['.pd-root select'] = 'width:100%;background:var(--ci-input,#111);color:inherit;border:1px solid var(--ci-line,#4a4a4a);border-radius:3px;padding:3px;';
+$def['.pd-empty'] = 'opacity:.6;padding:6px;';
+
+// + | ---------------------------------------------------------------------------
+// + | inspector panel (tools/InspectorPanel.js)
+// + |
+$root['--ci-fg'] = '#ddd';
+$root['--ci-dim'] = '#9a9a9a';
+$root['--ci-input'] = '#222';
+$root['--ci-line'] = '#4a4a4a';
+$root['--ci-pop'] = '#2e2e2e';
+$root['--ci-accent'] = '#a14fd0';
+$def['[data-theme="light"]'] = '--ci-fg:#222;--ci-dim:#6b6b6b;--ci-input:#fff;--ci-line:#b9bfbc;--ci-pop:#f4f4f4;--ci-accent:#7d3cc2;';
+$def['.ci-root'] = 'color:var(--ci-fg);font-size:12px;';
+$def['.ci-root input[type=number], .ci-root input[type=text], .ci-root select'] = 'width:100%;box-sizing:border-box;background:var(--ci-input);color:var(--ci-fg);border:1px solid transparent;border-radius:5px;padding:6px 8px;font:inherit;min-width:0;';
+$def['.ci-root input:focus, .ci-root select:focus'] = 'outline:none;border-color:var(--ci-accent);';
+$def['.ci-root input[type=range]'] = 'width:100%;accent-color:var(--ci-accent);';
+$def['.ci-root button:not(.ci-ico):not(.ci-swatch):not(.be-stop)'] = 'background:var(--ci-input);color:var(--ci-fg);border:1px solid var(--ci-line);border-radius:5px;padding:5px 10px;cursor:pointer;font:inherit;';
+$def['.ci-root button:not(.ci-ico):not(.ci-swatch):not(.be-stop):hover'] = 'border-color:var(--ci-accent);';
+$def['.ci-bar'] = 'display:flex;justify-content:space-between;padding:4px 2px 10px;';
+$def['.ci-ico'] = 'background:transparent;border:0;color:var(--ci-fg);width:26px;height:26px;padding:3px;border-radius:4px;cursor:pointer;line-height:0;';
+$def['.ci-ico:hover'] = 'background:rgba(127,127,127,.25);';
+$def['.ci-ico.on'] = 'color:var(--ci-accent);';
+$def['.ci-ico svg'] = 'width:100%;height:100%;';
+$def['.ci-grid'] = 'display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin-bottom:10px;';
+$def['.ci-grid .ci-field'] = 'position:relative;';
+$def['.ci-field>span'] = 'position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--ci-dim);font-size:10px;pointer-events:none;';
+$def['.ci-pair'] = 'display:flex;gap:6px;align-items:center;';
+$def['.ci-sec-h'] = 'display:flex;align-items:center;justify-content:space-between;margin:14px 0 8px;padding-top:10px;border-top:1px solid var(--ci-line);color:var(--ci-dim);font-size:11px;font-weight:bold;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;user-select:none;';
+$def['.ci-sec-h svg'] = 'width:12px;height:12px;transition:transform .15s;';
+$def['.ci-sec.closed .ci-sec-h svg'] = 'transform:rotate(-90deg);';
+$def['.ci-sec.closed .ci-sec-b'] = 'display:none;';
+$def['.ci-row'] = 'display:flex;align-items:center;gap:8px;margin:6px 0;';
+$def['.ci-row>label'] = 'flex:none;width:72px;';
+$def['.ci-row.slider'] = 'display:grid;grid-template-columns:1fr 48px;gap:10px;';
+$def['.ci-sub'] = 'display:flex;align-items:center;justify-content:space-between;margin:10px 0 6px;font-weight:bold;';
+$def['.ci-fill'] = 'display:grid;grid-template-columns:18px 30px 1fr 56px;gap:8px;align-items:center;margin:6px 0;';
+$def['.ci-swatch'] = 'width:30px;height:24px;border:1px solid var(--ci-line);border-radius:5px;cursor:pointer;padding:0;background-image:linear-gradient(45deg,#999 25%,transparent 25%,transparent 75%,#999 75%),linear-gradient(45deg,#999 25%,#fff 25%,#fff 75%,#999 75%);background-size:8px 8px;background-position:0 0,4px 4px;position:relative;overflow:hidden;';
+$def['.ci-swatch i'] = 'position:absolute;inset:0;';
+$def['.ci-title'] = 'font-weight:bold;margin:2px 0 8px;opacity:.85;';
+$def['.ci-pop'] = 'position:fixed;z-index:1100;width:248px;box-sizing:border-box;padding:12px;background:var(--ci-pop);color:var(--ci-fg);border:1px solid var(--ci-line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.45);font:12px sans-serif;';
+$def['.ci-pop-head'] = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;';
+$def['.ci-pop-head .ci-ico'] = 'width:24px;height:24px;';
+$def['.ci-pop h4'] = 'margin:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ci-dim);';
+$def['.ci-sv'] = 'position:relative;height:130px;border-radius:5px;overflow:hidden;cursor:crosshair;touch-action:none;';
+$def['.ci-sv canvas'] = 'width:100%;height:100%;display:block;';
+$def['.ci-dot'] = 'position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.5);pointer-events:none;';
+$def['.ci-sliders'] = 'display:flex;gap:10px;align-items:center;margin:10px 0;';
+$def['.ci-sliders>div:not(.ci-prev)'] = 'flex:1;display:flex;flex-direction:column;gap:8px;';
+$def['.ci-prev'] = 'width:30px;height:30px;border-radius:50%;border:1px solid var(--ci-line);flex:none;';
+$def['.ci-pop input[type=range]'] = '-webkit-appearance:none;appearance:none;height:10px;border-radius:5px;margin:0;width:100%;accent-color:initial;';
+$def['.ci-pop input[type=range]::-webkit-slider-thumb'] = '-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #333;box-shadow:0 0 0 1px #fff;';
+$def['.ci-pop input[type=range]::-moz-range-thumb'] = 'width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid #333;';
+$def['.ci-hue'] = 'background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);';
+$def['.ci-vals'] = 'display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr 1fr;gap:6px;';
+$def['.ci-vals div'] = 'text-align:center;color:var(--ci-dim);font-size:10px;';
+$def['input[type=number]'] = '-moz-appearance:textfield!important;'; // firefox only: no spin buttons
+$def['.ci-vals input'] = 'text-align:center;padding:6px 2px!important;';
+$def['.ci-vals input[type=number]'] = '-moz-appearance:textfield;appearance:textfield;';
+$def['.ci-vals input::-webkit-inner-spin-button, .ci-vals input::-webkit-outer-spin-button'] = '-webkit-appearance:none;margin:0;';
+
+// + | ---------------------------------------------------------------------------
+// + | styles that used to be set from the scripts (inline styles / cssText)
+// + |
+$def[".ce-flex1"] = "flex:1; min-width:0;";
+$def[".ce-hide"] = "display:none;";
+$def[".ce-num"] = "width:6em;";
+$def[".ce-w3"] = "width:3em;";
+$def[".ce-pointer"] = "cursor:pointer;";
+$def[".ce-link"] = "color:inherit; font-weight:bold;";
+$def[".ce-form-row"] = "display:flex; gap:8px; align-items:center; margin:8px 0;";
+$def[".ce-form-lbl"] = "min-width:70px;";
+$def[".ce-form-lbl.ce-wide"] = "min-width:110px;";
+$def[".ce-about a"] = "color:inherit; text-decoration:underline;";
+$def[".ce-chip"] = "position:absolute; z-index:30; display:flex; gap:6px; align-items:center; padding:6px; border-radius:6px; background:#2b2b2b; color:#eee; box-shadow:0 2px 8px rgba(0,0,0,.5); touch-action:manipulation;";
+$def[".ce-chip-label"] = "width:110px;";
+$def[".ce-chip-hint"] = "font:12px sans-serif; opacity:.8;";
+$def[".ce-pl-note"] = "font-size:12px; opacity:.8;";
+$def[".ce-pl-form"] = "display:flex; gap:6px; margin-top:10px;";
+$def[".ce-pl-row"] = "display:flex; gap:8px; align-items:center; padding:4px 0;";
+$def[".ce-layer-box"] = "border:1px solid var(--cm-line); border-radius:4px; padding:8px 12px; margin-bottom:10px;";
+$def[".ce-pi-row"] = "display:flex; gap:8px; align-items:center; margin:6px 0;";
+$def[".ce-pi-row > :first-child"] = "width:80px;";
+$def[".cancas-modal .bd.bare"] = "padding:0; display:flex; flex:1; min-width:0;";
+$def[".ce-sc-note"] = "font-size:12px; opacity:.75; margin:0 0 6px;";
+$def[".ce-sc-info"] = "font-size:12px; color:#f0b429; min-height:1.4em; margin:6px 0;";
+$def[".ce-sc-key"] = "min-width:130px; text-align:center;";
+$def[".ce-sc-mini"] = "padding:4px 8px;";
+$def[".ce-sc-row"] = "margin:5px 0;";
+$def[".ce-sc-lbl"] = "width:200px;";
+$def[".ce-sc-head"] = "font-weight:bold; margin:14px 0 4px; opacity:.85;";
+$def[".ce-sc-all"] = "margin-top:14px;";
+// present mode (tools/PresentMode.js)
+$def[".cancas-present"] = "position:fixed; inset:0; z-index:99999; background:#111; display:flex; flex-direction:column; align-items:center; justify-content:center; touch-action:none;";
+$def[".cp-canvas"] = "display:block; max-width:calc(100vw - 40px); max-height:calc(100vh - 96px); width:auto; height:auto; background:#fff; box-shadow:0 10px 40px rgba(0,0,0,.6);";
+$def[".cp-stage"] = "position:relative; line-height:0;";
+$def[".cp-hotlayer"] = "position:absolute; left:0; top:0; right:0; bottom:0;";
+$def[".cp-header"] = "position:fixed; top:0; left:0; right:0; height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 12px; box-sizing:border-box; z-index:1; background:linear-gradient(rgba(0,0,0,.55), transparent);";
+$def[".cp-btn"] = "width:36px; height:36px; flex:none; border-radius:18px; border:0; background:rgba(255,255,255,.15); color:#fff; font-size:16px; cursor:pointer;";
+$def[".cp-title"] = "color:#fff; font:14px sans-serif; opacity:.9; cursor:pointer; padding:6px 10px; border-radius:14px; max-width:60%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;";
+$def[".cp-title-edit"] = "font:14px sans-serif; padding:5px 10px; border-radius:14px; border:0; max-width:60%; text-align:center;";
+$def[".cp-hot"] = "position:absolute; cursor:pointer; touch-action:manipulation;";
+$def[".cp-link"] = "position:absolute; right:16px; padding:8px 16px; border-radius:20px; border:0; color:#fff; font:13px sans-serif; cursor:pointer; touch-action:manipulation; box-shadow:0 2px 6px rgba(0,0,0,.4);";
+// inspector helpers
+$def[".ci-propl"] = "width:100px;";
+$def[".ci-mt6"] = "margin-top:6px;";
+$def[".ci-mt8"] = "margin-top:8px;";
+$def[".ci-mt10"] = "margin-top:10px;";
+$def[".ci-mt12"] = "margin-top:12px;";
+$def[".ci-pair.ci-pair-end"] = "justify-content:flex-end; margin:-4px 0 6px;";
+$def[".ci-field.ci-w90"] = "width:90px;";
+$def[".ci-fill.ci-notoggle"] = "grid-template-columns:30px 1fr 56px;";
+$def[".ci-fill.ci-off, .ci-grid.ci-off"] = "opacity:.45;";
+$def[".ci-sp6"] = "height:6px;";
+$def[".ci-sp10"] = "height:10px;";
+$def[".ci-chk"] = "display:flex; align-items:center; gap:6px; margin:6px 0;";
+$def[".sf-sub.sf-shared"] = "padding:0 6px 4px 24px;";
+$def[".cx-sec.cx-bare"] = "border:0; padding:0;";
+$def[".cx-row.cx-mt8"] = "margin-top:8px;";
+$def[".le-gap"] = "width:20px; flex:none;";
+$def[".le-empty.le-empty-deep"] = "padding-left:52px;";
+// startup loader fade out (the loader itself is styled in default.phtml)
+$def["#cancas-loader.done"] = "opacity:0; pointer-events:none;";
+// overlay layers
+$def["{$editor} .debug"] = "bottom:0px; right:10px;";
+$def["{$editor} .hostproperty"] = "display:none;";
+$def["{$editor} .snippet-host"] = "pointer-events:none; top:0px; left:0px;";
+$def["{$editor} .page-host"] = "pointer-events:none; top:0px; left:0px; bottom:0px; right:0px; overflow:hidden;";
+$def["{$editor} .page-text"] = "font-size:8em; pointer-events:none;";
+$def["{$editor} .gle-surface"] = "z-index:5; visibility:hidden;";

@@ -106,13 +106,6 @@ function rgbColorPicker(engine){
 		draggable: false,
 		src: // igk.system.io.rootUri()+'/Projects/igk_default/Views/cancaseditor/Scripts/assets/Img/circle.png'
 			_NS.assetManager.getUri("Img/circle.png")
-	}).setCss({
-		"display":"inline-block",
-		"userSelect":"none",
-		width:'100px',
-		height:'100px',
-		border:'1px solid black',
-		backgroundColor:'#444'
 	}).on('mousemove', function(e){ 
 		if (!m_capture)
 			return;
@@ -229,10 +222,7 @@ function rgbColorPicker(engine){
 			 var b = _s.add('div');
 			 b.addClass("no-wrap ce-color-track");
 			 b.add('span')
-			 .setCss({
-				 display:'inline-block',
-				 width: '1.5em'
-			 })
+			 .addClass("ce-color-name")
 			 .setHtml(_d[i].toUpperCase());
 			 var _max = _rx.test(_d[i])?100: 255;
 			 var _val = 0;

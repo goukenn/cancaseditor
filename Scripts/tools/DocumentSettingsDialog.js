@@ -65,7 +65,7 @@
 				title.onchange = () => { draft.title = title.value; };
 				const w = _el('input', { type: 'number', min: 1, value: draft.width });
 				const h = _el('input', { type: 'number', min: 1, value: draft.height });
-				[w, h].forEach((i) => { i.style.width = '6em'; });
+				[w, h].forEach((i) => { i.classList.add('ce-num'); });
 				const preset = _el('select', {}, [_el('option', { value: '', textContent: T['doc.preset.custom'] })]);
 				PRESETS.forEach(([n, pw, ph]) => preset.append(_el('option', { value: pw + 'x' + ph, textContent: n })));
 				const sync = () => {
@@ -88,10 +88,10 @@
 				bg.onchange = () => { draft.background = bg.checked; color.disabled = !bg.checked; };
 				color.oninput = () => { draft.color = color.value; };
 				const cols = _el('input', { type: 'number', min: 1, max: 12, value: draft.columns });
-				cols.style.width = '6em';
+				cols.classList.add('ce-num');
 				cols.onchange = () => { draft.columns = Math.max(1, Math.min(12, Math.floor(Number(cols.value)) || draft.columns)); cols.value = draft.columns; };
 				const gap = _el('input', { type: 'number', min: 0, max: 200, value: draft.columnGap });
-				gap.style.width = '6em';
+				gap.classList.add('ce-num');
 				gap.onchange = () => { const v = Number(gap.value); draft.columnGap = Math.max(0, Math.min(200, isNaN(v) ? draft.columnGap : v)); gap.value = draft.columnGap; };
 				// same color row as the fills and the borders of the inspector
 				const gcolor = _NS.inspector.colorRow({ get: () => draft.columnColor, set: (v) => { draft.columnColor = v; }, defaultColor: 'rgba(161, 79, 208, 0.15)', apply: (fn) => fn() });
@@ -123,18 +123,18 @@
 				// the top most layer first
 				draft.layers.slice().reverse().forEach((d) => {
 					const box = _el('div');
-					box.style.cssText = 'border:1px solid var(--cm-line);border-radius:4px;padding:8px 12px;margin-bottom:10px';
+					box.className = 'ce-layer-box';
 					const title = _el('strong');
 					heads.push([title, d]);
 					const head = _el('div', {}, [title]);
-					head.style.cursor = 'pointer';
+					head.className = 'ce-pointer';
 					head.onclick = () => { current = d.layer; mark(); };
 					const vis = _el('input', { type: 'checkbox', checked: d.visible });
 					vis.onchange = () => { d.visible = vis.checked; };
 					const blend = _el('select', {}, blendings.map((b) => _el('option', { value: b, textContent: b, selected: b == d.blendingMode })));
 					blend.onchange = () => { d.blendingMode = blend.value; };
 					const val = _el('span', { textContent: Math.round(d.opacity * 100) + '%' });
-					val.style.width = '3em';
+					val.className = 'ce-w3';
 					const op = _el('input', { type: 'range', min: 0, max: 100, value: Math.round(d.opacity * 100) });
 					op.oninput = () => { d.opacity = op.value / 100; val.textContent = op.value + '%'; };
 					box.append(head, row(T['doc.layer.visible'], vis), row(T['doc.layer.blend'], blend), row(T['doc.layer.opacity'], op, val));

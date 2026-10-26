@@ -50,10 +50,10 @@
 	function buildPage(editor, draft) {
 		const root = document.createElement('div');
 		const note = document.createElement('p');
-		note.style.cssText = 'font-size:12px;opacity:.75;margin:0 0 6px';
+		note.className = 'ce-sc-note';
 		note.textContent = T('shortcuts.hint');
 		const info = document.createElement('p');
-		info.style.cssText = 'font-size:12px;color:#f0b429;min-height:1.4em;margin:6px 0';
+		info.className = 'ce-sc-info';
 		const fields = {}; // action => button
 		const show = (n) => { fields[n].textContent = draft.codes[n] ? AC.formatShortcut(draft.codes[n]) : T('shortcuts.none'); fields[n].style.opacity = draft.codes[n] ? 1 : .55; };
 		function assign(name, code) {
@@ -75,7 +75,7 @@
 		function row(name) {
 			const btn = document.createElement('button');
 			btn.type = 'button';
-			btn.style.cssText = 'min-width:130px;text-align:center';
+			btn.className = 'ce-sc-key';
 			fields[name] = btn;
 			let before = null;
 			const stop = () => { btn.onkeydown = null; };
@@ -98,21 +98,20 @@
 			reset.type = 'button';
 			reset.textContent = '↺';
 			reset.title = T('shortcuts.reset');
-			reset.style.padding = '4px 8px';
+			reset.className = 'ce-sc-mini';
 			reset.onclick = () => assign(name, defaultPrimary(name));
 			const clear = document.createElement('button');
 			clear.type = 'button';
 			clear.textContent = '×';
 			clear.title = T('shortcuts.clear');
-			clear.style.padding = '4px 8px';
+			clear.className = 'ce-sc-mini';
 			clear.onclick = () => assign(name, null);
 			show(name);
 			const r = document.createElement('div');
-			r.className = 'ce-row';
-			r.style.margin = '5px 0';
+			r.className = 'ce-row ce-sc-row';
 			const l = document.createElement('label');
 			l.textContent = labelOf(name);
-			l.style.width = '200px';
+			l.className = 'ce-sc-lbl';
 			r.append(l, btn, reset, clear);
 			return r;
 		}
@@ -120,14 +119,14 @@
 		GROUPS.forEach((g) => {
 			const h = document.createElement('div');
 			h.textContent = T(g.title);
-			h.style.cssText = 'font-weight:bold;margin:14px 0 4px;opacity:.85';
+			h.className = 'ce-sc-head';
 			root.append(h);
 			g.items.forEach((i) => root.append(row(i[0])));
 		});
 		const all = document.createElement('button');
 		all.type = 'button';
 		all.textContent = T('shortcuts.resetall');
-		all.style.marginTop = '14px';
+		all.className = 'ce-sc-all';
 		all.onclick = () => { info.textContent = ''; names().forEach((n) => { draft.codes[n] = defaultPrimary(n); show(n); }); };
 		root.append(all);
 		return root;

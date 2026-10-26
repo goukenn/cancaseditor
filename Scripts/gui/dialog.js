@@ -62,9 +62,8 @@ var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 		};
 		//move box according to title bar
 		var mv = {b:0};
-		// pointer events cover mouse, touch and pen; touch-action:none stops the browser panning during the drag
+		// pointer events cover mouse, touch and pen; touch-action:none (stylesheet) stops the browser panning during the drag
 		var tb = b.o;
-		tb.style.touchAction = 'none';
 		tb.addEventListener('pointerdown', function(e){
 			if (e.button !== 0 || (e.target.closest && e.target.closest('.close'))) return;
 			mv.b = 1;

@@ -10,25 +10,6 @@
 (function () {
 	const _NS = igk.winui.cancasEditor;
 	const SWIPE = 50; // px
-	const CSS =
-		// arrow in front of the entries that have a sub menu
-		'div.tool.t .menu .submenu li:has(> .submenu) > a{position:relative}' +
-		'div.tool.t .menu .submenu li:has(> .submenu) > a::after{content:"\\25B8";position:absolute;right:12px;top:0;font-size:1.2em;opacity:.9}' +
-		// mobile
-		'.ce-mobile div.tool.t{display:none!important}' +
-		'.ce-burger{display:none;position:absolute;left:8px;top:8px;z-index:120;width:36px;height:36px;padding:0;border:0;border-radius:6px;background:rgba(40,40,40,.85);color:#eee;cursor:pointer;box-shadow:0 0 4px rgba(0,0,0,.5)}' +
-		'.ce-mobile .ce-burger{display:block}.ce-burger svg{width:22px;height:22px;margin:7px}' +
-		'.ce-drawer{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);font:16px system-ui,sans-serif}' +
-		'.ce-drawer .ce-panel{position:absolute;left:0;top:0;bottom:0;width:min(320px,86vw);background:#2b2b2b;color:#eee;overflow:hidden;touch-action:pan-y;box-shadow:0 0 12px #000}' +
-		'.ce-drawer .ce-page{position:absolute;inset:0;overflow-y:auto;background:#2b2b2b;transition:transform .22s ease}' +
-		'.ce-drawer .ce-page.ce-under{transform:translateX(-30%)}.ce-drawer .ce-page.ce-in{transform:translateX(100%)}' +
-		'.ce-drawer .ce-head{display:flex;align-items:center;gap:8px;padding:12px;background:#1e1e1e;font-weight:bold;position:sticky;top:0}' +
-		'.ce-drawer .ce-head button{background:transparent;border:0;color:inherit;font-size:20px;cursor:pointer;padding:0 6px}' +
-		'.ce-drawer .ce-item{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid #383838;cursor:pointer}' +
-		'.ce-drawer .ce-item .ce-label{flex:1}.ce-drawer .ce-item .ce-more{opacity:.6}' +
-		'.ce-drawer .ce-item.ce-off{opacity:.35;pointer-events:none}.ce-drawer .ce-item:active{background:#4c448f}' +
-		'[data-theme="light"] .ce-drawer .ce-panel,[data-theme="light"] .ce-drawer .ce-page{background:#e4e8e6;color:#111}' +
-		'[data-theme="light"] .ce-drawer .ce-head{background:#cfd8d4}[data-theme="light"] .ce-drawer .ce-item{border-color:#c3c9c6}';
 	const BURGER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
 	const el = (tag, props, children) => { const e = document.createElement(tag); Object.assign(e, props || {}); (children || []).forEach((c) => e.append(c)); return e; };
 	/** the entries of a ul (menu bar or sub menu): [{label, a, sub:[...]|null, off}] */
@@ -46,7 +27,6 @@
 		return out.filter((x) => x.label);
 	}
 	function init(editor) {
-		if (!document.getElementById('cancas-menu-css')) { document.head.append(el('style', { id: 'cancas-menu-css', textContent: CSS })); }
 		const host = editor.host.o;
 		const burger = el('button', { type: 'button', className: 'ce-burger', title: 'Menu', innerHTML: BURGER });
 		host.append(burger);

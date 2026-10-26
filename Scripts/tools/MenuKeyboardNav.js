@@ -6,17 +6,6 @@
 // item, Escape clears the highlight.
 "use strict";
 (function () {
-	const CSS = '.menu .kbd-sel > a{background-color:#4c448f;color:#eee}' +
-		'[data-theme="light"] .menu .kbd-sel > a{color:#fff}' +
-		// a submenu opened by ArrowRight (desktop only shows .submenu on :hover / .touchable-device li.igk-show)
-		'.menu li.kbd-open > .submenu{display:block !important;opacity:1 !important}';
-	if (!document.getElementById('cancas-menu-kbd-css')) {
-		const st = document.createElement('style');
-		st.id = 'cancas-menu-kbd-css';
-		st.textContent = CSS;
-		document.head.append(st);
-	}
-
 	let current = null; // the <li> currently highlighted by the keyboard, if any
 
 	function visible(el) {

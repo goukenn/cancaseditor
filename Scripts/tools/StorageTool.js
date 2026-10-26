@@ -458,13 +458,13 @@
 		const root = document.createElement('div');
 		const list = document.createElement('div');
 		const note = document.createElement('p');
-		note.style.cssText = 'font-size:12px;opacity:.8';
+		note.className = 'ce-pl-note';
 		const name = Object.assign(document.createElement('input'), { type: 'text', placeholder: T['plugins.name'] });
 		const url = Object.assign(document.createElement('input'), { type: 'url', placeholder: T['plugins.url'] });
-		url.style.flex = '1';
+		url.className = 'ce-flex1';
 		const add = Object.assign(document.createElement('button'), { textContent: T['plugins.add'] });
 		const form = document.createElement('div');
-		form.style.cssText = 'display:flex;gap:6px;margin-top:10px';
+		form.className = 'ce-pl-form';
 		form.append(name, url, add);
 		const draw = () => {
 			list.textContent = '';
@@ -474,11 +474,11 @@
 			}
 			prefs.plugins.forEach((p) => {
 				const row = document.createElement('div');
-				row.style.cssText = 'display:flex;gap:8px;align-items:center;padding:4px 0';
+				row.className = 'ce-pl-row';
 				const cb = Object.assign(document.createElement('input'), { type: 'checkbox', checked: !!p.enabled, title: T['plugins.enabled'] });
 				cb.onchange = () => prefs.setPluginEnabled(p, cb.checked);
 				const lb = document.createElement('span');
-				lb.style.flex = '1';
+				lb.className = 'ce-flex1';
 				lb.textContent = p.name + ' - ' + p.url;
 				const del = Object.assign(document.createElement('button'), { textContent: T['plugins.delete'] });
 				del.onclick = () => prefs.removePlugin(p);

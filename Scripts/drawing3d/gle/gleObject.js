@@ -337,7 +337,7 @@ return c;
 		var tc = igk.createNode('canvas')
 				.setAttribute("id", "webgl")
 				.setAttribute("igk-no-contextmenu", "1")
-				.addClass("fitw posab loc_a no-selection").setCss({zIndex: 5, visibility: 'hidden'});
+				.addClass("fitw posab loc_a no-selection gle-surface");
 		var _p = a.getService("publisher");
 				try{
 					//get uri to load shaders
@@ -424,4 +424,4 @@ return c;
 					console.debug(gl.getParameter(gl.VENDOR));
 				 }		
 	});
-})();
+})();

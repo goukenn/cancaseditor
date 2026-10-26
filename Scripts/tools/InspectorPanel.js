@@ -9,56 +9,11 @@
 	const R = () => _NS.R || {};
 	const T = (k, d) => R()[k] || d || k;
 	// ---------------------------------------------------------------- styles
-	const CSS = ':root{--ci-fg:#ddd;--ci-dim:#9a9a9a;--ci-input:#222;--ci-line:#4a4a4a;--ci-pop:#2e2e2e;--ci-accent:#a14fd0}' +
-		'[data-theme="light"]{--ci-fg:#222;--ci-dim:#6b6b6b;--ci-input:#fff;--ci-line:#b9bfbc;--ci-pop:#f4f4f4;--ci-accent:#7d3cc2}' +
-		'.ci-root{color:var(--ci-fg);font-size:12px}' +
-		'.ci-root input[type=number],.ci-root input[type=text],.ci-root select{width:100%;box-sizing:border-box;background:var(--ci-input);color:var(--ci-fg);border:1px solid transparent;border-radius:5px;padding:6px 8px;font:inherit;min-width:0}' +
-		'.ci-root input:focus,.ci-root select:focus{outline:none;border-color:var(--ci-accent)}' +
-		'.ci-root input[type=range]{width:100%;accent-color:var(--ci-accent)}' +
-		'.ci-root button:not(.ci-ico):not(.ci-swatch):not(.be-stop){background:var(--ci-input);color:var(--ci-fg);border:1px solid var(--ci-line);border-radius:5px;padding:5px 10px;cursor:pointer;font:inherit}' +
-		'.ci-root button:not(.ci-ico):not(.ci-swatch):not(.be-stop):hover{border-color:var(--ci-accent)}' +
-		'.ci-bar{display:flex;justify-content:space-between;padding:4px 2px 10px}' +
-		'.ci-ico{background:transparent;border:0;color:var(--ci-fg);width:26px;height:26px;padding:3px;border-radius:4px;cursor:pointer;line-height:0}' +
-		'.ci-ico:hover{background:rgba(127,127,127,.25)}.ci-ico.on{color:var(--ci-accent)}.ci-ico svg{width:100%;height:100%}' +
-		'.ci-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin-bottom:10px}' +
-		'.ci-grid .ci-field{position:relative}' +
-		'.ci-field>span{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--ci-dim);font-size:10px;pointer-events:none}' +
-		'.ci-pair{display:flex;gap:6px;align-items:center}' +
-		'.ci-sec-h{display:flex;align-items:center;justify-content:space-between;margin:14px 0 8px;padding-top:10px;border-top:1px solid var(--ci-line);color:var(--ci-dim);font-size:11px;font-weight:bold;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;user-select:none}' +
-		'.ci-sec-h svg{width:12px;height:12px;transition:transform .15s}.ci-sec.closed .ci-sec-h svg{transform:rotate(-90deg)}.ci-sec.closed .ci-sec-b{display:none}' +
-		'.ci-row{display:flex;align-items:center;gap:8px;margin:6px 0}.ci-row>label{flex:none;width:72px}' +
-		'.ci-row.slider{display:grid;grid-template-columns:1fr 48px;gap:10px}' +
-		'.ci-sub{display:flex;align-items:center;justify-content:space-between;margin:10px 0 6px;font-weight:bold}' +
-		'.ci-fill{display:grid;grid-template-columns:18px 30px 1fr 56px;gap:8px;align-items:center;margin:6px 0}' +
-		'.ci-swatch{width:30px;height:24px;border:1px solid var(--ci-line);border-radius:5px;cursor:pointer;padding:0;background-image:linear-gradient(45deg,#999 25%,transparent 25%,transparent 75%,#999 75%),linear-gradient(45deg,#999 25%,#fff 25%,#fff 75%,#999 75%);background-size:8px 8px;background-position:0 0,4px 4px;position:relative;overflow:hidden}' +
-		'.ci-swatch i{position:absolute;inset:0}' +
-		'.ci-title{font-weight:bold;margin:2px 0 8px;opacity:.85}' +
-		// color picker popover
-		'.ci-pop{position:fixed;z-index:1100;width:248px;box-sizing:border-box;padding:12px;background:var(--ci-pop);color:var(--ci-fg);border:1px solid var(--ci-line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.45);font:12px sans-serif}' +
-		'.ci-pop-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.ci-pop-head .ci-ico{width:24px;height:24px}' +
-		'.ci-pop h4{margin:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ci-dim)}' +
-		'.ci-sv{position:relative;height:130px;border-radius:5px;overflow:hidden;cursor:crosshair;touch-action:none}.ci-sv canvas{width:100%;height:100%;display:block}' +
-		'.ci-dot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.5);pointer-events:none}' +
-		'.ci-sliders{display:flex;gap:10px;align-items:center;margin:10px 0}.ci-sliders>div:not(.ci-prev){flex:1;display:flex;flex-direction:column;gap:8px}' +
-		'.ci-prev{width:30px;height:30px;border-radius:50%;border:1px solid var(--ci-line);flex:none}' +
-		'.ci-pop input[type=range]{-webkit-appearance:none;appearance:none;height:10px;border-radius:5px;margin:0;width:100%;accent-color:initial}' +
-		'.ci-pop input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #333;box-shadow:0 0 0 1px #fff}' +
-		'.ci-pop input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid #333}' +
-		'.ci-hue{background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}' +
-		'.ci-vals{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr 1fr;gap:6px}.ci-vals div{text-align:center;color:var(--ci-dim);font-size:10px}' +
-		// Firefox always draws the number spinners: hide them (Chrome ignores -moz-appearance and keeps its hover / focus spinners)
-		'@supports (-moz-appearance:none){input[type=number]{-moz-appearance:textfield!important;appearance:textfield!important}}' +
-		'.ci-vals input{text-align:center;padding:6px 2px!important}.ci-vals input[type=number]{-moz-appearance:textfield;appearance:textfield}.ci-vals input::-webkit-inner-spin-button,.ci-vals input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}';
 	function _el(tag, props, children) {
 		const e = document.createElement(tag);
 		Object.assign(e, props || {});
 		(children || []).forEach((c) => e.append(c));
 		return e;
-	}
-	function _css() {
-		if (!document.getElementById('cancas-inspector-css')) {
-			document.head.append(_el('style', { id: 'cancas-inspector-css', textContent: CSS }));
-		}
 	}
 	const svg = (d, w) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (w || 1.6) + '" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>';
 	const ICONS = {
@@ -121,7 +76,6 @@
 	 */
 	function openPicker(anchor, start, onChange) {
 		closePicker();
-		_css();
 		const hsv = rgb2hsv(start);
 		let alpha = start.a;
 		const sv = _el('div', { className: 'ci-sv' });
@@ -320,7 +274,8 @@
 		};
 		op.addEventListener('change', () => paint());
 		paint();
-		return _el('div', { className: 'ci-fill' }, [on, sw, hex, _el('div', { className: 'ci-field' }, [op, _el('span', { textContent: '%' })])]);
+		const pct = _el('div', { className: 'ci-field' }, [op, _el('span', { textContent: '%' })]);
+		return _el('div', { className: 'ci-fill' + (a.noToggle ? ' ci-notoggle' : '') }, a.noToggle ? [sw, hex, pct] : [on, sw, hex, pct]); // noToggle: the color is always on, the caller owns the switch
 	}
 	function sliderRow(label, value, min, max, onchange, suffix) {
 		const r = _el('input', { type: 'range', min, max, value });
@@ -397,7 +352,7 @@
 					ctl.onchange = () => apply(() => { el[n] = ctl.value; });
 				}
 				const lab = _el('label', { textContent: T('ins.prop.' + n, n), title: n });
-				lab.style.width = '100px';
+				lab.className = 'ci-propl';
 				body.append(_el('div', { className: 'ci-row' }, [lab, ctl]));
 			});
 		});
@@ -507,7 +462,7 @@
 				// the handles and the fields of the inspector follow the new position
 				if (editor.tool && editor.tool.selectElement) { editor.tool.selectElement(el); }
 			};
-			root.append(_el('div', { className: 'ci-pair', style: 'justify-content:flex-end;margin:-4px 0 6px' }, [...fits, lockBtn, flip(true), flip(false), resetBtn]));
+			root.append(_el('div', { className: 'ci-pair ci-pair-end' }, [...fits, lockBtn, flip(true), flip(false), resetBtn]));
 		}
 		if (cornerRadius0(el)) {
 			const b = hasBound(el) ? el.bound : { width: 200, height: 200 };
@@ -582,7 +537,7 @@
 					}));
 					if ('strokeWidth' in el) {
 						body.append(_el('div', { className: 'ci-row' }, [_el('label', { textContent: T('ins.width') }),
-							_el('div', { className: 'ci-field', style: 'width:90px' }, [numInput(el.strokeWidth, (v) => apply(() => { el.strokeWidth = v; }), { min: 0, step: 0.5 }), _el('span', { textContent: 'px' })])]));
+							_el('div', { className: 'ci-field ci-w90' }, [numInput(el.strokeWidth, (v) => apply(() => { el.strokeWidth = v; }), { min: 0, step: 0.5 }), _el('span', { textContent: 'px' })])]));
 					}
 				}
 			}));
@@ -606,20 +561,20 @@
 							rebuild();
 						}
 					}));
-					body.append(_el('div', { className: 'ci-grid', style: 'margin-top:8px' }, [
+					body.append(_el('div', { className: 'ci-grid ci-mt8' }, [
 						field('X', numInput(round2(sh.x), (v) => apply(() => { sh.x = v; }), { step: 1 })),
 						field('Y', numInput(round2(sh.y), (v) => apply(() => { sh.y = v; }), { step: 1 })),
 						field(T('ins.shadow.blur'), numInput(round2(sh.blur), (v) => apply(() => { sh.blur = Math.max(0, v); }), { min: 0, step: 1 }))]));
 				});
 				const add = _el('button', { type: 'button', textContent: '+ ' + T('ins.shadow.add') });
-				add.style.marginTop = '6px';
+				add.className = 'ci-mt6';
 				add.onclick = () => { apply(() => { el.shadows = el.shadows.concat([Object.assign({}, DEFAULT)]); }); rebuild(); };
 				body.append(add);
 			}));
 		}
 		if (el.getType() == 'htmlnode' && _NS.htmlEditor) {
 			const b = _el('button', { textContent: T('prop.html.edit'), className: 'igk-btn' });
-			b.style.marginTop = '12px';
+			b.classList.add('ci-mt12');
 			b.onclick = () => _NS.htmlEditor.showDialog(editor, el.html, (h) => { el.html = h; editor.refresh(); });
 			root.append(b);
 		}
@@ -678,7 +633,7 @@
 					}));
 					if ('strokeWidth' in proxy) {
 						body.append(_el('div', { className: 'ci-row' }, [_el('label', { textContent: T('ins.width') }),
-							_el('div', { className: 'ci-field', style: 'width:90px' }, [numInput(proxy.strokeWidth, (v) => apply(() => { proxy.strokeWidth = v; }), { min: 0, step: 0.5 }), _el('span', { textContent: 'px' })])]));
+							_el('div', { className: 'ci-field ci-w90' }, [numInput(proxy.strokeWidth, (v) => apply(() => { proxy.strokeWidth = v; }), { min: 0, step: 0.5 }), _el('span', { textContent: 'px' })])]));
 					}
 				}
 			}));
@@ -706,11 +661,11 @@
 			editor.refresh();
 			editor.raiseEvent('currentDocumentChanged', { old: doc, current: doc }); // the status bar and the explorer show the new id
 		};
-		root.append(idInput, _el('div', { style: 'height:6px' }));
+		root.append(idInput, _el('div', { className: 'ci-sp6' }));
 		const title = _el('input', { type: 'text', value: doc.title || '', placeholder: T('doc.name') });
 		title.onchange = () => { doc.title = title.value; editor.refresh(); };
 		root.append(title);
-		root.append(_el('div', { style: 'height:10px' }));
+		root.append(_el('div', { className: 'ci-sp10' }));
 		// the size of a document is at least 1: 0 keeps the current size
 		const wi = numInput(doc.width, (v) => { doc.setSize(v, doc.height); resize(); }, { min: 1 });
 		const hi = numInput(doc.height, (v) => { doc.setSize(doc.width, v); resize(); }, { min: 1 });
@@ -718,27 +673,38 @@
 		hi.addEventListener('change', () => { hi.value = doc.height; });
 		root.append(_el('div', { className: 'ci-grid' }, [field('W', wi), field('H', hi)]));
 		// background color of the document (the first color row), then the column guides with their own color row
-		root.append(_el('div', { style: 'height:6px' }), _el('div', { className: 'ci-sub', textContent: T('doc.background.color') }), colorRow({
+		root.append(_el('div', { className: 'ci-sp6' }), _el('div', { className: 'ci-sub', textContent: T('doc.background.color') }), colorRow({
 			get: () => doc.fill, set: (v) => { doc.fill = v; }, apply: (fn) => { fn(); editor.refresh(); }
 		}));
 		// column guides (1 - 12 equal columns, like igk-col-12-N)
 		const ci = numInput(doc.columns, (v) => { doc.columns = v; editor.refresh(); }, { min: 1, max: 12 });
 		ci.addEventListener('change', () => { ci.value = doc.columns; });
-		const cs = _el('input', { type: 'checkbox', checked: doc.showColumns, title: T('doc.columns.show') });
-		cs.onchange = () => { doc.showColumns = cs.checked; editor.refresh(); };
 		const gi = numInput(doc.columnGap, (v) => { doc.columnGap = v; editor.refresh(); }, { min: 0, max: 200 });
 		gi.addEventListener('change', () => { gi.value = doc.columnGap; });
-		root.append(_el('div', { style: 'height:6px' }), _el('div', { className: 'ci-grid' }, [field(T('ins.columns'), ci), field(T('ins.gap'), gi)]),
+		if (!doc.columnColor || doc.columnColor == 'none' || doc.columnColor == 'transparent') { doc.columnColor = 'rgba(161, 79, 208, 0.15)'; } // the row has no own switch any more
+		// one switch for the grid: it also enables the color, columns and gutter
+		const colors = colorRow({ noToggle: true, get: () => doc.columnColor, set: (v) => { doc.columnColor = v; }, defaultColor: 'rgba(161, 79, 208, 0.15)', apply: (fn) => { fn(); editor.refresh(); } });
+		const grid = _el('div', { className: 'ci-grid' }, [field(T('ins.columns'), ci), field(T('ins.gap'), gi)]);
+		const cs = _el('input', { type: 'checkbox', checked: doc.showColumns, title: T('doc.columns.show') });
+		const syncGrid = () => {
+			[colors, grid].forEach((r) => {
+				r.classList.toggle('ci-off', !cs.checked);
+				r.querySelectorAll('input,button').forEach((e) => { e.disabled = !cs.checked; });
+			});
+		};
+		cs.onchange = () => { doc.showColumns = cs.checked; syncGrid(); editor.refresh(); };
+		syncGrid();
+		// the grid options together: switch, color, then columns and gutter
+		root.append(_el('div', { className: 'ci-sp6' }),
+			_el('label', { className: 'ci-chk' }, [cs, _el('span', { textContent: T('doc.columns.show') })]),
 			_el('div', { className: 'ci-sub', textContent: T('doc.columns.color') }),
-			// same color row as the fills and the borders: toggle, swatch picker, hex, opacity
-			colorRow({ get: () => doc.columnColor, set: (v) => { doc.columnColor = v; }, defaultColor: 'rgba(161, 79, 208, 0.15)', apply: (fn) => { fn(); editor.refresh(); } }),
-			_el('label', { style: 'display:flex;align-items:center;gap:6px;margin:6px 0' }, [cs, _el('span', { textContent: T('doc.columns.show') })]));
+			colors,
+			grid);
 		if (doc.kind == 'page' && _NS.pageDesigner) { root.append(_NS.pageDesigner.build(editor, doc)); } // web page design mode
 		return root;
 	}
 	/** build the inspector content for the current selection */
 	function build(editor) {
-		_css();
 		const el = editor.element || (editor.tool && editor.tool.elem) || null;
 		// several elements selected (selection tool): the properties they have in common
 		if (el && el.type === 2 && el.items && el.items.length > 1) { return multiPanel(editor, Array.prototype.slice.call(el.items)); }

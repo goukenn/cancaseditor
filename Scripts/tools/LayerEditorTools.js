@@ -2,27 +2,15 @@
 //register layer tool
 function LayerEditorTool(){
 	igk.winui.cancasEditor.Editor.Tool.apply(this);
-	var lb = igk.createNode("span").addClass("layertool").setCss({
-		paddingLeft: "4px",
-		paddingRight: "4px",
-		cursor: 'pointer'
-	});
+	var lb = igk.createNode("span").addClass("layertool");
 	lb.setHtml("");
 	var self = this;
 	var doc = lb.add("span").setHtml("scene");
 	var sp = lb.add("span").setHtml(" &gt; ");
-	var ly = lb.add("span").setHtml("layer").setCss({
-		position:'relative'
-	});
+	var ly = lb.add("span").addClass("layertool-layer").setHtml("layer");
 	ly.title = ly.add("span");
 	//lb.setHtml("<span>document:  </span><span> &gt; </span> <span>layers: (0) </span>");
-	var lyv = ly.add('ul').addClass('layerview dispn posab').setCss({
-		bottom: '100%',
-		width:'auto',
-		left:'0px',
-		zIndex:'10',
-		backgroundColor:'#444'
-	});
+	var lyv = ly.add('ul').addClass('layerview dispn posab');
 	lyv.setHtml(""); 
 	var selectedLi = -1;
 	var _visible = 0;

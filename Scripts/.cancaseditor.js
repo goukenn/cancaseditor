@@ -1139,10 +1139,7 @@
 				}
 				var g = q.select(".debug").first();
 				if (!g) {
-					g = q.add("div").addClass("debug posab").setCss({
-						bottom: '0px',
-						right: '10px'
-					});
+					g = q.add("div").addClass("debug posab");
 				}
 				g.setHtml("");
 				for (var i = 0; i < m.length; i++) {
@@ -2129,7 +2126,7 @@
 				q.setHtml("");
 				// + | init layayou
 				tools.top = q.add("div").addClass("tool t");  // top 
-				let ii = tools.top.add('span').addClass('logo posab').setCss({ left: 0, top: 0 });
+				let ii = tools.top.add('span').addClass('logo posab');
 				ii.setHtml('logo');
 				tools.left = q.add("div").addClass("tool l"); // left 
 				tools.bottom = q.add("div").addClass("tool b no-selection"); // bottom
@@ -2148,7 +2145,7 @@
 				ul.select(".contextmenu").remove();
 				ul.init();
 				// + | hidding
-				q.add("div").addClass("hostproperty").setCss({ display: 'none' });
+				q.add("div").addClass("hostproperty");
 				var m_canvas = q.add("div").addClass("surface loc_a fit no-overflow")
 					.add("canvas").addClass("surface-2d fit no-padding no-margin dispb");
 				m_canvas.o.width = '100';
@@ -6040,8 +6037,8 @@
 						return r.text();
 					}).then(function (html) {
 						var c = document.createElement("div");
+						c.className = "ce-about";
 						c.innerHTML = html;
-						c.querySelectorAll("a").forEach(function (l) { l.style.color = "inherit"; l.style.textDecoration = "underline"; });
 						_NS.ui.modal({ title: (_NS.R && _NS.R['help.about']) || 'About', content: c });
 					});
 				}, index: 0

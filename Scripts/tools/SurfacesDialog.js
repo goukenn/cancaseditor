@@ -153,7 +153,7 @@
 					await refresh();
 				} });
 				const box = _el('div', { className: 'sf-share' }, [login, add]);
-				const shared = _el('div', { className: 'sf-sub', style: 'padding:0 6px 4px 24px' });
+				const shared = _el('div', { className: 'sf-sub sf-shared' });
 				it.shared.forEach((l) => shared.append(_el('span', { textContent: l + ' ' }), act('✕', async () => { await api.share(it.id, l, false); refresh(); }, T('surf.unshare'))));
 				frag.push(box);
 				it.shared.length && frag.push(shared);

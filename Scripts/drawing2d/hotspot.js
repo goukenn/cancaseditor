@@ -104,10 +104,10 @@
 		const b = el.bound;
 		const top = toScreen(world({ x: b.x, y: b.y }));
 		const chip = document.createElement('div');
-		chip.style.cssText = 'position:absolute;z-index:30;display:flex;gap:6px;align-items:center;padding:6px;border-radius:6px;background:#2b2b2b;color:#eee;box-shadow:0 2px 8px rgba(0,0,0,.5);touch-action:manipulation';
+		chip.className = 'ce-chip';
 		const lab = document.createElement('span');
 		lab.textContent = T('hotspot.goto', 'Go to');
-		lab.style.cssText = 'font:12px sans-serif;opacity:.8';
+		lab.className = 'ce-chip-hint';
 		const sel = document.createElement('select');
 		const none = document.createElement('option');
 		none.value = ''; none.textContent = T('hotspot.none', '(none)');

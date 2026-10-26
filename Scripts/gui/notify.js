@@ -21,19 +21,12 @@ var GUI = igk.system.createNS("igk.winui.cancasEditor.gui", {
 			_top += _NS.rulers.SIZE;
 		}
 		_notHost.o.style.top = Math.max(0, _top) + 8 + "px";
-		_notHost.o.style.right = 8 + "px";
-		_notHost.o.style.maxWidth = "min(300px, calc(100% - 16px))";
 		var q = igk.createNode("div");
 		q.addClass("igk-cancas-editor_notify");
 		// safari not allow to add properties twice
 		//demonstration
-		var s = {		
-			"fontSize":"12pt","maxWidth":"280px","lineHeight":"15pt"
-		};
-		// s["lineHeight"] = "15pt"; 
-		q.add("div").setCss(s).setHtml(msg || "Balafon Cancas editor edition notify node demonstration. New package  available <a href='#'>version 1.0</a>");
-		// tap (touch/pen) or click closes the tip; touch-action:none keeps the tap from being taken as a pan
-		q.o.style.touchAction = "none";
+		q.add("div").addClass("msg").setHtml(msg || "Balafon Cancas editor edition notify node demonstration. New package  available <a href='#'>version 1.0</a>");
+		// tap (touch/pen) or click closes the tip (touch-action:none, in the stylesheet, keeps the tap from being taken as a pan)
 		q.o.addEventListener("pointerup", function(e){
 			e.stopPropagation();
 			_self.close();

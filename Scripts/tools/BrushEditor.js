@@ -10,23 +10,12 @@
 	const I = () => _NS.inspector;
 	const TEXTURE_SIDE = 96; // the thumbnail: the options of the user are small
 	const SOURCE_SIDE = 2048; // the real size picture is only reduced beyond this side
-	const CSS = '.be-bar{position:relative;height:18px;border-radius:9px;margin:12px 6px 14px;cursor:copy;border:1px solid var(--ci-line,#4a4a4a)}' +
-		'.be-stop{position:absolute;top:-4px;width:14px;height:24px;margin-left:-7px;border:2px solid #fff;border-radius:4px;padding:0;cursor:ew-resize;box-shadow:0 0 0 1px rgba(0,0,0,.6)}' +
-		'.be-stop.on{border-color:var(--ci-accent,#a14fd0);box-shadow:0 0 0 2px var(--ci-accent,#a14fd0)}' +
-		'.be-row{display:flex;gap:8px;align-items:center;margin:6px 0}.be-row>label{width:70px;flex:none}' +
-		'.be-tag{font-size:10px;opacity:.6;margin-left:6px}.be-note{font-size:11px;color:#f0b429;margin:4px 0}' +
-		'.be-tex{width:44px;height:44px;border:1px solid var(--ci-line,#4a4a4a);border-radius:5px;background-size:cover;flex:none}';
 	const selectedStop = {}; // brush id => selected stop index
 	function _el(tag, props, children) {
 		const e = document.createElement(tag);
 		Object.assign(e, props || {});
 		(children || []).forEach((c) => e.append(c));
 		return e;
-	}
-	function _css() {
-		if (!document.getElementById('cancas-brush-css')) {
-			document.head.append(_el('style', { id: 'cancas-brush-css', textContent: CSS }));
-		}
 	}
 	const typeOf = (fill) => {
 		if (B().isRef(fill)) { const d = B().get(B().idOf(fill)); return d ? d.type : 'solid'; }
@@ -82,7 +71,7 @@
 			const prev = _el('div', { className: 'be-tex' });
 			if (def.image) { prev.style.backgroundImage = 'url(' + def.image + ')'; }
 			const file = _el('input', { type: 'file', accept: 'image/*' });
-			file.style.display = 'none';
+			file.className = 'ce-hide';
 			const choose = _el('button', { type: 'button', textContent: T('brush.texture.choose') });
 			choose.onclick = () => file.click();
 			file.onchange = async () => {
@@ -178,7 +167,7 @@
 		rebuildMarkers();
 		// ---- geometry (fractions of the bound, in %): also editable with the handles on the canvas
 		const g = (title, v, f) => I().field(title, I().numInput(pct(v), (n) => upd(f(n / 100)), { step: 1 }));
-		const grid = _el('div', { className: 'ci-grid', style: 'margin-top:10px' });
+		const grid = _el('div', { className: 'ci-grid ci-mt10' });
 		if (def.type == 'radial') {
 			grid.append(
 				g('X', def.center.x, (n) => ({ center: { x: n, y: B().get(id).center.y } })),
@@ -205,7 +194,6 @@
 	 * @returns {HTMLElement}
 	 */
 	function build(editor, el, prop, apply, rebuild) {
-		_css();
 		const root = _el('div');
 		const cur = el[prop];
 		const type = typeOf(cur);

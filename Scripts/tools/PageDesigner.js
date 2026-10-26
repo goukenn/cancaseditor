@@ -17,23 +17,11 @@
 		label: ['Label'], img: ['', { src: '', alt: '' }], input: ['', { type: 'text' }],
 		table: ['', { width: '100%', cellpadding: '0', cellspacing: '0', border: '0', role: 'presentation' }]
 	};
-	const CSS = '.pd-root{margin-top:10px;font-size:12px}.pd-h{font-weight:bold;margin:10px 0 4px;opacity:.85}' +
-		'.pd-pal{display:flex;flex-wrap:wrap;gap:4px}.pd-pal button{padding:2px 7px;border:1px solid var(--ci-line,#4a4a4a);border-radius:10px;background:transparent;color:inherit;cursor:pointer;font:11px monospace}' +
-		'.pd-pal button:hover{background:rgba(127,127,127,.25)}' +
-		'.pd-tree{border:1px solid var(--ci-line,#4a4a4a);border-radius:4px;padding:2px;max-height:240px;overflow:auto;outline:none}.pd-tree:focus{border-color:var(--ci-accent,#a14fd0)}' +
-		'.pd-row{display:flex;align-items:center;gap:2px;padding:1px 2px;border-radius:3px;cursor:pointer;white-space:nowrap}.pd-row:hover{background:rgba(127,127,127,.18)}' +
-		'.pd-row.sel{background:rgba(161,79,208,.35)}.pd-row .lb{flex:1;min-width:44px;overflow:hidden;text-overflow:ellipsis}.pd-row .tx{opacity:.6;max-width:44px;overflow:hidden;text-overflow:ellipsis}' +
-		'.pd-row button{border:0;background:transparent;color:inherit;cursor:pointer;padding:0 2px;opacity:.7;font-size:11px}.pd-row button:hover{opacity:1}' +
-		'.pd-ed label{display:block;margin:6px 0 2px;opacity:.7}.pd-ed input,.pd-ed textarea{width:100%;box-sizing:border-box;background:var(--ci-input,#111);color:inherit;border:1px solid var(--ci-line,#4a4a4a);border-radius:3px;padding:3px 5px;font:12px monospace}' +
-		'.pd-root select{width:100%;background:var(--ci-input,#111);color:inherit;border:1px solid var(--ci-line,#4a4a4a);border-radius:3px;padding:3px}.pd-empty{opacity:.6;padding:6px}';
 	function _el(tag, props, children) {
 		const e = document.createElement(tag);
 		Object.assign(e, props || {});
 		(children || []).forEach((c) => e.append(c));
 		return e;
-	}
-	function _css() {
-		if (!document.getElementById('cancas-pagedesigner-css')) { document.head.append(_el('style', { id: 'cancas-pagedesigner-css', textContent: CSS })); }
 	}
 	let m_sel = null; // runtime id (u) of the selected node
 	let m_refocus = false; // the tree takes the focus back after a redraw made from it (Backspace / Delete)
@@ -44,7 +32,6 @@
 	 * @returns {HTMLElement}
 	 */
 	function build(editor, doc) {
-		_css();
 		const P = ELEM.page;
 		const root = _el('div', { className: 'pd-root' });
 		const redraw = () => { const p = root.parentNode; if (p) { p.replaceChild(build(editor, doc), root); } };

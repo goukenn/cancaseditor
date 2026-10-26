@@ -8,22 +8,6 @@
 	const AC = _NS.Actions;
 	const T = (k, d) => (_NS.R && _NS.R[k]) || d || k;
 	const collapsed = {}; // row key => true when closed
-	const CSS = '.le-root{font-size:12px;color:var(--ci-fg,#ddd)}' +
-		'.le-bar{display:flex;gap:6px;padding:2px 0 8px;border-bottom:1px solid var(--ci-line,#4a4a4a);margin-bottom:6px}' +
-		'.le-bar button{background:transparent;border:1px solid var(--ci-line,#4a4a4a);color:inherit;border-radius:5px;padding:3px 8px;cursor:pointer;font:inherit}' +
-		'.le-bar button:hover{background:rgba(127,127,127,.2)}' +
-		'.le-row{display:flex;align-items:center;gap:4px;padding:3px 4px;border-radius:4px;cursor:pointer;white-space:nowrap}' +
-		'.le-row:hover{background:rgba(127,127,127,.18)}.le-row.active{background:rgba(161,79,208,.28)}.le-row.sel{outline:1px solid var(--ci-accent,#a14fd0)}' +
-		'.le-row .le-label{flex:1;overflow:hidden;text-overflow:ellipsis}.le-row .le-sub{opacity:.55;font-size:10px}' +
-		'.le-row.hidden .le-label{opacity:.45;text-decoration:line-through}' +
-		'.le-ico{background:transparent;border:0;color:inherit;width:20px;height:20px;padding:2px;line-height:0;cursor:pointer;border-radius:3px;flex:none}' +
-		'.le-ico:hover{background:rgba(127,127,127,.3)}.le-ico svg{width:100%;height:100%}.le-ico.off{opacity:.45}' +
-		'.le-empty{opacity:.6;padding:4px 8px;font-style:italic}' +
-		'.le-row.drop-above{box-shadow:inset 0 2px 0 var(--ci-accent,#a14fd0)}.le-row.drop-below{box-shadow:inset 0 -2px 0 var(--ci-accent,#a14fd0)}.le-row.drop-into{outline:2px solid var(--ci-accent,#a14fd0);outline-offset:-2px}' +
-		'.le-row.dragging{opacity:.4}' +
-		'.le-row input.le-edit{flex:1;min-width:0;font:inherit;color:inherit;background:rgba(127,127,127,.2);border:1px solid var(--ci-accent,#a14fd0);border-radius:3px;padding:1px 4px;outline:none}' +
-		'.le-menu{position:fixed;z-index:100000;min-width:150px;background:var(--ci-bg,#333);color:var(--ci-fg,#ddd);border:1px solid var(--ci-line,#4a4a4a);border-radius:6px;padding:4px;box-shadow:0 4px 14px rgba(0,0,0,.4);font-size:12px}' +
-		'.le-menu div{padding:4px 10px;border-radius:4px;cursor:pointer}.le-menu div:hover{background:rgba(127,127,127,.25)}.le-menu .le-sep{height:1px;padding:0;margin:4px 0;background:var(--ci-line,#4a4a4a);cursor:default}';
 	const svg = (d) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>';
 	const ICON = {
 		eye: svg('<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),
@@ -32,14 +16,6 @@
 		right: svg('<path d="m9 6 6 6-6 6"/>'),
 		close: svg('<path d="M6 6l12 12M18 6 6 18"/>')
 	};
-	function _css() {
-		if (!document.getElementById('cancas-explorer-css')) {
-			const s = document.createElement('style');
-			s.id = 'cancas-explorer-css';
-			s.textContent = CSS;
-			document.head.append(s);
-		}
-	}
 	function _el(tag, props, children) {
 		const e = document.createElement(tag);
 		Object.assign(e, props || {});
@@ -274,7 +250,6 @@
 	}
 	/** @returns {HTMLElement} the explorer of the scene */
 	function build(editor) {
-		_css();
 		const root = _el('div', { className: 'le-root' });
 		const bar = _el('div', { className: 'le-bar' });
 		const addDoc = _el('button', { type: 'button', textContent: '+ ' + T('lay.adddoc'), title: T('lay.adddoc') });
@@ -291,7 +266,7 @@
 		const row = (o) => {
 			const r = _el('div', { className: 'le-row' + (o.active ? ' active' : '') + (o.selected ? ' sel' : '') + (o.hidden ? ' hidden' : '') });
 			r.style.paddingLeft = (4 + o.depth * 14) + 'px';
-			r.append(o.toggle ? iconBtn(collapsed[o.key] ? ICON.right : ICON.down, '', () => { collapsed[o.key] = !collapsed[o.key]; rerender(); }) : _el('span', { style: 'width:20px;flex:none' }));
+			r.append(o.toggle ? iconBtn(collapsed[o.key] ? ICON.right : ICON.down, '', () => { collapsed[o.key] = !collapsed[o.key]; rerender(); }) : _el('span', { className: 'le-gap' }));
 			if (o.eye) {
 				r.append(iconBtn(o.hidden ? ICON.eyeOff : ICON.eye, T(o.hidden ? 'lay.show' : 'lay.hide'), () => { o.eye(o.hidden); editor.refresh(); rerender(); } /* hidden now => show */, o.hidden));
 			}
@@ -408,7 +383,7 @@
 					onclick: () => { editor.document = doc; editor.layer = ly; editor.refresh(); rerender(); }
 				}));
 				if (collapsed[lkey]) { return; }
-				if (items.length == 0) { root.append(_el('div', { className: 'le-empty', style: 'padding-left:' + (4 + 2 * 14 + 20) + 'px', textContent: T('lay.noelements') })); }
+				if (items.length == 0) { root.append(_el('div', { className: 'le-empty le-empty-deep', textContent: T('lay.noelements') })); }
 				// the elements, top most first; a group lists its own members below it
 				const list = (arr, depth) => Array.prototype.slice.call(arr).reverse().forEach((el) => {
 					const isGroup = el.getType() == 'group';

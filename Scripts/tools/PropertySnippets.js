@@ -11,22 +11,10 @@
 	const B = () => _NS.brushes;
 	const T = (k, d) => (_NS.R && _NS.R[k]) || d || k;
 	const SVG_NS = 'http://www.w3.org/2000/svg';
-	const CSS = '.ps-host{position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none;z-index:6;overflow:hidden}' +
-		'.ps-host svg{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}' +
-		'.ps-h{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;box-sizing:border-box;border:2px solid #fff;border-radius:50%;background:#a14fd0;box-shadow:0 0 0 1px rgba(0,0,0,.65);cursor:move;pointer-events:all;touch-action:none}' +
-		'.ps-h.shadow{border-radius:2px;width:11px;height:11px;margin:-5px 0 0 -5px;background:#222;transform:rotate(45deg)}' +
-		'.ps-h.dim{width:9px;height:9px;margin:-4px 0 0 -4px;cursor:pointer}' +
-		'.ps-dot{position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;border:1px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.6);pointer-events:none}' +
-		'.ps-chip{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:2px;padding:2px;border-radius:14px;background:rgba(0,0,0,.6);pointer-events:all}' +
-		'.ps-chip button{border:0;background:transparent;color:#ddd;padding:3px 12px;border-radius:12px;cursor:pointer;font:12px sans-serif}' +
-		'.ps-chip button.on{background:#a14fd0;color:#fff}';
 	let mode = 'shape'; // 'shape' | 'brush'
 	let lastEl = null;
 	function _el(tag, props) { return Object.assign(document.createElement(tag), props || {}); }
 	function init(editor) {
-		if (!document.getElementById('cancas-snippets-css')) {
-			document.head.append(_el('style', { id: 'cancas-snippets-css', textContent: CSS }));
-		}
 		const surface = editor.canvas.o.parentNode;
 		const host = _el('div', { className: 'ps-host' });
 		const lines = document.createElementNS(SVG_NS, 'svg');

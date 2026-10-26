@@ -25,13 +25,14 @@ CancasEditor: a 2D canvas/SVG graphic editor in JavaScript, written as a **Balaf
   - `.cancaseditor.d.js` — type declarations; `jsconfig.json` (`allowJs`, no `checkJs`); `package.json` is metadata only.
   - `.autoload.js` — ES-module import manifest (`@/lib/cancalib/...`) for an external bundler; it is **not** loaded by the PHP view. When adding/removing a script, keep it in sync, but `load_cancas_scripts` is what actually serves the app.
 - `Lib/Classes/` — `Surfaces.php` (`Com\IGKDEV\App\CancasEditor\Surfaces`) and `Actions/CancasActions.php`; server side of user surfaces/options/plugins sync for logged-in users.
-- `Styles/default.pcss`, `Styles/themes/` — PCSS styles (dynamic styles are also injected by tools).
+- `Styles/default.pcss`, `Styles/themes/` — PCSS styles (all the static styles of the tools and dialogs).
 - `Data/` — `R/Img/favicon.ico`, `packages/`. `wiki/`, `modelapp/`, `svg.phtml`, `ipad.phtml`, `wiki.phtml` — secondary views.
 - `Docs/` — documentation (`documentation.md`/`.docx`). Functional specs are in the parent project: `../../Docs/spec-cancaseditor.md` (French, with `.en.md` and `.json` metadata). **Read it before changing a feature**, and update it when a feature changes.
 
 ## Working conventions
 
 - Script load order is alphabetical, so a file may only rely at load time on files that sort before it (core first via the dotted name `.cancaseditor.js`); defer other cross-file use to runtime.
+- Static styles live in `Styles/default.pcss` (class names in the scripts, no `<style>` injection or `cssText`); only values computed at runtime (positions, sizes, colors from data) stay inline.
 - User-visible strings use `cancas.*` translation keys (fr/en/nl), not hard-coded text.
 - After changing a view or the UI, load `https://local.com:8085/cancaseditor/` and check rendering and the browser console before calling it done (the browser tools are available for this).
 - Browser caching: the app registers a service worker (`cancas-app.sw.js`, cache `cancaseditor-<CE_CACHE_VERSION>`); if changes do not show up, bump the cache version or unregister the worker.

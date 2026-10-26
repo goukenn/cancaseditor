@@ -19,8 +19,7 @@
 	function finish() {
 		const l = loader();
 		if (!l) { return; }
-		l.style.opacity = '0';
-		l.style.pointerEvents = 'none';
+		l.classList.add('done'); // faded out by the stylesheet
 		setTimeout(() => l.remove(), 350);
 	}
 	const boot = _NS.boot = {

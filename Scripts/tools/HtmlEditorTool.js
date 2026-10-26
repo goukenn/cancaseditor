@@ -50,15 +50,6 @@
 		(children || []).forEach((c) => e.append(c));
 		return e;
 	}
-	const DLG_CSS = '.cancas-html-dlg{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);font:14px sans-serif}' +
-		'.cancas-html-dlg>div{background:#2b2b2b;color:#eee;width:min(960px,94vw);height:min(720px,90vh);display:flex;flex-direction:column;border-radius:6px;overflow:hidden}' +
-		'.cancas-html-dlg .bar{display:flex;gap:6px;padding:8px;background:#1e1e1e;align-items:center}' +
-		'.cancas-html-dlg .bar button{background:#444;color:#eee;border:0;padding:6px 12px;border-radius:4px;cursor:pointer}' +
-		'.cancas-html-dlg .bar button.on{background:#5b4bd6}.cancas-html-dlg .bar .sp{flex:1}' +
-		'.cancas-html-dlg iframe,.cancas-html-dlg textarea{flex:1;border:0;width:100%;background:#fff;color:#000}' +
-		'.cancas-html-dlg textarea{background:#111;color:#ddd;font:13px monospace;padding:8px;resize:none;box-sizing:border-box}' +
-		'.cancas-html-dlg .props{display:flex;gap:8px;padding:6px 8px;background:#262626;font-size:12px;align-items:center}' +
-		'.cancas-html-dlg .props input{background:#111;color:#eee;border:1px solid #444;padding:3px 6px;border-radius:3px;min-width:0;flex:1}';
 	/**
 	 * show the editor dialog
 	 * @param {*} editor
@@ -67,9 +58,6 @@
 	 */
 	function showDialog(editor, html, onApply) {
 		const T = R();
-		if (!document.getElementById('cancas-html-dlg-css')) {
-			document.head.append(_el('style', { id: 'cancas-html-dlg-css', textContent: DLG_CSS }));
-		}
 		const frame = _el('iframe', { sandbox: 'allow-same-origin' }); // no script execution
 		const area = _el('textarea', { spellcheck: false, value: html });
 		const tabs = {};

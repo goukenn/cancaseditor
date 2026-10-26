@@ -8,7 +8,7 @@ var LY = igk.system.createNS("igk.winui.cancasEditor.Layers",{
 });
 igk.system.createClass(LY, {name:"snippets", parent: ELEM.drawing2DContainer}, function(a){
 	var MS_BTN = igk.winui.mouseButton;
-	var p = $igk(a.canvas.o.parentNode).add("div").setCss({"pointerEvents":"none", "top":"0px", "left":"0px"}).addClass("snippet-host posab loc_a");
+	var p = $igk(a.canvas.o.parentNode).add("div").addClass("snippet-host posab loc_a");
 	var startPos = 0;
 	var self = this;
 	var snippets = [];
@@ -171,7 +171,7 @@ igk.system.createClass(LY, {name:"snippets", parent: ELEM.drawing2DContainer}, f
 		}
 		return dom.addClass(cl).on("click", function(){
 			//alert("click ok");
-		}).setCss({"pointerEvents":"all"}).on("mousedown", function(e){
+		}).on("mousedown", function(e){
 			if(igk.winui.cancasEditor.isCapturing())
 				return;
 			_startCapture();

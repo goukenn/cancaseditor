@@ -133,15 +133,9 @@
 		return parts.join('\n\n') + '\n';
 	}
 	const el = (tag, props, children) => { const e = document.createElement(tag); Object.assign(e, props || {}); (children || []).forEach((c) => e.append(c)); return e; };
-	const CSS = '.cancas-modal.cx-wide>div{width:min(1000px,96vw)}.cx-grid{display:flex;gap:14px;flex-wrap:wrap}.cx-form{flex:1 1 280px;min-width:0}.cx-out{flex:1 1 300px;min-width:0}' +
-		'.cx-out textarea{width:100%;height:320px;box-sizing:border-box;font:12px/1.4 ui-monospace,Menlo,monospace;background:var(--cm-input,#111);color:var(--cm-fg,#eee);border:1px solid var(--cm-line,#444);border-radius:4px;padding:8px;resize:vertical}' +
-		'.cx-sec{border:1px solid var(--cm-line,#444);border-radius:4px;padding:6px 8px;margin:0 0 8px}.cx-sec>legend{padding:0 4px;font-weight:bold}' +
-		'.cx-row{display:flex;align-items:center;gap:6px;margin:4px 0}.cx-row>label{width:90px;flex:none;font-size:12px}.cx-row input[type=number]{width:64px}.cx-row input[type=text]{flex:1}' +
-		'.cx-chk{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px}.cx-chk label{display:flex;align-items:center;gap:3px}';
 	function showDialog(editor) {
 		const target = selected(editor);
 		if (!target) { _NS.gui.notify.Show(editor, T('msg.css.select')); return; }
-		if (!document.getElementById('cancas-cssx-css')) { document.head.append(el('style', { id: 'cancas-cssx-css', textContent: CSS })); }
 		const o = {
 			selector: target.id, target: 'html',
 			transition: { on: false, props: ['opacity', 'transform'], duration: 0.3, easing: 'ease', delay: 0 },
@@ -201,7 +195,7 @@
 				row(T('css.easing'), select(o.anim, 'easing', EASINGS)),
 				row(T('css.iterations'), input(o.anim, 'iterations', 'text', { placeholder: 'infinite' })),
 				row(T('css.direction'), select(o.anim, 'direction', ['normal', 'alternate', 'reverse', 'alternate-reverse'])),
-				el('div', { className: 'cx-sec', style: 'border:0;padding:0', innerHTML: '' }),
+				el('div', { className: 'cx-sec cx-bare', innerHTML: '' }),
 				el('b', { textContent: T('css.from') }), ...state(o.anim.from), el('b', { textContent: T('css.to') }), ...state(o.anim.to))
 		]);
 		const copy = el('button', { type: 'button', textContent: T('css.copy'), className: 'primary' });
@@ -212,7 +206,7 @@
 		const save = el('button', { type: 'button', textContent: T('css.download') });
 		save.onclick = () => igk.io.file.download('text/css', ident(o.selector) + '.css', out.value);
 		refresh();
-		_NS.ui.modal({ className: 'cx-wide', title: T('file.export.toCss').replace(/\.\.\.$/, ''), content: el('div', { className: 'cx-grid' }, [form, el('div', { className: 'cx-out' }, [out, el('div', { className: 'cx-row', style: 'margin-top:8px' }, [copy, save])])]) });
+		_NS.ui.modal({ className: 'cx-wide', title: T('file.export.toCss').replace(/\.\.\.$/, ''), content: el('div', { className: 'cx-grid' }, [form, el('div', { className: 'cx-out' }, [out, el('div', { className: 'cx-row cx-mt8' }, [copy, save])])]) });
 	}
 	AC.regMenuAction('file.export.toCss', { index: 24, callback: (a) => showDialog(a) });
 	_NS.cssExport = { buildCss, declarations };

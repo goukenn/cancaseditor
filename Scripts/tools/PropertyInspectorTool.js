@@ -25,11 +25,10 @@
 		const form = _el('div');
 		const field = (label, value, type, apply) => {
 			const input = _el('input', { type, value: value == null ? '' : value });
-			input.style.cssText = 'flex:1;min-width:0';
+			input.className = 'ce-flex1';
 			input.onchange = () => { apply(input.value); editor.resizeCanvas(true); };
 			const row = _el('label', {}, [_el('span', { textContent: label }), input]);
-			row.style.cssText = 'display:flex;gap:8px;align-items:center;margin:6px 0';
-			row.firstChild.style.cssText = 'width:80px';
+			row.className = 'ce-pi-row';
 			form.append(row);
 		};
 		field('id', doc.id, 'text', () => { }); // read only in practice
@@ -80,14 +79,8 @@
 	let m_isOpen = () => false; // the property panel is shown (docked, or in the modal on small screens)
 	let m_showLayers = null;
 	let m_tab = 'properties'; // 'properties' | 'layers'
-	const TAB_CSS = '.ci-tabs{display:flex;gap:4px;margin:0 0 10px;border-bottom:1px solid var(--ci-line,#4a4a4a)}' +
-		'.ci-tabs button{flex:1;background:transparent;border:0;border-bottom:2px solid transparent;color:var(--ci-dim,#9a9a9a);padding:6px 4px;cursor:pointer;font:inherit;font-weight:bold}' +
-		'.ci-tabs button.on{color:var(--ci-fg,#ddd);border-bottom-color:var(--ci-accent,#a14fd0)}';
 	/** tab bar + the content of the current tab (properties of the selection | explorer of the scene) */
 	function panelContent(editor, rerender) {
-		if (!document.getElementById('cancas-tabs-css')) {
-			document.head.append(_el('style', { id: 'cancas-tabs-css', textContent: TAB_CSS }));
-		}
 		const tabs = _el('div', { className: 'ci-tabs' });
 		[['properties', 'ins.tab.properties'], ['layers', 'ins.tab.layers']].forEach(([n, k]) => {
 			const b = _el('button', { type: 'button', textContent: R()[k] || k, className: m_tab == n ? 'on' : '' });
